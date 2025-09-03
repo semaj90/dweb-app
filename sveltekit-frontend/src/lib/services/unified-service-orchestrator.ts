@@ -99,14 +99,16 @@ export interface ServiceConfig {
   };
 }
 
-export class UnifiedServiceOrchestrator {;
-  private wasmGPUOrchestrator: UnifiedWASMGPUOrchestrator;
-  private quicClient: QUICGatewayClient;
-  private llamaService: LlamaCppOllamaService;
-  private nesGPUBridge: NESStyleGPUBridge;
+export class UnifiedServiceOrchestrator {
+;
+  // Definite assignment assertions (!) because these are set during initializeServices()/initializeSystemHealth() in the constructor
+  private wasmGPUOrchestrator!: UnifiedWASMGPUOrchestrator;
+  private quicClient!: QUICGatewayClient;
+  private llamaService!: LlamaCppOllamaService;
+  private nesGPUBridge!: NESStyleGPUBridge;
   private taskQueue: ServiceTask[] = [];
   private activeTasks: Map<string, ServiceTask> = new Map();
-  private systemHealth: SystemHealth;
+  private systemHealth!: SystemHealth;
   private config: ServiceConfig;
   private healthCheckInterval?: NodeJS.Timeout;
   private performanceMetrics: Array<{
@@ -245,7 +247,7 @@ export class UnifiedServiceOrchestrator {;
       }
 
       this.systemHealth.lastChecked = new Date();
-      
+
       const healthCheckTime = Date.now() - startTime;
       if (dev) {
         console.log(`[Orchestrator] Health check completed in ${healthCheckTime}ms - Status: ${this.systemHealth.overall}`);
@@ -345,7 +347,7 @@ export class UnifiedServiceOrchestrator {;
     options: any = {}
   ): Promise<OrchestrationResult> {
     const task: ServiceTask = {
-      id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: this.generateId('doc'),
       type: 'document',
       priority: options.priority || TaskPriority.NORMAL,
       data: { document, options },
@@ -364,7 +366,7 @@ export class UnifiedServiceOrchestrator {;
     options: any = {}
   ): Promise<OrchestrationResult> {
     const task: ServiceTask = {
-      id: `inference_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: this.generateId('inference'),
       type: 'inference',
       priority: options.priority || TaskPriority.HIGH,
       data: { input, options },
@@ -383,7 +385,7 @@ export class UnifiedServiceOrchestrator {;
     options: any = {}
   ): Promise<OrchestrationResult> {
     const task: ServiceTask = {
-      id: `canvas_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: this.generateId('canvas'),
       type: 'canvas',
       priority: options.priority || TaskPriority.NORMAL,
       data: { canvasState, options },
@@ -403,7 +405,7 @@ export class UnifiedServiceOrchestrator {;
     options: any = {}
   ): Promise<OrchestrationResult> {
     const task: ServiceTask = {
-      id: `gpu_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: this.generateId('gpu'),
       type: 'gpu',
       priority: options.priority || TaskPriority.HIGH,
       data: { operation, data, options },
@@ -431,22 +433,22 @@ export class UnifiedServiceOrchestrator {;
       // Execute based on task type and available services
       switch (task.type) {
         case 'document':
-          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } = 
+          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } =
             await this.executeDocumentTask(task, servicesUsed, fallbacksTriggered));
           break;
 
         case 'inference':
-          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } = 
+          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } =
             await this.executeInferenceTask(task, servicesUsed, fallbacksTriggered));
           break;
 
         case 'canvas':
-          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } = 
+          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } =
             await this.executeCanvasTask(task, servicesUsed, fallbacksTriggered));
           break;
 
         case 'gpu':
-          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } = 
+          ({ result, success, servicesUsed: servicesUsed, fallbacksTriggered: fallbacksTriggered } =
             await this.executeGPUTask(task, servicesUsed, fallbacksTriggered));
           break;
 
@@ -543,7 +545,7 @@ export class UnifiedServiceOrchestrator {;
           temperature: options.temperature || 0.7,
           stream: false
         });
-        
+
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
@@ -588,7 +590,7 @@ export class UnifiedServiceOrchestrator {;
           temperature: options.temperature || 0.1,
           stream: false
         });
-        
+
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
@@ -666,7 +668,7 @@ export class UnifiedServiceOrchestrator {;
           body: { operation, data, options },
           timeout: task.timeout
         } as any);
-        
+
         if ((result as any).success) {
           return { result: (result as any).data, success: true, servicesUsed, fallbacksTriggered };
         }
@@ -696,6 +698,11 @@ export class UnifiedServiceOrchestrator {;
     }, 0);
   }
 
+  // Centralized ID generator replacing deprecated substr usage
+  private generateId(prefix: string): string {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  }
+
   private updatePerformanceMetrics(latency: number, success: number, error: number): void {
     const metric = {
       timestamp: new Date(),
@@ -714,10 +721,10 @@ export class UnifiedServiceOrchestrator {;
 
     // Update system health performance metrics
     if (this.performanceMetrics.length > 0) {
-      this.systemHealth.performance.averageLatency = 
+      this.systemHealth.performance.averageLatency =
         this.performanceMetrics.reduce((sum, m) => sum + m.latency, 0) / this.performanceMetrics.length;
-      
-      this.systemHealth.performance.throughput = 
+
+      this.systemHealth.performance.throughput =
         this.performanceMetrics.reduce((sum, m) => sum + m.throughput, 0) / this.performanceMetrics.length;
     }
   }
@@ -747,7 +754,7 @@ export class UnifiedServiceOrchestrator {;
     // Wait for active tasks to complete (with timeout)
     const maxWaitTime = 30000; // 30 seconds
     const startTime = Date.now();
-    
+
     while (this.activeTasks.size > 0 && (Date.now() - startTime) < maxWaitTime) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
@@ -765,14 +772,16 @@ export class UnifiedServiceOrchestrator {;
 // Singleton instance for global use
 let orchestratorInstance: UnifiedServiceOrchestrator | null = null;
 
-export function getOrchestrator(config?: Partial<ServiceConfig>): UnifiedServiceOrchestrator {;
+export function getOrchestrator(config?: Partial<ServiceConfig>): UnifiedServiceOrchestrator {
+;
   if (!orchestratorInstance) {
     orchestratorInstance = new UnifiedServiceOrchestrator(config);
   }
   return orchestratorInstance;
 }
 
-export function resetOrchestrator(): void {;
+export function resetOrchestrator(): void {
+;
   if (orchestratorInstance) {
     orchestratorInstance.shutdown();
     orchestratorInstance = null;

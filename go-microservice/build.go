@@ -1,4 +1,5 @@
-//go:build ignore
+//go:build experimental || ignore
+// +build experimental ignore
 
 // build.go
 // Build configuration and compilation instructions for go-llama direct integration
@@ -68,7 +69,7 @@ func (bs *BuildSystem) BuildAll() error {
 	log.Printf("   CUDA Path: %s", bs.config.CUDAPath)
 	log.Printf("   GPU Enabled: %v", bs.config.EnableGPU)
 	log.Printf("   Build Mode: %s", bs.config.BuildMode)
-	
+
 	// Step 1: Verify dependencies
 	if err := bs.verifyDependencies(); err != nil {
 		return fmt.Errorf("dependency verification failed: %w", err)
@@ -103,7 +104,7 @@ func (bs *BuildSystem) BuildAll() error {
 
 	log.Printf("✅ Complete go-llama integration build successful!")
 	log.Printf("📁 Binaries available in: %s", bs.config.OutputDir)
-	
+
 	return nil
 }
 
@@ -271,7 +272,7 @@ func (bs *BuildSystem) buildMainExecutables() error {
 
 	for _, exe := range executables {
 		outputPath := filepath.Join(bs.config.OutputDir, exe.output)
-		
+
 		args := []string{"build"}
 		if bs.config.EnableOptimizations {
 			args = append(args, "-ldflags", "-s -w") // Strip debug info for smaller binaries
@@ -303,7 +304,7 @@ func (bs *BuildSystem) getCGOEnvironment() []string {
 	if bs.config.EnableGPU {
 		cFlags := fmt.Sprintf("-I%s/include", strings.ReplaceAll(bs.config.CUDAPath, "\\", "/"))
 		ldFlags := fmt.Sprintf("-L%s/lib/x64 -lcudart -lcublas", strings.ReplaceAll(bs.config.CUDAPath, "\\", "/"))
-		
+
 		env = append(env,
 			fmt.Sprintf("CGO_CFLAGS=%s", cFlags),
 			fmt.Sprintf("CGO_LDFLAGS=%s", ldFlags),
@@ -425,13 +426,13 @@ For automated builds, use:
 // main function for build system
 func main() {
 	log.Printf("🔧 Go-Llama Integration Build System")
-	
+
 	config := DefaultBuildConfig()
 	buildSystem := NewBuildSystem(config)
 
 	// Parse command line arguments (simplified)
 	args := os.Args[1:]
-	
+
 	if len(args) == 0 {
 		buildSystem.ShowBuildInstructions()
 		return

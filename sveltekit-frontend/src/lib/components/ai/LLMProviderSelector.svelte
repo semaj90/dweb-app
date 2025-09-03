@@ -25,7 +25,7 @@
 		onProviderChange,
 		availableProviders = [],
 		disabled = false,
-		class: class,
+		class: className = '',
 		id,
 		'data-testid': testId
 	}: LLMProviderSelectorProps = $props();

@@ -41,8 +41,7 @@
   import { allRoutes, routeCategories } from '$lib/data/routes-config';
   
   // Get data from server loader
-  export let data: PageData;
-;
+  let { data }: { data: PageData } = $props();
   // Discover all route modules
   const modules = import.meta.glob('/src/routes/**/+page.svelte');
 

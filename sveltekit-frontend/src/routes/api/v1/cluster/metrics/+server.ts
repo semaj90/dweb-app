@@ -1,4 +1,5 @@
 import type { RequestHandler } from './$types.js';
+import { json } from '@sveltejs/kit';
 
 /**
  * Cluster Metrics API

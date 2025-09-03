@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 // Enhanced Legal AI Microservice
 // NVIDIA CUDA + Redis + Gemma3-Legal GGUF Integration

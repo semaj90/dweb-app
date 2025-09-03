@@ -1,6 +1,6 @@
 <script lang="ts">
   // Updated to use melt-ui components
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import Select from '$lib/components/ui/MeltSelect.svelte';
   import { onMount } from "svelte";

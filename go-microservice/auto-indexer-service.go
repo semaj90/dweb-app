@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -30,10 +30,10 @@ type AutoIndexer struct {
 	watcher     *fsnotify.Watcher
 	processor   *DocumentProcessor
 	config      *IndexerConfig
-	
+
 	// Performance optimization fields - Context7 best practices
 	totalProcessed    int64       // atomic counter
-	totalErrors       int64       // atomic counter  
+	totalErrors       int64       // atomic counter
 	averageLatency    int64       // atomic average (microseconds)
 	bufferPool        *sync.Pool  // Buffer pool for file content
 	mutex             sync.RWMutex
@@ -53,7 +53,7 @@ type DocumentProcessor struct {
 	resultQueue chan IndexingResult
 	workers     int
 	wg          sync.WaitGroup
-	
+
 	// Context7 optimization fields
 	connectionPool   chan struct{}   // Connection pool for rate limiting
 	requestCount     int64          // atomic counter
@@ -110,7 +110,7 @@ func NewAutoIndexer(config *IndexerConfig) (*AutoIndexer, error) {
 			},
 		},
 	}
-	
+
 	// Initialize connection pool semaphore
 	for i := 0; i < 10; i++ {
 		processor.connectionPool <- struct{}{}
@@ -313,19 +313,19 @@ func (dp *DocumentProcessor) processWithGPU(content string) ([]float32, string, 
 		newAvg := (currentAvg + latency) / 2
 		atomic.StoreInt64(&dp.totalLatency, newAvg)
 	}()
-	
+
 	// Rate limiting with connection pool
 	<-dp.connectionPool
 	defer func() { dp.connectionPool <- struct{}{} }()
-	
+
 	// Get buffer from pool
 	buffer := dp.bufferPool.Get().(*bytes.Buffer)
 	buffer.Reset()
 	defer dp.bufferPool.Put(buffer)
-	
+
 	// Call our GPU microservice with optimized request
 	payload := map[string]interface{}{
-		"endpoint":    "analyze-document", 
+		"endpoint":    "analyze-document",
 		"content":     content,
 		"llmProvider": "ollama",
 		"options": map[string]interface{}{
@@ -338,7 +338,7 @@ func (dp *DocumentProcessor) processWithGPU(content string) ([]float32, string, 
 
 	jsonData, _ := json.Marshal(payload)
 	buffer.Write(jsonData)
-	
+
 	resp, err := http.Post("http://localhost:8080/llm-request", "application/json", buffer)
 	if err != nil {
 		return nil, "", err
@@ -349,7 +349,7 @@ func (dp *DocumentProcessor) processWithGPU(content string) ([]float32, string, 
 	// Implementation depends on GPU service response format
 	embedding := make([]float32, 768) // Placeholder - optimized allocation
 	summary := "GPU-generated summary with enhanced processing"
-	
+
 	return embedding, summary, nil
 }
 
@@ -372,18 +372,18 @@ func (ai *AutoIndexer) handleResults() {
 
 func (ai *AutoIndexer) storeResult(result IndexingResult) {
 	embeddingStr := fmt.Sprintf("[%s]", strings.Trim(fmt.Sprint(result.Embedding), "[]"))
-	
+
 	_, err := ai.dbPool.Exec(context.Background(),
-		`INSERT INTO indexed_files (file_path, content, embedding, summary, processing_method, gpu_processing_time_ms) 
+		`INSERT INTO indexed_files (file_path, content, embedding, summary, processing_method, gpu_processing_time_ms)
 		 VALUES ($1, $2, $3, $4, $5, $6)
-		 ON CONFLICT (file_path) DO UPDATE SET 
-		 embedding = EXCLUDED.embedding, 
-		 summary = EXCLUDED.summary, 
+		 ON CONFLICT (file_path) DO UPDATE SET
+		 embedding = EXCLUDED.embedding,
+		 summary = EXCLUDED.summary,
 		 processing_method = EXCLUDED.processing_method,
 		 gpu_processing_time_ms = EXCLUDED.gpu_processing_time_ms,
 		 indexed_at = NOW()`,
 		result.FilePath, "", embeddingStr, result.Summary, result.Method, result.ProcessingTime)
-	
+
 	if err != nil {
 		log.Printf("Database storage failed for %s: %v", result.FilePath, err)
 	}
@@ -392,7 +392,7 @@ func (ai *AutoIndexer) storeResult(result IndexingResult) {
 func (ai *AutoIndexer) cacheResult(result IndexingResult) {
 	cacheKey := fmt.Sprintf("indexed:%s", result.FilePath)
 	cacheData, _ := json.Marshal(result)
-	
+
 	ai.redisClient.Set(context.Background(), cacheKey, cacheData, 24*time.Hour)
 }
 
@@ -405,7 +405,7 @@ func (ai *AutoIndexer) logResult(result IndexingResult) {
 		"method":          result.Method,
 		"error":           result.Error,
 	}
-	
+
 	logJSON, _ := json.Marshal(logEntry)
 	log.Printf("INDEXING_RESULT: %s", logJSON)
 }

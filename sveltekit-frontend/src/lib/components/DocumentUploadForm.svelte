@@ -1,22 +1,38 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { $props } from 'svelte';
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import { fade, slide } from 'svelte/transition';
   import { writable } from 'svelte/store';
   import type { OCRResult } from '$lib/services/ocr-processor';
   import type { DocumentUploadFormProps } from '$lib/types/component-props.js';
 
   const dispatch = createEventDispatcher();
+  // SvelteKit 2 / Svelte 5 helpers (before $props() destructure)
+  type ProcessingStatus = 'pending' | 'processing' | 'completed' | 'error';
 
-  let { 
+  interface InternalFormData {
+    uploaded_files: File[];
+    ocr_results: OCRResult[];
+    processing_status: ProcessingStatus;
+  }
+
+  function createDefaultFormData(): InternalFormData {
+    return {
+      uploaded_files: [],
+      ocr_results: [],
+      processing_status: 'pending'
+    };
+  }
+  // Use: formData = $bindable(createDefaultFormData()) in the $props destructure if no parent value
+  let {
     caseId,
     allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'],
     maxFileSize = 10 * 1024 * 1024, // 10MB
     maxFiles = 10,
     onUploadComplete,
     onUploadError,
-    class: class,
+    class: className = '',
     id,
     'data-testid': testId,
     formData = $bindable()

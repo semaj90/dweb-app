@@ -1,21 +1,23 @@
+//go:build ignore
+// +build ignore
+
 // Enhanced RAG V2 with CUDA 12.8/13.0 GPU Acceleration for Legal AI
+// Temporarily excluded from build to resolve duplicate symbols with main.go during refactor.
 package main
 
 import (
-    "context"
-    "database/sql"
-    "encoding/json"
-    "fmt"
-    "log"
-    "net/http"
-    "os"
-    "sync"
-    "time"
-    
-    "github.com/gorilla/mux"
-    _ "github.com/lib/pq"
-    "github.com/redis/go-redis/v9"
-    "github.com/google/uuid"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"sync"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	"github.com/redis/go-redis/v9"
 )
 
 // GPU-Enhanced Legal AI Service
@@ -88,18 +90,18 @@ func NewLegalAIGPU() (*LegalAIGPU, error) {
             "fp16":          true,
         },
     }
-    
+
     // Simulate GPU initialization
     gpu.initialized = true
     log.Println("✅ Legal AI GPU initialized (RTX 3060 Ti - 8GB)")
-    
+
     return gpu, nil
 }
 
 // Initialize GPU-enhanced Legal AI Service
 func NewLegalAIService() (*LegalAIService, error) {
     service := &LegalAIService{}
-    
+
     // Initialize GPU
     gpu, err := NewLegalAIGPU()
     if err != nil {
@@ -107,23 +109,23 @@ func NewLegalAIService() (*LegalAIService, error) {
         gpu = nil
     }
     service.gpu = gpu
-    
+
     // Initialize database
     dbManager, err := NewDatabaseManager()
     if err != nil {
         return nil, fmt.Errorf("database initialization failed: %v", err)
     }
     service.db = dbManager
-    
+
     // Initialize Redis
     service.redis = redis.NewClient(&redis.Options{
         Addr: "localhost:6379",
         DB:   0,
     })
-    
+
     service.initialized = true
     log.Println("✅ Legal AI Service initialized with GPU acceleration")
-    
+
     return service, nil
 }
 
@@ -133,19 +135,19 @@ func NewDatabaseManager() (*DatabaseManager, error) {
     if dbURL == "" {
         dbURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db?sslmode=disable"
     }
-    
+
     db, err := sql.Open("postgres", dbURL)
     if err != nil {
         return nil, err
     }
-    
+
     if err = db.Ping(); err != nil {
         log.Printf("⚠️ Database connection failed: %v (using mock mode)", err)
     }
-    
+
     // Initialize GPU for database operations
     gpu, _ := NewLegalAIGPU()
-    
+
     return &DatabaseManager{
         db:  db,
         gpu: gpu,
@@ -155,28 +157,28 @@ func NewDatabaseManager() (*DatabaseManager, error) {
 // GPU-accelerated document search
 func (s *LegalAIService) SearchDocuments(req GPUSearchRequest) (*GPUSearchResponse, error) {
     startTime := time.Now()
-    
+
     response := &GPUSearchResponse{
         Query:     req.Query,
         Timestamp: startTime,
         GPUUsed:   false,
     }
-    
+
     // Get query embeddings (mock for now)
     queryEmbeddings := generateMockEmbeddings(384) // nomic-embed-text size
-    
+
     // Fetch documents from database
     documents, err := s.fetchDocumentsFromDB(req.CaseID, req.Limit)
     if err != nil {
         return nil, fmt.Errorf("failed to fetch documents: %v", err)
     }
-    
+
     if len(documents) == 0 {
         response.Documents = []LegalDocument{}
         response.ProcessTimeMS = float64(time.Since(startTime).Nanoseconds()) / 1e6
         return response, nil
     }
-    
+
     // Use GPU for similarity computation if available and requested
     if s.gpu != nil && req.UseGPU {
         err = s.computeGPUSimilarities(documents, queryEmbeddings)
@@ -187,12 +189,12 @@ func (s *LegalAIService) SearchDocuments(req GPUSearchRequest) (*GPUSearchRespon
             log.Printf("⚠️ GPU computation failed, falling back to CPU: %v", err)
         }
     }
-    
+
     // Fallback to CPU if GPU not used
     if !response.GPUUsed {
         s.computeCPUSimilarities(documents, queryEmbeddings)
     }
-    
+
     // Filter by minimum similarity
     filteredDocs := []LegalDocument{}
     for _, doc := range documents {
@@ -200,11 +202,11 @@ func (s *LegalAIService) SearchDocuments(req GPUSearchRequest) (*GPUSearchRespon
             filteredDocs = append(filteredDocs, doc)
         }
     }
-    
+
     response.Documents = filteredDocs
     response.TotalDocuments = len(filteredDocs)
     response.ProcessTimeMS = float64(time.Since(startTime).Nanoseconds()) / 1e6
-    
+
     return response, nil
 }
 
@@ -213,7 +215,7 @@ func (s *LegalAIService) computeGPUSimilarities(documents []LegalDocument, query
     if s.gpu == nil {
         return fmt.Errorf("GPU not available")
     }
-    
+
     // Prepare embeddings matrix
     docEmbeddings := make([][]float32, len(documents))
     for i, doc := range documents {
@@ -222,13 +224,13 @@ func (s *LegalAIService) computeGPUSimilarities(documents []LegalDocument, query
         }
         docEmbeddings[i] = doc.Embeddings
     }
-    
+
     // Compute similarities using GPU
     similarities, err := s.gpu.ProcessLegalDocuments(docEmbeddings, queryEmbeddings)
     if err != nil {
         return err
     }
-    
+
     // Update documents with similarities
     for i := range documents {
         if i < len(similarities) {
@@ -236,7 +238,7 @@ func (s *LegalAIService) computeGPUSimilarities(documents []LegalDocument, query
             documents[i].GPUProcessed = true
         }
     }
-    
+
     return nil
 }
 
@@ -246,7 +248,7 @@ func (s *LegalAIService) computeCPUSimilarities(documents []LegalDocument, query
         if len(documents[i].Embeddings) == 0 {
             documents[i].Embeddings = generateMockEmbeddings(384)
         }
-        
+
         // Simple cosine similarity
         documents[i].Similarity = cosineSimilarityCPU(documents[i].Embeddings, queryEmbeddings)
         documents[i].GPUProcessed = false
@@ -257,11 +259,11 @@ func (s *LegalAIService) computeCPUSimilarities(documents []LegalDocument, query
 func (s *LegalAIService) fetchDocumentsFromDB(caseID string, limit int) ([]LegalDocument, error) {
     s.db.mutex.RLock()
     defer s.db.mutex.RUnlock()
-    
+
     if limit == 0 {
         limit = 10
     }
-    
+
     // Mock data for now (replace with actual database query)
     documents := []LegalDocument{
         {
@@ -292,11 +294,11 @@ func (s *LegalAIService) fetchDocumentsFromDB(caseID string, limit int) ([]Legal
             UpdatedAt: time.Now(),
         },
     }
-    
+
     if len(documents) > limit {
         documents = documents[:limit]
     }
-    
+
     return documents, nil
 }
 
@@ -314,19 +316,19 @@ func cosineSimilarityCPU(vec1, vec2 []float32) float32 {
     if len(vec1) != len(vec2) {
         return 0
     }
-    
+
     var dotProduct, norm1, norm2 float32
-    
+
     for i := range vec1 {
         dotProduct += vec1[i] * vec2[i]
         norm1 += vec1[i] * vec1[i]
         norm2 += vec2[i] * vec2[i]
     }
-    
+
     if norm1 == 0 || norm2 == 0 {
         return 0
     }
-    
+
     return dotProduct / (float32(sqrt(float64(norm1))) * float32(sqrt(float64(norm2))))
 }
 
@@ -348,7 +350,7 @@ func (s *LegalAIService) handleGPUSearch(w http.ResponseWriter, r *http.Request)
         http.Error(w, fmt.Sprintf("Invalid request: %v", err), http.StatusBadRequest)
         return
     }
-    
+
     // Set defaults
     if req.Limit == 0 {
         req.Limit = 10
@@ -356,20 +358,20 @@ func (s *LegalAIService) handleGPUSearch(w http.ResponseWriter, r *http.Request)
     if req.SimilarityMin == 0 {
         req.SimilarityMin = 0.3
     }
-    
+
     response, err := s.SearchDocuments(req)
     if err != nil {
         http.Error(w, fmt.Sprintf("Search failed: %v", err), http.StatusInternalServerError)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(response)
 }
 
 func (s *LegalAIService) handleGPUStatus(w http.ResponseWriter, r *http.Request) {
     var status map[string]interface{}
-    
+
     if s.gpu != nil {
         status = s.gpu.GetStatus()
     } else {
@@ -378,10 +380,10 @@ func (s *LegalAIService) handleGPUStatus(w http.ResponseWriter, r *http.Request)
             "error": "GPU not initialized",
         }
     }
-    
+
     status["service_initialized"] = s.initialized
     status["timestamp"] = time.Now().Format(time.RFC3339)
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(status)
 }
@@ -396,7 +398,7 @@ func (s *LegalAIService) handleHealth(w http.ResponseWriter, r *http.Request) {
         "database_connected": s.db.db != nil,
         "redis_connected": s.redis != nil,
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(health)
 }
@@ -404,20 +406,20 @@ func (s *LegalAIService) handleHealth(w http.ResponseWriter, r *http.Request) {
 // Main function
 func main() {
     log.Println("🚀 Starting Enhanced RAG V2 with CUDA 12.8/13.0 GPU Acceleration")
-    
+
     service, err := NewLegalAIService()
     if err != nil {
         log.Fatalf("❌ Failed to initialize service: %v", err)
     }
-    
+
     // Setup HTTP router
     router := mux.NewRouter()
-    
+
     // GPU-accelerated endpoints
     router.HandleFunc("/api/gpu/search", service.handleGPUSearch).Methods("POST")
     router.HandleFunc("/api/gpu/status", service.handleGPUStatus).Methods("GET")
     router.HandleFunc("/health", service.handleHealth).Methods("GET")
-    
+
     // Static endpoints
     router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         response := map[string]interface{}{
@@ -432,23 +434,23 @@ func main() {
             "version": "2.0.0",
             "timestamp": time.Now().Format(time.RFC3339),
         }
-        
+
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(response)
     })
-    
+
     // Get port from environment
     port := os.Getenv("PORT")
     if port == "" {
         port = "8097"
     }
-    
+
     log.Printf("✅ Enhanced RAG V2 with CUDA acceleration running on port %s", port)
     log.Printf("🔗 Endpoints:")
     log.Printf("   POST http://localhost:%s/api/gpu/search", port)
     log.Printf("   GET  http://localhost:%s/api/gpu/status", port)
     log.Printf("   GET  http://localhost:%s/health", port)
-    
+
     if err := http.ListenAndServe(":"+port, router); err != nil {
         log.Fatalf("❌ Server failed to start: %v", err)
     }

@@ -51,3 +51,54 @@ export interface EnhancedRAGEngine {
   search: (query: string) => Promise<VectorSearchResult[]>;
   analyze: (content: string) => Promise<SemanticEntity[]>;
 }
+
+// Chat related types for AI Assistant
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  metadata?: {
+    model?: string;
+    tokenCount?: number;
+    processingTime?: number;
+    confidence?: number;
+  };
+}
+
+export interface SystemStatus {
+  gpu: boolean;
+  ollama: boolean;
+  enhancedRAG: boolean;
+  postgres: boolean;
+  neo4j: boolean;
+}
+
+export interface ChatRequest {
+  message: string;
+  model?: string;
+  temperature?: number;
+  stream?: boolean;
+  context?: {
+    caseId?: string;
+    documentIds?: string[];
+    previousMessages?: ChatMessage[];
+  };
+}
+
+export interface ChatResponse {
+  response: string;
+  model: string;
+  timestamp: string;
+  conversationId?: string;
+  performance: {
+    duration: number;
+    tokens: number;
+    promptTokens: number;
+    responseTokens: number;
+    tokensPerSecond: number;
+  };
+  suggestions?: string[];
+  relatedCases?: string[];
+  vectorSearchResults?: VectorSearchResult[];
+}

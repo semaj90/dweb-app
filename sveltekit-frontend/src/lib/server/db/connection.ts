@@ -4,11 +4,11 @@
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import * as schema from './schema-unified-postgres';
+import * as schema from '../schema/documents';
 
 // Connection configuration
 const connectionString = process.env.DATABASE_URL ||
-  `postgresql://${process.env.POSTGRES_USER || 'legal_admin'}:${process.env.POSTGRES_PASSWORD || '123456'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'legal_ai_db'}`;
+  `postgresql://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || '123456'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'legal_ai_db'}`;
 
 // Create postgres connection with optimized settings
 const sql = postgres(connectionString, {

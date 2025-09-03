@@ -21,6 +21,13 @@
 	import { createMachine, assign } from 'xstate';
 	import { useMachine } from '@xstate/svelte';
 
+	// TensorFlow.js AI Services Integration
+	import { TensorFlowSynthesizer } from '$lib/middleware/tfjs-synthesizer';
+	import { MultiLayerCache } from '$lib/services/multi-layer-cache';
+	import { rabbitMQQueue, type DocumentMessage, type ChunkMessage } from '$lib/services/rabbitmq-queue-service';
+	import type { SynthesizedAnalysis } from '$lib/middleware/tfjs-synthesizer';
+	import type { NLPCacheOperations } from '$lib/services/multi-layer-cache';
+
 	// Feedback Integration
 	import FeedbackIntegration from '$lib/components/feedback/FeedbackIntegration.svelte';
 
@@ -35,20 +42,93 @@
 
 	let { contextItems = [], caseId = '' }: Props = $props();
 
-	// --- Client-Side Caching with Loki.js ---
-	// Initializes a simple in-memory DB to cache summaries on the client.
-	// Ensure Loki.js DB and collection are initialized only once (singleton pattern).
-let db = $state<Loki;
-	let lokiSummaryCache: Collection<any>;
+// --- TensorFlow.js AI Services Initialization ---
+let tensorFlowSynthesizer: TensorFlowSynthesizer | null = null;
+let multiLayerCache: MultiLayerCache | null = null;
+let synthesizedResults: SynthesizedAnalysis | null = null;
+
+// Initialize AI services
+async function initializeAIServices() {
+	if (!multiLayerCache) {
+		multiLayerCache = new MultiLayerCache({
+			enableRedisCache: true,
+			enableLokiCache: true,
+			enableMemoryCache: true,
+			redisTTL: 3600, // 1 hour
+			lokiTTL: 1800,  // 30 minutes
+			memoryTTL: 300, // 5 minutes
+		});
+		await multiLayerCache.initialize();
+	}
+	
+	if (!tensorFlowSynthesizer) {
+		tensorFlowSynthesizer = new TensorFlowSynthesizer({
+			parallelProcessing: true,
+			useGPUAcceleration: false, // Browser environment
+			debugMode: false,
+			legalBERTConfig: {
+				modelPath: '/models/legal-bert',
+				vocabularyPath: '/models/legal-bert-vocab.json'
+			},
+			cacheService: multiLayerCache
+		});
+		await tensorFlowSynthesizer.initialize();
+	}
+
+	// Initialize RabbitMQ queue service for NLP task queuing
+	if (!rabbitMQQueue.connected) {
+		try {
+			await rabbitMQQueue.initialize();
+			console.log('✅ RabbitMQ queue service initialized');
+			
+			// Set up event listeners for queue events
+			rabbitMQQueue.on('documentQueued', (event) => {
+				console.log('📄 Document queued for processing:', event);
+			});
+			
+			rabbitMQQueue.on('chunkQueued', (event) => {
+				console.log('🧩 Chunk queued for embedding:', event);
+			});
+			
+			rabbitMQQueue.on('embeddingQueued', (event) => {
+				console.log('🧠 Embedding queued for storage:', event);
+			});
+			
+		} catch (error) {
+			console.warn('⚠️ RabbitMQ initialization failed, continuing without queuing:', error);
+		}
+	}
+}
+
+// Initialize services when component mounts
+let servicesInitialized = $state(false);
+$effect(() => {
+	if (!servicesInitialized) {
+		initializeAIServices().then(() => {
+			servicesInitialized = true;
+		}).catch(err => {
+			console.warn('AI services initialization failed:', err);
+			servicesInitialized = true; // Allow fallback
+		});
+	}
+});
+
+// --- Client-Side Caching with Loki.js ---
+// Initializes a simple in-memory DB to cache summaries on the client.
+// Ensure Loki.js DB and collection are initialized only once (singleton pattern).
+let db = $state<Loki | null>(null);
+	let lokiSummaryCache: Collection<any> | null;
 
 	function getSummaryCache() {
 		if (!db) {
-			db >(new Loki('ai-cache.db'));
+			db = new Loki('ai-cache.db');
 			lokiSummaryCache = db.addCollection('summaries', { indices: ['caseId'] });
 		} else if (!lokiSummaryCache) {
-			lokiSummaryCache = db.getCollection('summaries') || db.addCollection('summaries', { indices: ['caseId'] });
+			lokiSummaryCache =
+				db.getCollection('summaries') ||
+				db.addCollection('summaries', { indices: ['caseId'] });
 		}
-		return lokiSummaryCache;
+		return lokiSummaryCache!;
 	}
 	// initialize
 	const summaryCacheCollection = getSummaryCache();
@@ -67,30 +147,90 @@ let showSources = $state(true);
 	const hasContent = $derived(() => contextItems.length > 0);
 	const isLoading = $derived(() => state.matches('processing'));
 	const canSummarize = $derived(() => hasContent && !!user && !isLoading);
-	const allowSave = true;
 	const canSave = $derived(() => !!summary && !!user && !isSaving);
-
-	// Feedback integration variables
-let feedbackIntegration = $state<any;
-	let currentInteractionId: string | null >(null);
+	const allowSave = true;
+// Feedback integration variables
+let feedbackIntegration = $state<any>();
+let currentInteractionId: string | null = null;
 
 	const getStatusInfo = () => {
 		if (isLoading) {
-			return { icon: Bot, text: 'Analyzing...', color: 'text-blue-600' };
+			const processingText = servicesInitialized && tensorFlowSynthesizer 
+				? 'Analyzing with TensorFlow.js...' 
+				: 'Analyzing...';
+			return { icon: Bot, text: processingText, color: 'text-blue-600' };
 		}
 		if (error) {
 			return { icon: AlertCircle, text: 'Error', color: 'text-red-600' };
 		}
 		if (summary) {
-			return { icon: FileText, text: 'Summary ready', color: 'text-green-600' };
+			const readyText = synthesizedResults 
+				? 'TensorFlow.js Analysis Complete' 
+				: 'Summary ready';
+			return { icon: FileText, text: readyText, color: 'text-green-600' };
+		}
+		if (!servicesInitialized) {
+			return { icon: RefreshCw, text: 'Initializing AI services...', color: 'text-orange-600' };
 		}
 		return null;
 	};
 
 	async function fetchSummaryFromServer(payload: { caseId: string; evidence: any[]; userId?: string }) {
-		// Try Enhanced RAG service first, fallback to SvelteKit API endpoints
 		try {
-			// Try multiple Enhanced RAG endpoints
+			const evidenceText = payload.evidence
+				.map(item => `${item.title || 'Evidence'}: ${item.content || item.description || ''}`)
+				.join('\n\n');
+
+			// Try TensorFlow.js synthesizer first with caching
+			if (tensorFlowSynthesizer && multiLayerCache && servicesInitialized) {
+				try {
+					console.log('Using TensorFlow.js synthesizer with caching...');
+					
+					// Check cache first using multi-layer cache
+					const cacheKey = `evidence_analysis_${payload.caseId}`;
+					const cachedResult = await multiLayerCache.get('summary', cacheKey);
+					
+					if (cachedResult) {
+						console.log('Cache hit for evidence analysis');
+						synthesizedResults = cachedResult;
+						return {
+							summary: cachedResult.enhancedResponse.summary,
+							sources: cachedResult.enhancedResponse.sources || [],
+							confidence: cachedResult.qualityMetrics?.confidence || 0.85
+						};
+					}
+
+					// Perform TensorFlow.js analysis with synthesizer
+					const analysisResult = await tensorFlowSynthesizer.synthesizeAnalysis(
+						evidenceText,
+						`Analyze and summarize the following legal evidence for case ${payload.caseId}`,
+						{
+							caseId: payload.caseId,
+							userId: payload.userId,
+							evidenceCount: payload.evidence.length,
+							requestType: 'evidence_summary'
+						}
+					);
+
+					// Cache the results using multi-layer cache
+					await multiLayerCache.set('summary', cacheKey, analysisResult, 3600); // 1 hour TTL
+					
+					synthesizedResults = analysisResult;
+					
+					return {
+						summary: analysisResult.enhancedResponse.summary,
+						sources: analysisResult.enhancedResponse.sources || [],
+						confidence: analysisResult.qualityMetrics?.confidence || 0.9,
+						processingTime: analysisResult.processingPipeline.totalProcessingTime,
+						aiInsights: analysisResult.synthesizedInsights
+					};
+				} catch (tfError) {
+					console.warn('TensorFlow.js synthesizer error:', tfError);
+					// Fall through to API fallback
+				}
+			}
+
+			// Fallback to existing Enhanced RAG service
 			let ragResult;
 
 			// Try health check first
@@ -228,12 +368,8 @@ let feedbackIntegration = $state<any;
 			},
 			services: {
 				processEvidenceOnServer: async (context) => {
-					// Use the same resilient approach as fetchSummaryFromServer
-					return await fetchSummaryFromServer({
-						caseId: context.caseId,
-						evidence: context.evidence,
-						userId: context.userId
-					});
+					// Use the enhanced processing with queuing capability
+					return await processWithQueuing(context.evidence);
 				}
 			}
 		}
@@ -327,8 +463,89 @@ let feedbackIntegration = $state<any;
 		stream = '';
 		retryCount = 0;
 		sources = [];
+		synthesizedResults = null;
 		// also clear machine context summary
 		// send a PROCESS to re-check cache if needed
+	}
+
+	/**
+	 * Queue documents for background processing using RabbitMQ
+	 * This implements the RAG ingestion pipeline described by the user
+	 */
+	async function queueDocumentProcessing(evidence: any[]): Promise<string[]> {
+		if (!rabbitMQQueue.connected) {
+			throw new Error('RabbitMQ queue service not available');
+		}
+
+		const jobIds: string[] = [];
+
+		for (const item of evidence) {
+			const documentMessage: DocumentMessage = {
+				document_id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+				case_id: caseId,
+				source_location: item.url || item.path || 'memory://evidence',
+				metadata: {
+					title: item.title || item.name || 'Evidence Item',
+					file_type: item.type || 'text',
+					upload_date: new Date().toISOString(),
+					user_id: user?.id
+				}
+			};
+
+			try {
+				const jobId = await rabbitMQQueue.publishDocument(documentMessage);
+				jobIds.push(jobId);
+				
+				console.log(`✅ Queued document ${documentMessage.document_id} for processing`);
+			} catch (error) {
+				console.error('❌ Failed to queue document:', error);
+				throw error;
+			}
+		}
+
+		return jobIds;
+	}
+
+	/**
+	 * Enhanced processing function that uses queuing for expensive operations
+	 */
+	async function processWithQueuing(evidence: any[]): Promise<any> {
+		try {
+			// For small batches, process directly with TensorFlow.js
+			if (evidence.length <= 3) {
+				console.log('📊 Processing small batch directly with TensorFlow.js');
+				return await fetchSummaryFromServer({
+					caseId,
+					evidence,
+					userId: user?.id
+				});
+			}
+
+			// For larger batches, use RabbitMQ queuing
+			console.log('🚀 Using RabbitMQ queuing for large batch processing');
+			
+			const queuedJobIds = await queueDocumentProcessing(evidence);
+			
+			// Return immediate response indicating queued processing
+			return {
+				summary: `Processing ${evidence.length} evidence items in background. Job IDs: ${queuedJobIds.slice(0, 3).join(', ')}${queuedJobIds.length > 3 ? '...' : ''}`,
+				sources: [],
+				confidence: 0.0,
+				processingMode: 'queued',
+				jobIds: queuedJobIds,
+				estimatedCompletionTime: evidence.length * 30 // 30 seconds per item estimate
+			};
+
+		} catch (error) {
+			console.warn('⚠️ Queuing failed, falling back to direct processing:', error);
+			
+			// Fallback to direct processing
+			return await fetchSummaryFromServer({
+				caseId,
+				evidence,
+				userId: user?.id
+			});
+		}
 	}
 </script>
 
@@ -369,7 +586,7 @@ let feedbackIntegration = $state<any;
 		<div class="flex flex-wrap gap-3">
 			<AnyButton
 				type="button"
-				on:on:click={handleSummarize}
+				onclick={handleSummarize}
 				aria-disabled={!canSummarize}
 				disabled={!canSummarize}
 				variant="default"
@@ -385,11 +602,10 @@ let feedbackIntegration = $state<any;
 					Summarize Evidence
 				{/if}
 			</AnyButton>
-
 			{#if allowSave}
 				<AnyButton
 					type="button"
-					on:on:click={handleSave}
+					onclick={handleSave}
 					aria-disabled={!canSave}
 					disabled={!canSave}
 					variant="outline"
@@ -408,7 +624,7 @@ let feedbackIntegration = $state<any;
 			{#if error && retryCount < 3}
 				<AnyButton
 					type="button"
-					on:on:click={handleRetry}
+					onclick={handleRetry}
 					variant="outline"
 					class="gap-2 text-orange-600 border-orange-600 hover:bg-orange-50"
 				>
@@ -420,7 +636,7 @@ let feedbackIntegration = $state<any;
 			{#if summary || error}
 				<AnyButton
 					type="button"
-					on:on:click={handleReset}
+					onclick={handleReset}
 					variant="ghost"
 					size="sm"
 					class="text-gray-500 hover:text-gray-700"
@@ -474,6 +690,67 @@ let feedbackIntegration = $state<any;
 							<pre class="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">{summary}</pre>
 						</div>
 					</div>
+
+					<!-- AI Insights from TensorFlow.js Synthesizer -->
+					{#if synthesizedResults?.synthesizedInsights}
+						<div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4" role="region" aria-label="AI insights">
+							<h4 class="font-semibold text-emerald-900 dark:text-emerald-100 mb-3 flex items-center gap-2">
+								<Sparkles class="w-4 h-4" />
+								TensorFlow.js AI Insights
+							</h4>
+							<div class="space-y-3">
+								{#if synthesizedResults.synthesizedInsights.riskAssessment}
+									<div class="p-3 bg-white dark:bg-emerald-950/50 rounded border">
+										<p class="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-1">Risk Assessment</p>
+										<p class="text-xs text-emerald-700 dark:text-emerald-300">
+											Level: {synthesizedResults.synthesizedInsights.riskAssessment.level} 
+											(Score: {synthesizedResults.synthesizedInsights.riskAssessment.score})
+										</p>
+									</div>
+								{/if}
+								
+								{#if synthesizedResults.synthesizedInsights.keyEntities?.length > 0}
+									<div class="p-3 bg-white dark:bg-emerald-950/50 rounded border">
+										<p class="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-2">Key Legal Entities</p>
+										<div class="flex flex-wrap gap-1">
+											{#each synthesizedResults.synthesizedInsights.keyEntities.slice(0, 8) as entity}
+												<Badge variant="outline" class="text-xs">
+													{entity.text} ({entity.type})
+												</Badge>
+											{/each}
+										</div>
+									</div>
+								{/if}
+
+								{#if synthesizedResults.synthesizedInsights.recommendedActions?.length > 0}
+									<div class="p-3 bg-white dark:bg-emerald-950/50 rounded border">
+										<p class="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-2">Recommended Actions</p>
+										<div class="space-y-1">
+											{#each synthesizedResults.synthesizedInsights.recommendedActions.slice(0, 3) as action}
+												<p class="text-xs text-emerald-700 dark:text-emerald-300">• {action}</p>
+											{/each}
+										</div>
+									</div>
+								{/if}
+
+								{#if synthesizedResults.qualityMetrics}
+									<div class="flex gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+										<Badge variant="secondary">
+											Confidence: {Math.round((synthesizedResults.qualityMetrics.confidence || 0) * 100)}%
+										</Badge>
+										{#if synthesizedResults.processingPipeline.totalProcessingTime}
+											<Badge variant="secondary">
+												Processing: {synthesizedResults.processingPipeline.totalProcessingTime}ms
+											</Badge>
+										{/if}
+										<Badge variant="secondary">
+											TensorFlow.js Enhanced
+										</Badge>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
 
 					<!-- Evidence Sources -->
 					{#if showSources && sources.length > 0}

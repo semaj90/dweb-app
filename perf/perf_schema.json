@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Build Performance Summary",
+  "type": "object",
+  "required": ["git_sha", "timestamp", "clean_ms"],
+  "properties": {
+    "git_sha": {"type": "string"},
+    "timestamp": {"type": "string", "description": "ISO 8601"},
+    "clean_ms": {"type": "number"},
+    "incremental_ms": {"type": ["number", "null"]},
+    "link_ms": {"type": ["number", "null"]},
+    "cache_hit_ratio": {"type": ["number", "null"]},
+    "template_instantiations": {"type": ["integer", "null"]},
+    "hdr_top": {"type": "array", "items": {"type": "object", "properties": {"header": {"type": "string"}, "parse_ms": {"type": "number"}, "pct_total": {"type": "number"}}, "required": ["header", "parse_ms", "pct_total"]}}
+  }
+}

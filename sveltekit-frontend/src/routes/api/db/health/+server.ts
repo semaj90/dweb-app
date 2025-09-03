@@ -11,7 +11,7 @@ import { dev } from '$app/environment';
 
 // Database connection for health check
 const connectionString = import.meta.env.DATABASE_URL || 
-  `postgresql://${import.meta.env.DATABASE_USER || 'legal_admin'}:${import.meta.env.DATABASE_PASSWORD || '123456'}@${import.meta.env.DATABASE_HOST || 'localhost'}:${import.meta.env.DATABASE_PORT || '5432'}/${import.meta.env.DATABASE_NAME || 'legal_ai_db'}`;
+  `postgresql://${import.meta.env.DATABASE_USER || 'postgres'}:${import.meta.env.DATABASE_PASSWORD || '123456'}@${import.meta.env.DATABASE_HOST || 'localhost'}:${import.meta.env.DATABASE_PORT || '5432'}/${import.meta.env.DATABASE_NAME || 'legal_ai_db'}`;
 
 export const GET: RequestHandler = async () => {
   let sql: postgres.Sql | null = null;

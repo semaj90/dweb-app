@@ -1,12 +1,8 @@
 // simple_legal_cuda_server.go - Simplified CUDA gRPC/HTTP Server with Integrated Cache System
-package main
+package cuda
 
 import (
-	"bytes"
-	"compress/gzip"
 	"context"
-	"encoding/base64"
-	"encoding/binary"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,9 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	// HTTP/2 and REST API
+	// REST API
 	"github.com/gin-gonic/gin"
-	"golang.org/x/net/http2"
 
 	// Monitoring and Metrics
 	"github.com/prometheus/client_golang/prometheus"
@@ -45,7 +40,7 @@ type CudaServerConfig struct {
 	Environment   string `json:"environment" env:"ENVIRONMENT" default:"development"`
 
 	// Database Configuration
-	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"`
+	PostgresURL string `json:"postgres_url" env:"POSTGRES_URL" default:"postgresql://postgres:123456@localhost:5432/legal_ai_db"`
 	RedisURL    string `json:"redis_url" env:"REDIS_URL" default:"localhost:6379"`
 
 	// CUDA Configuration
@@ -489,7 +484,7 @@ func loadServerConfig() *CudaServerConfig {
 		MetricsPort: getEnv("METRICS_PORT", "9090"),
 		Environment: getEnv("ENVIRONMENT", "development"),
 
-		PostgresURL: getEnv("POSTGRES_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		PostgresURL: getEnv("POSTGRES_URL", "postgresql://postgres:123456@localhost:5432/legal_ai_db"),
 		RedisURL:    getEnv("REDIS_URL", "localhost:6379"),
 
 		CudaDeviceID:   0,
@@ -549,7 +544,7 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 		c.Next()
 	})
 
-	// Health endpoints
+	// Health endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":        "healthy",
@@ -564,14 +559,13 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 	// Metrics endpoint
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	// Cache statistics
+	// Cache stats
 	router.GET("/cache/stats", func(c *gin.Context) {
 		if service.multiCache == nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "cache not initialized"})
 			return
 		}
-		stats := service.multiCache.GetStats()
-		c.JSON(http.StatusOK, stats)
+		c.JSON(http.StatusOK, service.multiCache.GetStats())
 	})
 
 	// GPU status
@@ -584,211 +578,43 @@ func startHTTPServer(service *SimpleLegalCudaService, config *CudaServerConfig) 
 		})
 	})
 
-	// CUDA API endpoints
+	// Minimal embedding endpoint
 	router.POST("/api/cuda/embed", func(c *gin.Context) {
-		var req struct {
-			Text string `json:"text"`
-		}
-
+		var req struct{ Text string `json:"text"` }
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-
 		cacheKey := fmt.Sprintf("embed:%s", req.Text)
 		sessionID := c.Request.Header.Get("Session-ID")
-		if sessionID == "" {
-			sessionID = "default"
-		package main
-
-		import (
-			"bytes"
-			"compress/gzip"
-			"context"
-			"encoding/base64"
-			"encoding/binary"
-			"fmt"
-			"log"
-			"net/http"
-			"time"
-		)
-
-		// EmbeddingGenerator is the abstraction for real CUDA/cgo or CPU fallback
-		type EmbeddingGenerator interface {
-			Generate(ctx context.Context, text string) ([]float32, error)
-		}
-
-		// CPUSimulator implements EmbeddingGenerator for testing
-		type CPUSimulator struct {
-			Dim int
-		}
-
-		func (s *CPUSimulator) Generate(ctx context.Context, text string) ([]float32, error) {
-			emb := make([]float32, s.Dim)
-			for i := range emb {
-				// Respect cancellation
-				select {
-				case <-ctx.Done():
-					return nil, ctx.Err()
-				default:
-				}
-				emb[i] = float32(i) * 0.001
+		if sessionID == "" { sessionID = "default" }
+		if service.multiCache != nil {
+			if cached, found := service.multiCache.Get(c.Request.Context(), sessionID, cacheKey); found {
+				c.JSON(http.StatusOK, gin.H{"cached": true, "embedding": cached})
+				return
 			}
-			return emb, nil
 		}
-
-		// Cache write worker job
-		type cacheJob struct {
-			ctx       context.Context
-			sessionID string
-			key       string
-			value     interface{} // store encoded payload (string) to keep small over network
-			ttlSec    int
+		emb := make([]float32, 16)
+		for i := range emb { emb[i] = float32((i*7)%13) * 0.01 }
+		if service.multiCache != nil {
+			_ = service.multiCache.Set(c.Request.Context(), sessionID, cacheKey, emb, 300)
 		}
+		c.JSON(http.StatusOK, gin.H{"cached": false, "embedding": emb, "length": len(emb)})
+	})
 
-		// startCacheWriter runs background worker(s) that flush Set() to multiCache asynchronously
-		func startCacheWriter(svc *SimpleLegalCudaService, workerCount int, queueSize int) chan<- cacheJob {
-			jobs := make(chan cacheJob, queueSize)
-			for w := 0; w < workerCount; w++ {
-				go func(id int) {
-					for job := range jobs {
-						// respect shutdown
-						select {
-						case <-svc.shutdownChan:
-							return
-						default:
-						}
-						if svc.multiCache == nil {
-							continue
-						}
-						err := svc.multiCache.Set(job.ctx, job.sessionID, job.key, job.value, job.ttlSec)
-						if err != nil {
-							log.Printf("[cache-writer-%d] set error: %v", id, err)
-							if svc.metrics != nil {
-								svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "error").Inc()
-							}
-						} else if svc.metrics != nil {
-							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "success").Inc()
-						}
-					}
-				}(w)
-			}
-			return jobs
+	srv := &http.Server{Addr: ":" + config.HTTPPort, Handler: router}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server error: %v", err)
 		}
+	}()
+	return srv, nil
+}
 
-		// helper: float32 slice -> gzip(base64(byte[]))
-		func encodeEmbeddingGzipBase64(emb []float32) (string, error) {
-			var buf bytes.Buffer
-			// binary write floats as little-endian
-			if err := binary.Write(&buf, binary.LittleEndian, emb); err != nil {
-				return "", err
-			}
-			var gz bytes.Buffer
-			gw := gzip.NewWriter(&gz)
-			if _, err := gw.Write(buf.Bytes()); err != nil {
-				_ = gw.Close()
-				return "", err
-			}
-			if err := gw.Close(); err != nil {
-				return "", err
-			}
-			return base64.StdEncoding.EncodeToString(gz.Bytes()), nil
-		}
-
-		// Register this endpoint from startHTTPServer or init code.
-		// Assumes svc, gen (EmbeddingGenerator), and cacheJobs channel exist.
-		func registerEmbedEndpoint(router *gin.Engine, svc *SimpleLegalCudaService, gen EmbeddingGenerator, cacheJobs chan<- cacheJob, defaultTTL time.Duration) {
-			router.POST("/api/cuda/embed", func(c *gin.Context) {
-				var req struct {
-					Text string `json:"text"`
-				}
-				if err := c.ShouldBindJSON(&req); err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-					return
-				}
-
-				// Trace ID - prefer incoming header, otherwise generate short id
-				traceID := c.GetHeader("X-Trace-ID")
-				if traceID == "" {
-					traceID = fmt.Sprintf("%d", time.Now().UnixNano())
-				}
-
-				cacheKey := fmt.Sprintf("embed:%x", req.Text) // simple key - consider hashing for long text
-				sessionID := c.GetHeader("Session-ID")
-				if sessionID == "" {
-					sessionID = "default"
-				}
-
-				// Cache GET (non-blocking safe check)
-				if svc.multiCache != nil {
-					if cached, found := svc.multiCache.Get(c.Request.Context(), sessionID, cacheKey); found {
-						if svc.metrics != nil {
-							svc.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "hit").Inc()
-						}
-						c.JSON(http.StatusOK, gin.H{
-							"trace_id": traceID,
-							"cached":   true,
-							"encoding": "gzip+base64",
-							"data":     cached,
-						})
-						return
-					}
-					if svc.metrics != nil {
-						svc.metrics.cacheOperations.WithLabelValues("get", "multi_layer", "miss").Inc()
-					}
-				}
-
-				// Generate embedding with request context (cancels on client disconnect)
-				ctx := c.Request.Context()
-				start := time.Now()
-				emb, err := gen.Generate(ctx, req.Text)
-				if err != nil {
-					if svc.metrics != nil {
-						svc.metrics.errorRate.WithLabelValues("embed_generate", "cuda_service", "high").Inc()
-					}
-					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "trace_id": traceID})
-					return
-				}
-				if svc.metrics != nil {
-					svc.metrics.embeddingGenerationTime.WithLabelValues("simulator", fmt.Sprintf("%d", len(emb)), "1").Observe(time.Since(start).Seconds())
-				}
-
-				// encode embedding
-				encoded, err := encodeEmbeddingGzipBase64(emb)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "encoding failed", "trace_id": traceID})
-					return
-				}
-
-				// Async cache write: try to queue, drop with metric if queue full
-				if svc.multiCache != nil && cacheJobs != nil {
-					job := cacheJob{
-						ctx:       context.Background(), // background so async write survives request context
-						sessionID: sessionID,
-						key:       cacheKey,
-						value:     encoded,
-						ttlSec:    int(defaultTTL.Seconds()),
-					}
-					select {
-					case cacheJobs <- job:
-						if svc.metrics != nil {
-							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "queued").Inc()
-						}
-					default:
-						// queue full - avoid blocking; record drop
-						if svc.metrics != nil {
-							svc.metrics.cacheOperations.WithLabelValues("set", "multi_layer", "dropped").Inc()
-						}
-						log.Printf("[embed] cache queue full, skipping async set for key=%s trace=%s", cacheKey, traceID)
-					}
-				}
-
-				// Return compressed encoded embedding to client (SvelteKit can decode)
-				c.JSON(http.StatusOK, gin.H{
-					"trace_id": traceID,
-					"cached":   false,
-					"encoding": "gzip+base64",
-					"data":     encoded,
-				})
-			})
-		}
+// getEnv returns the environment variable value or a default if unset.
+func getEnv(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
+}

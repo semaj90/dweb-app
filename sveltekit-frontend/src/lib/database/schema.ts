@@ -1,4 +1,9 @@
 
+// DEPRECATION WARNING:
+// This legacy camelCase schema is retained temporarily for non-auth code paths.
+// Do NOT import from '$lib/database/schema' for authentication/session logic.
+// Use '$lib/server/db/schema-postgres' instead. A runtime guard below logs when
+// auth-critical tables are imported from this module.
 import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, vector } from "drizzle-orm/pg-core";
 import { sql } from 'drizzle-orm';
 
@@ -168,6 +173,13 @@ export const relations = {
     case: cases
   }
 };
+
+// Runtime guard: flag unintended server-side auth imports of legacy schema
+const gAny = globalThis as any;
+if (!gAny.__legacy_schema_warned) {
+  gAny.__legacy_schema_warned = true;
+  console.log('[LEGACY-SCHEMA] Loaded legacy $lib/database/schema (avoid for auth)');
+}
 
 // Type exports for use in application
 export type User = typeof users.$inferSelect;

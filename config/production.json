@@ -1,0 +1,39 @@
+﻿{
+    "service_name":  "LegalAI-Platform",
+    "service_description":  "Legal AI Platform Microservices",
+    "gpu":  {
+                "enabled":  true,
+                "device_id":  0,
+                "memory_limit_mb":  6144,
+                "batch_size":  32,
+                "cuda_version":  "13.0",
+                "optimization":  "balanced"
+            },
+    "memory":  {
+                   "max_heap_size_mb":  8192,
+                   "gc_target_percent":  100,
+                   "enable_profiling":  false,
+                   "pool_size":  32,
+                   "buffer_size":  8192
+               },
+    "cache":  {
+                  "redis":  {
+                                "enabled":  true,
+                                "host":  "localhost",
+                                "port":  6379,
+                                "db":  0,
+                                "pool_size":  32
+                            },
+                  "local":  {
+                                "enabled":  true,
+                                "max_size_mb":  512,
+                                "ttl_seconds":  3600
+                            }
+              },
+    "performance":  {
+                        "worker_count":  16,
+                        "max_concurrency":  64,
+                        "enable_pipelining":  true,
+                        "batch_timeout_ms":  100
+                    }
+}

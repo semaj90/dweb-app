@@ -1,44 +1,69 @@
 
-import { createClient } from "redis";
-import IORedis from "ioredis";
+/**
+ * Centralized Redis Client for Legal AI Platform
+ * Follows the integration guide pattern with enhanced error handling
+ */
 
-let redisClient: any = null;
+import Redis from 'ioredis';
+import { getRedisConfig } from '$lib/config/redis-config';
 
-// IORedis connection for high-performance operations
-export const REDIS_CONNECTION = new IORedis({
-  host: '127.0.0.1',
-  port: 6379,
-  retryDelayOnFailover: 100,
-  maxRetriesPerRequest: 3
+// Get optimized Redis configuration
+const url = process.env.REDIS_URL ?? 'redis://127.0.0.1:6379';
+const config = getRedisConfig();
+
+// Create Redis client with optimized settings
+export const redis = new Redis(url, {
+  ...config,
+  maxRetriesPerRequest: null, // Important for pub/sub
+  lazyConnect: false, // Connect immediately
+});
+
+// Legacy IORedis connection for backward compatibility
+export const REDIS_CONNECTION = redis;
+
+// Enhanced event handlers
+redis.on('connect', () => {
+  console.log('[redis] ✅ Connected successfully');
+});
+
+redis.on('ready', () => {
+  console.log('[redis] 🚀 Client ready for operations');
+});
+
+redis.on('error', (error) => {
+  console.error('[redis] ❌ Connection error:', error.message);
+  
+  // Provide helpful error messages
+  if (error.message.includes('ECONNREFUSED')) {
+    console.error('[redis] 💡 Tip: Start Redis server with: npm run redis:start');
+  } else if (error.message.includes('NOAUTH')) {
+    console.error('[redis] 💡 Tip: Check REDIS_PASSWORD environment variable');
+  }
+});
+
+redis.on('reconnecting', (delay) => {
+  console.log(`[redis] 🔄 Reconnecting in ${delay}ms...`);
+});
+
+redis.on('close', () => {
+  console.log('[redis] 🔌 Connection closed');
 });
 
 // Redis client factory for backward compatibility
 export const createRedisInstance = () => {
-  return new IORedis({
-    host: '127.0.0.1',
-    port: 6379,
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3
-  });
+  return new Redis(config);
 };
 
-export async function createRedisClient(): Promise<any> {
-  if (redisClient) {
-    return redisClient;
+// Legacy client factory (now uses IORedis for consistency)
+let legacyClient: Redis | null = null;
+
+export async function createRedisClient(): Promise<Redis> {
+  if (legacyClient) {
+    return legacyClient;
   }
-  const redisUrl = import.meta.env.REDIS_URL || "redis://localhost:6379";
-
-  redisClient = createClient({
-    url: redisUrl,
-  });
-
-  redisClient.on("error", (err: Error) => {
-    console.error("Redis Client Error", err);
-  });
-
-  await redisClient.connect();
-
-  return redisClient;
+  
+  legacyClient = redis; // Use the main client
+  return legacyClient;
 }
 export async function getFromCache(key: string): Promise<string | null> {
   try {

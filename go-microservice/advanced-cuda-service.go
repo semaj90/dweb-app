@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -17,7 +20,7 @@ import (
 	"sync/atomic"
 	"syscall"
 	"time"
-	
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -145,19 +148,19 @@ func NewDimensionalCache(maxSize int) *DimensionalCache {
 func (c *DimensionalCache) Get(key string) ([]float32, []float32, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	entry, exists := c.cache[key]
 	if !exists {
 		return nil, nil, false
 	}
-	
+
 	// Move to front of LRU list (most recently used) - O(1)
 	c.lruList.MoveToFront(entry.element)
-	
+
 	// Update access metadata
 	entry.metadata.AccessCount++
 	entry.metadata.Timestamp = time.Now().Unix()
-	
+
 	return entry.embeddings, entry.attention, true
 }
 
@@ -165,7 +168,7 @@ func (c *DimensionalCache) Get(key string) ([]float32, []float32, bool) {
 func (c *DimensionalCache) Set(key string, embeddings, attention []float32, userID, context string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Check if key already exists
 	if existingEntry, exists := c.cache[key]; exists {
 		// Update existing entry and move to front - O(1)
@@ -180,12 +183,12 @@ func (c *DimensionalCache) Set(key string, embeddings, attention []float32, user
 		c.lruList.MoveToFront(existingEntry.element)
 		return
 	}
-	
+
 	// Check if cache is full - evict LRU if needed
 	if c.currentSize >= c.maxSize {
 		c.evictLRU() // O(1) operation
 	}
-	
+
 	// Create new cache entry
 	entry := &CacheEntry{
 		key:        key,
@@ -198,10 +201,10 @@ func (c *DimensionalCache) Set(key string, embeddings, attention []float32, user
 			Context:     context,
 		},
 	}
-	
+
 	// Add to front of list (most recently used) - O(1)
 	entry.element = c.lruList.PushFront(entry)
-	
+
 	// Add to hash map - O(1)
 	c.cache[key] = entry
 	c.currentSize++
@@ -212,24 +215,24 @@ func (c *DimensionalCache) evictLRU() {
 	if c.lruList.Len() == 0 {
 		return
 	}
-	
+
 	// Get least recently used item (back of list) - O(1)
 	lruElement := c.lruList.Back()
 	if lruElement == nil {
 		return
 	}
-	
+
 	// Extract the entry - O(1)
 	lruEntry := lruElement.Value.(*CacheEntry)
-	
+
 	// Remove from list - O(1)
 	c.lruList.Remove(lruElement)
-	
+
 	// Remove from hash map - O(1)
 	delete(c.cache, lruEntry.key)
 	c.currentSize--
-	
-	log.Printf("Evicted LRU cache entry: %s (age: %d seconds)", 
+
+	log.Printf("Evicted LRU cache entry: %s (age: %d seconds)",
 		lruEntry.key, time.Now().Unix()-lruEntry.metadata.Timestamp)
 }
 
@@ -237,7 +240,7 @@ func (c *DimensionalCache) evictLRU() {
 func (c *DimensionalCache) GetStats() map[string]interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	return map[string]interface{}{
 		"currentSize": c.currentSize,
 		"maxSize":    c.maxSize,
@@ -250,28 +253,28 @@ func (c *DimensionalCache) GetStats() map[string]interface{} {
 func (c *DimensionalCache) evictOldEntries(percentToEvict int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	if percentToEvict <= 0 || percentToEvict > 100 {
 		return
 	}
-	
+
 	entriesToEvict := (c.currentSize * percentToEvict) / 100
 	evicted := 0
-	
+
 	// Evict from the back (least recently used)
 	for evicted < entriesToEvict && c.lruList.Len() > 0 {
 		lruElement := c.lruList.Back()
 		if lruElement == nil {
 			break
 		}
-		
+
 		lruEntry := lruElement.Value.(*CacheEntry)
 		c.lruList.Remove(lruElement)
 		delete(c.cache, lruEntry.key)
 		c.currentSize--
 		evicted++
 	}
-	
+
 	log.Printf("Cache cleanup: evicted %d entries (%d%% of cache)", evicted, percentToEvict)
 }
 
@@ -320,13 +323,13 @@ func NewXStateMachine() *XStateMachine {
 			},
 		},
 	}
-	
+
 	machine := &XStateMachine{
 		currentState: "idle",
 		states:       states,
 		transitions:  make(chan StateTransition, 100),
 	}
-	
+
 	go machine.processTransitions()
 	return machine
 }
@@ -334,7 +337,7 @@ func NewXStateMachine() *XStateMachine {
 func (m *XStateMachine) Transition(event, userID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	currentConfig := m.states[m.currentState]
 	if nextState, exists := currentConfig.On[event]; exists {
 		transition := StateTransition{
@@ -344,20 +347,20 @@ func (m *XStateMachine) Transition(event, userID string) {
 			UserID:    userID,
 			Timestamp: time.Now().Unix(),
 		}
-		
+
 		// Execute onExit actions
 		for _, action := range currentConfig.OnExit {
 			m.executeAction(action, userID)
 		}
-		
+
 		m.currentState = nextState
-		
+
 		// Execute onEntry actions
 		nextConfig := m.states[nextState]
 		for _, action := range nextConfig.OnEntry {
 			m.executeAction(action, userID)
 		}
-		
+
 		select {
 		case m.transitions <- transition:
 		default:
@@ -394,12 +397,12 @@ func NewComputationQueue(amqpURL, queueName string) (*ComputationQueue, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
-	
+
 	ch, err := conn.Channel()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open channel: %v", err)
 	}
-	
+
 	_, err = ch.QueueDeclare(
 		queueName, // name
 		true,      // durable
@@ -411,7 +414,7 @@ func NewComputationQueue(amqpURL, queueName string) (*ComputationQueue, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to declare queue: %v", err)
 	}
-	
+
 	return &ComputationQueue{
 		connection: conn,
 		channel:    ch,
@@ -422,12 +425,12 @@ func NewComputationQueue(amqpURL, queueName string) (*ComputationQueue, error) {
 func (q *ComputationQueue) EnqueueJob(job ComputationJob) error {
 	q.mu.Lock()
 	defer q.mu.Unlock()
-	
+
 	body, err := json.Marshal(job)
 	if err != nil {
 		return fmt.Errorf("failed to marshal job: %v", err)
 	}
-	
+
 	err = q.channel.Publish(
 		"",           // exchange
 		q.queueName,  // routing key
@@ -438,11 +441,11 @@ func (q *ComputationQueue) EnqueueJob(job ComputationJob) error {
 			Body:        body,
 			Priority:    uint8(job.Priority),
 		})
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to publish job: %v", err)
 	}
-	
+
 	return nil
 }
 
@@ -453,7 +456,7 @@ func (q *ComputationQueue) StartConsumer(ctx context.Context, service *AdvancedC
 	if err != nil {
 		return fmt.Errorf("failed to set QoS: %v", err)
 	}
-	
+
 	msgs, err := q.channel.Consume(
 		q.queueName, // queue
 		"",          // consumer
@@ -466,9 +469,9 @@ func (q *ComputationQueue) StartConsumer(ctx context.Context, service *AdvancedC
 	if err != nil {
 		return fmt.Errorf("failed to register consumer: %v", err)
 	}
-	
+
 	log.Printf("RabbitMQ Consumer started, waiting for jobs...")
-	
+
 	// Consumer goroutine - processes jobs asynchronously
 	go func() {
 		defer func() {
@@ -476,7 +479,7 @@ func (q *ComputationQueue) StartConsumer(ctx context.Context, service *AdvancedC
 				log.Printf("Consumer panic recovered: %v", r)
 			}
 		}()
-		
+
 		for {
 			select {
 			case <-ctx.Done():
@@ -487,27 +490,27 @@ func (q *ComputationQueue) StartConsumer(ctx context.Context, service *AdvancedC
 					log.Printf("Consumer channel closed")
 					return
 				}
-				
+
 				// Process job asynchronously
 				go q.processJob(msg, service)
 			}
 		}
 	}()
-	
+
 	return nil
 }
 
 // Process individual job from RabbitMQ queue
 func (q *ComputationQueue) processJob(msg amqp.Delivery, service *AdvancedCudaService) {
 	startTime := time.Now()
-	
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Job processing panic: %v", r)
 			msg.Nack(false, true) // Requeue on panic
 		}
 	}()
-	
+
 	// Parse job from message
 	var job ComputationJob
 	if err := json.Unmarshal(msg.Body, &job); err != nil {
@@ -515,17 +518,17 @@ func (q *ComputationQueue) processJob(msg amqp.Delivery, service *AdvancedCudaSe
 		msg.Nack(false, false) // Don't requeue invalid messages
 		return
 	}
-	
-	log.Printf("Processing job: %s (type: %s, priority: %d, user: %s)", 
+
+	log.Printf("Processing job: %s (type: %s, priority: %d, user: %s)",
 		job.JobID, job.Type, job.Priority, job.UserID)
-	
+
 	// Update job processing timestamp
 	job.Processed = time.Now().Unix()
-	
+
 	// Process based on job type
 	var result interface{}
 	var err error
-	
+
 	switch job.Type {
 	case "3d_visualization":
 		result, err = q.process3DVisualization(job, service)
@@ -538,12 +541,12 @@ func (q *ComputationQueue) processJob(msg amqp.Delivery, service *AdvancedCudaSe
 	default:
 		err = fmt.Errorf("unknown job type: %s", job.Type)
 	}
-	
+
 	processingTime := time.Since(startTime).Seconds()
-	
+
 	if err != nil {
 		log.Printf("Job %s failed after %.2fs: %v", job.JobID, processingTime, err)
-		
+
 		// Retry logic - requeue with decreased priority if not critical failure
 		if job.Priority > 1 {
 			job.Priority--
@@ -551,16 +554,16 @@ func (q *ComputationQueue) processJob(msg amqp.Delivery, service *AdvancedCudaSe
 				log.Printf("Failed to requeue job %s: %v", job.JobID, retryErr)
 			}
 		}
-		
+
 		msg.Nack(false, false) // Don't requeue original message
 		return
 	}
-	
+
 	log.Printf("Job %s completed successfully in %.2fs", job.JobID, processingTime)
-	
+
 	// Send result back via WebSocket or store for later retrieval
 	q.deliverResult(job, result, service)
-	
+
 	// Acknowledge message processing completion
 	msg.Ack(false)
 }
@@ -576,13 +579,13 @@ func (q *ComputationQueue) process3DVisualization(job ComputationJob, service *A
 		UserID:     job.UserID,
 		Context:    "async_processing",
 	}
-	
+
 	// Process through main attention pipeline
 	response, err := service.processAdvancedAttention(req)
 	if err != nil {
 		return nil, fmt.Errorf("3D visualization failed: %v", err)
 	}
-	
+
 	return response, nil
 }
 
@@ -597,12 +600,12 @@ func (q *ComputationQueue) processVectorComputation(job ComputationJob, service 
 		UseCache:   true,
 		Context:    "vector_processing",
 	}
-	
+
 	response, err := service.processAdvancedAttention(req)
 	if err != nil {
 		return nil, fmt.Errorf("vector computation failed: %v", err)
 	}
-	
+
 	return response, nil
 }
 
@@ -617,12 +620,12 @@ func (q *ComputationQueue) processLegalAnalysis(job ComputationJob, service *Adv
 		UseCache:   true,
 		Context:    "legal_processing",
 	}
-	
+
 	response, err := service.processAdvancedAttention(req)
 	if err != nil {
 		return nil, fmt.Errorf("legal analysis failed: %v", err)
 	}
-	
+
 	return response, nil
 }
 
@@ -638,12 +641,12 @@ func (q *ComputationQueue) processOfflineBatch(job ComputationJob, service *Adva
 		UseCache:   false, // Don't cache offline jobs
 		Context:    "offline_batch",
 	}
-	
+
 	response, err := service.processAdvancedAttention(req)
 	if err != nil {
 		return nil, fmt.Errorf("offline batch failed: %v", err)
 	}
-	
+
 	return response, nil
 }
 
@@ -664,21 +667,21 @@ func (q *ComputationQueue) deliverResult(job ComputationJob, result interface{},
 		"completed":   time.Now().Unix(),
 		"processingTime": job.Processed - job.Created,
 	}
-	
+
 	// Try to send via result queue first
 	if err := q.sendToResultQueue(resultMsg); err != nil {
 		log.Printf("Failed to send result to result queue: %v", err)
 		// Store result for later retrieval if WebSocket delivery fails
 		service.storeJobResult(job.JobID, resultMsg)
 	}
-	
+
 	log.Printf("Result delivered for job %s (user: %s)", job.JobID, job.UserID)
 }
 
 // Send result to dedicated result queue
 func (q *ComputationQueue) sendToResultQueue(result map[string]interface{}) error {
 	resultQueueName := q.queueName + "_results"
-	
+
 	// Ensure result queue exists
 	_, err := q.channel.QueueDeclare(
 		resultQueueName, // name
@@ -691,12 +694,12 @@ func (q *ComputationQueue) sendToResultQueue(result map[string]interface{}) erro
 	if err != nil {
 		return fmt.Errorf("failed to declare result queue: %v", err)
 	}
-	
+
 	body, err := json.Marshal(result)
 	if err != nil {
 		return fmt.Errorf("failed to marshal result: %v", err)
 	}
-	
+
 	err = q.channel.Publish(
 		"",             // exchange
 		resultQueueName, // routing key
@@ -707,11 +710,11 @@ func (q *ComputationQueue) sendToResultQueue(result map[string]interface{}) erro
 			Body:        body,
 			Timestamp:   time.Now(),
 		})
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to publish result: %v", err)
 	}
-	
+
 	return nil
 }
 
@@ -733,15 +736,15 @@ func (q *ComputationQueue) Close() error {
 func NewAdvancedCudaService() *AdvancedCudaService {
 	cache := NewDimensionalCache(10000)
 	stateMachine := NewXStateMachine()
-	
+
 	computeQueue, err := NewComputationQueue("amqp://guest:guest@localhost:5672/", "3d_computations")
 	if err != nil {
 		log.Printf("Failed to initialize RabbitMQ: %v", err)
 		computeQueue = nil
 	}
-	
+
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	service := &AdvancedCudaService{
 		cache:        cache,
 		stateMachine: stateMachine,
@@ -761,12 +764,12 @@ func NewAdvancedCudaService() *AdvancedCudaService {
 		shutdownCh:     make(chan struct{}),
 		healthStatus:   1, // 1 = healthy, 0 = unhealthy
 	}
-	
+
 	// Start background services with proper context handling
 	go service.idleDetectionLoop()
 	go service.gpuMemoryMonitor()
 	go service.healthMonitor()
-	
+
 	// Start RabbitMQ consumer if queue is available
 	if computeQueue != nil {
 		if err := computeQueue.StartConsumer(ctx, service); err != nil {
@@ -774,14 +777,14 @@ func NewAdvancedCudaService() *AdvancedCudaService {
 			atomic.StoreInt32(&service.healthStatus, 0)
 		}
 	}
-	
+
 	return service
 }
 
 func (s *AdvancedCudaService) idleDetectionLoop() {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -804,10 +807,10 @@ func (s *AdvancedCudaService) idleDetectionLoop() {
 func (s *AdvancedCudaService) markUserActive(userID string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	_, wasActive := s.activeUsers[userID]
 	s.activeUsers[userID] = time.Now()
-	
+
 	if !wasActive {
 		s.stateMachine.Transition("USER_ACTIVE", userID)
 	}
@@ -834,30 +837,30 @@ func (s *AdvancedCudaService) validateAttentionRequest(req AttentionRequest) err
 func (s *AdvancedCudaService) executeCUDAWorker(ctx context.Context, cudaWorkerPath string, inputJSON []byte) (map[string]interface{}, error) {
 	cmd := exec.CommandContext(ctx, cudaWorkerPath)
 	cmd.Stdin = bytes.NewReader(inputJSON)
-	
+
 	// Use pipes for streaming I/O
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create stdout pipe: %w", err)
 	}
-	
+
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create stderr pipe: %w", err)
 	}
-	
+
 	// Start the command
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start CUDA worker: %w", err)
 	}
-	
+
 	// Read output streams concurrently with proper error handling
 	var outputBuf, errorBuf bytes.Buffer
 	var wg sync.WaitGroup
 	var readErr error
-	
+
 	wg.Add(2)
-	
+
 	// Goroutine for stdout
 	go func() {
 		defer wg.Done()
@@ -865,7 +868,7 @@ func (s *AdvancedCudaService) executeCUDAWorker(ctx context.Context, cudaWorkerP
 			readErr = fmt.Errorf("stdout read error: %w", err)
 		}
 	}()
-	
+
 	// Goroutine for stderr
 	go func() {
 		defer wg.Done()
@@ -873,15 +876,15 @@ func (s *AdvancedCudaService) executeCUDAWorker(ctx context.Context, cudaWorkerP
 			readErr = fmt.Errorf("stderr read error: %w", err)
 		}
 	}()
-	
+
 	// Wait for I/O operations to complete
 	wg.Wait()
-	
+
 	if readErr != nil {
 		cmd.Process.Kill()
 		return nil, readErr
 	}
-	
+
 	// Wait for command completion
 	if err := cmd.Wait(); err != nil {
 		errorMsg := errorBuf.String()
@@ -890,18 +893,18 @@ func (s *AdvancedCudaService) executeCUDAWorker(ctx context.Context, cudaWorkerP
 		}
 		return nil, fmt.Errorf("CUDA worker failed: %w", err)
 	}
-	
+
 	// Parse CUDA output with validation
 	outputBytes := outputBuf.Bytes()
 	if len(outputBytes) == 0 {
 		return nil, errors.New("CUDA worker returned empty output")
 	}
-	
+
 	var result map[string]interface{}
 	if err := json.Unmarshal(outputBytes, &result); err != nil {
 		return nil, fmt.Errorf("failed to parse CUDA output: %w", err)
 	}
-	
+
 	return result, nil
 }
 
@@ -909,14 +912,14 @@ func (s *AdvancedCudaService) executeCUDAWorker(ctx context.Context, cudaWorkerP
 func (s *AdvancedCudaService) getGPUMemoryLimit() int64 {
 	// Default to 6GB limit for RTX 3060 Ti (leaving 2GB for system)
 	defaultLimit := int64(6 * 1024 * 1024 * 1024)
-	
+
 	// Check environment variable for custom limit
 	if limitStr := os.Getenv("CUDA_GPU_MEMORY_LIMIT_GB"); limitStr != "" {
 		if limit, err := fmt.Sscanf(limitStr, "%d", &defaultLimit); err == nil && limit == 1 {
 			defaultLimit *= 1024 * 1024 * 1024 // Convert GB to bytes
 		}
 	}
-	
+
 	return defaultLimit
 }
 
@@ -924,7 +927,7 @@ func (s *AdvancedCudaService) getGPUMemoryLimit() int64 {
 func (s *AdvancedCudaService) gpuMemoryMonitor() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -933,13 +936,13 @@ func (s *AdvancedCudaService) gpuMemoryMonitor() {
 		case <-ticker.C:
 			memoryUsed := atomic.LoadInt64(&s.gpuMemoryUsed)
 			memoryLimit := s.getGPUMemoryLimit()
-			
+
 			// If memory usage exceeds 80% of limit, trigger cache cleanup
 			if memoryUsed > int64(float64(memoryLimit)*0.8) {
 				log.Printf("GPU memory usage high: %d MB / %d MB (%.1f%%)",
 					memoryUsed/(1024*1024), memoryLimit/(1024*1024),
 					float64(memoryUsed)/float64(memoryLimit)*100)
-				
+
 				// Force cache eviction to free memory
 				s.cache.evictOldEntries(50) // Evict 50% of cache entries
 			}
@@ -951,7 +954,7 @@ func (s *AdvancedCudaService) gpuMemoryMonitor() {
 func (s *AdvancedCudaService) healthMonitor() {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -964,20 +967,20 @@ func (s *AdvancedCudaService) healthMonitor() {
 				atomic.StoreInt32(&s.healthStatus, 0)
 				continue
 			}
-			
+
 			// Check if we can stat the CUDA worker binary
 			if _, err := os.Stat(cudaWorkerPath); err != nil {
 				atomic.StoreInt32(&s.healthStatus, 0)
 				log.Printf("Health check failed: CUDA worker not accessible: %v", err)
 				continue
 			}
-			
+
 			// Check RabbitMQ connection if available
 			if s.computeQueue != nil {
 				// RabbitMQ health would be checked here
 				// For now, assume healthy if queue exists
 			}
-			
+
 			// Service is healthy
 			atomic.StoreInt32(&s.healthStatus, 1)
 		}
@@ -987,15 +990,15 @@ func (s *AdvancedCudaService) healthMonitor() {
 // Shutdown gracefully shuts down the service
 func (s *AdvancedCudaService) Shutdown() {
 	log.Printf("Starting graceful shutdown...")
-	
+
 	// Cancel context to signal all goroutines to stop
 	s.cancel()
-	
+
 	// Wait for processing jobs to complete (with timeout)
 	timeout := time.After(30 * time.Second)
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-timeout:
@@ -1008,7 +1011,7 @@ func (s *AdvancedCudaService) Shutdown() {
 			}
 		}
 	}
-	
+
 cleanup:
 	// Close RabbitMQ connection
 	if s.computeQueue != nil {
@@ -1016,7 +1019,7 @@ cleanup:
 			log.Printf("Error closing RabbitMQ connection: %v", err)
 		}
 	}
-	
+
 	// Signal shutdown complete
 	close(s.shutdownCh)
 	log.Printf("Graceful shutdown completed")
@@ -1027,26 +1030,26 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 	startTime := time.Now()
 	atomic.AddInt32(&s.processingJobs, 1)
 	defer atomic.AddInt32(&s.processingJobs, -1)
-	
+
 	// Input validation
 	if err := s.validateAttentionRequest(req); err != nil {
 		return nil, fmt.Errorf("invalid request: %w", err)
 	}
-	
+
 	// Mark user as active
 	if req.UserID != "" {
 		s.markUserActive(req.UserID)
 	}
-	
+
 	// Transition to computing state
 	s.stateMachine.Transition("START_COMPUTE", req.UserID)
-	
+
 	// Check cache first
 	cacheKey := fmt.Sprintf("%s:%s:%s", req.UserID, req.Type, req.Context)
 	var output, attention []float32
 	var cached bool
 	var cudaResult map[string]interface{}
-	
+
 	if req.UseCache {
 		if cachedOutput, cachedAttention, found := s.cache.Get(cacheKey); found {
 			output = cachedOutput
@@ -1054,7 +1057,7 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 			cached = true
 		}
 	}
-	
+
 	if !cached {
 		// Prepare CUDA worker input with enhanced error handling
 		cudaInput := map[string]interface{}{
@@ -1064,31 +1067,31 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 			"gpuMemoryLimit": s.getGPUMemoryLimit(),
 			"timeout": 30,
 		}
-		
+
 		inputJSON, err := json.Marshal(cudaInput)
 		if err != nil {
 			s.stateMachine.Transition("COMPUTE_ERROR", req.UserID)
 			return nil, fmt.Errorf("failed to marshal CUDA input: %w", err)
 		}
-		
+
 		// Execute CUDA worker with proper error handling and resource management
 		cudaWorkerPath := os.Getenv("CUDA_WORKER_PATH")
 		if cudaWorkerPath == "" {
 			s.stateMachine.Transition("COMPUTE_ERROR", req.UserID)
 			return nil, errors.New("CUDA_WORKER_PATH environment variable not set")
 		}
-		
+
 		ctx, cancel := context.WithTimeout(s.ctx, 30*time.Second)
 		defer cancel()
-		
+
 		result, err := s.executeCUDAWorker(ctx, cudaWorkerPath, inputJSON)
 		if err != nil {
 			s.stateMachine.Transition("COMPUTE_ERROR", req.UserID)
 			return nil, fmt.Errorf("CUDA worker execution failed: %w", err)
 		}
-		
+
 		cudaResult = result
-		
+
 		// Extract vector results with bounds checking
 		if vectorData, ok := cudaResult["vector"].([]interface{}); ok {
 			output = make([]float32, len(vectorData))
@@ -1101,7 +1104,7 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 				}
 			}
 		}
-		
+
 		// Extract attention results with bounds checking
 		if attentionData, ok := cudaResult["attention"].([]interface{}); ok {
 			attention = make([]float32, len(attentionData))
@@ -1114,35 +1117,35 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 				}
 			}
 		}
-		
+
 		// Update GPU memory usage tracking
 		if memMB, ok := cudaResult["memMB"].(float64); ok {
 			memoryBytes := int64(memMB * 1024 * 1024)
 			atomic.StoreInt64(&s.gpuMemoryUsed, memoryBytes)
 		}
-		
+
 		// Cache the result if enabled
 		if req.UseCache {
 			s.cache.Set(cacheKey, output, attention, req.UserID, req.Context)
 		}
 	}
-	
+
 	// Transition back to active state
 	s.stateMachine.Transition("COMPUTE_COMPLETE", req.UserID)
-	
+
 	// Extract dynamic GPU information from CUDA worker response
 	var gpuName string = "Unknown GPU"
 	var memoryUsed int64 = atomic.LoadInt64(&s.gpuMemoryUsed)
-	
+
 	if !cached && cudaResult != nil {
 		if gpuInfo, ok := cudaResult["gpu"].(string); ok {
 			gpuName = gpuInfo
 		}
-		
+
 		if memMB, ok := cudaResult["memMB"].(float64); ok {
 			memoryUsed = int64(memMB * 1024 * 1024) // Convert MB to bytes
 		}
-		
+
 		log.Printf("CUDA Worker GPU Info: %s, Memory: %d MB", gpuName, memoryUsed/(1024*1024))
 	} else {
 		// For cached responses, use stored values
@@ -1151,7 +1154,7 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 			memoryUsed = 8192 * 1024 * 1024 // 8GB fallback
 		}
 	}
-	
+
 	response := &AttentionResponse{
 		JobID:       req.JobID,
 		Status:      "success",
@@ -1163,7 +1166,7 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 		MemoryUsed:  memoryUsed,
 		Timestamp:   time.Now().Unix(),
 	}
-	
+
 	// Queue for 3D computation if needed
 	if s.computeQueue != nil && req.Type == "3d_compute" {
 		job := ComputationJob{
@@ -1174,12 +1177,12 @@ func (s *AdvancedCudaService) processAdvancedAttention(req AttentionRequest) (*A
 			Data:     output,
 			Created:  time.Now().Unix(),
 		}
-		
+
 		if err := s.computeQueue.EnqueueJob(job); err != nil {
 			log.Printf("Failed to enqueue 3D job: %v", err)
 		}
 	}
-	
+
 	return response, nil
 }
 
@@ -1190,17 +1193,17 @@ func (s *AdvancedCudaService) handleAttention(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if req.JobID == "" {
 		req.JobID = fmt.Sprintf("job_%d", time.Now().UnixNano())
 	}
-	
+
 	response, err := s.processAdvancedAttention(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, response)
 }
 
@@ -1211,26 +1214,26 @@ func (s *AdvancedCudaService) handleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	userID := c.Query("userId")
 	if userID == "" {
 		userID = "anonymous"
 	}
-	
+
 	for {
 		var req AttentionRequest
 		if err := conn.ReadJSON(&req); err != nil {
 			log.Printf("WebSocket read error: %v", err)
 			break
 		}
-		
+
 		req.UserID = userID
 		response, err := s.processAdvancedAttention(req)
 		if err != nil {
 			conn.WriteJSON(gin.H{"error": err.Error()})
 			continue
 		}
-		
+
 		if err := conn.WriteJSON(response); err != nil {
 			log.Printf("WebSocket write error: %v", err)
 			break
@@ -1242,10 +1245,10 @@ func (s *AdvancedCudaService) handleWebSocket(c *gin.Context) {
 func (s *AdvancedCudaService) storeJobResult(jobID string, result interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.jobResults[jobID] = result
 	log.Printf("Stored result for job %s", jobID)
-	
+
 	// Clean up old results to prevent memory leaks (keep last 1000 results)
 	if len(s.jobResults) > 1000 {
 		// Simple cleanup - remove 100 oldest entries
@@ -1264,7 +1267,7 @@ func (s *AdvancedCudaService) storeJobResult(jobID string, result interface{}) {
 func (s *AdvancedCudaService) getJobResult(jobID string) (interface{}, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	
+
 	result, exists := s.jobResults[jobID]
 	return result, exists
 }
@@ -1272,29 +1275,29 @@ func (s *AdvancedCudaService) getJobResult(jobID string) (interface{}, bool) {
 func (s *AdvancedCudaService) handleCacheStats(c *gin.Context) {
 	// Use the new O(1) cache stats method
 	stats := s.cache.GetStats()
-	
+
 	// Add additional service-level stats
 	s.mu.RLock()
 	activeUsers := len(s.activeUsers)
 	s.mu.RUnlock()
-	
+
 	stats["activeUsers"] = activeUsers
 	stats["cacheType"] = "O(1) LRU with Doubly-Linked List"
 	stats["performanceImprovement"] = "1000x faster eviction (O(1) vs O(n))"
-	
+
 	c.JSON(http.StatusOK, stats)
 }
 
 func (s *AdvancedCudaService) handleStateInfo(c *gin.Context) {
 	s.stateMachine.mu.RLock()
 	defer s.stateMachine.mu.RUnlock()
-	
+
 	info := gin.H{
 		"currentState": s.stateMachine.currentState,
 		"activeUsers":  len(s.activeUsers),
 		"states":       s.stateMachine.states,
 	}
-	
+
 	c.JSON(http.StatusOK, info)
 }
 
@@ -1304,13 +1307,13 @@ func (s *AdvancedCudaService) handleJobResult(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Job ID required"})
 		return
 	}
-	
+
 	result, exists := s.getJobResult(jobID)
 	if !exists {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Job result not found"})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, result)
 }
 
@@ -1319,7 +1322,7 @@ func (s *AdvancedCudaService) handleQueueStats(c *gin.Context) {
 		"queueConnected": s.computeQueue != nil,
 		"consumerActive": s.computeQueue != nil,
 	}
-	
+
 	if s.computeQueue != nil {
 		stats["queueName"] = s.computeQueue.queueName
 		stats["status"] = "connected"
@@ -1327,12 +1330,12 @@ func (s *AdvancedCudaService) handleQueueStats(c *gin.Context) {
 		stats["status"] = "disconnected"
 		stats["error"] = "RabbitMQ not available"
 	}
-	
+
 	s.mu.RLock()
 	stats["storedResults"] = len(s.jobResults)
 	stats["offlineJobs"] = len(s.offlineJobs)
 	s.mu.RUnlock()
-	
+
 	c.JSON(http.StatusOK, stats)
 }
 
@@ -1341,13 +1344,13 @@ func (s *AdvancedCudaService) handleEnqueueJob(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "RabbitMQ not available"})
 		return
 	}
-	
+
 	var job ComputationJob
 	if err := c.ShouldBindJSON(&job); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Set default values if not provided
 	if job.JobID == "" {
 		job.JobID = fmt.Sprintf("job_%d", time.Now().UnixNano())
@@ -1358,12 +1361,12 @@ func (s *AdvancedCudaService) handleEnqueueJob(c *gin.Context) {
 	if job.Priority == 0 {
 		job.Priority = 5 // Default priority
 	}
-	
+
 	if err := s.computeQueue.EnqueueJob(job); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to enqueue job: %v", err)})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"jobId": job.JobID,
 		"status": "enqueued",
@@ -1377,25 +1380,25 @@ func main() {
 	if cudaWorkerPath == "" {
 		log.Fatal("CUDA_WORKER_PATH environment variable not set")
 	}
-	
+
 	service := NewAdvancedCudaService()
-	
+
 	r := gin.Default()
-	
+
 	// CORS middleware
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// API Routes
 	v1 := r.Group("/api/v1")
 	{
@@ -1403,27 +1406,27 @@ func main() {
 		v1.GET("/cache/stats", service.handleCacheStats)
 		v1.GET("/state/info", service.handleStateInfo)
 		v1.GET("/ws", service.handleWebSocket)
-		
+
 		// RabbitMQ job processing endpoints
 		v1.POST("/jobs", service.handleEnqueueJob)
 		v1.GET("/jobs/:jobId", service.handleJobResult)
 		v1.GET("/queue/stats", service.handleQueueStats)
 	}
-	
+
 	// Enhanced health check
 	r.GET("/health", func(c *gin.Context) {
 		healthStatus := atomic.LoadInt32(&service.healthStatus)
 		memoryUsed := atomic.LoadInt64(&service.gpuMemoryUsed)
 		processingJobs := atomic.LoadInt32(&service.processingJobs)
-		
+
 		status := "healthy"
 		httpStatus := http.StatusOK
-		
+
 		if healthStatus == 0 {
 			status = "unhealthy"
 			httpStatus = http.StatusServiceUnavailable
 		}
-		
+
 		c.JSON(httpStatus, gin.H{
 			"status":        status,
 			"gpu":           "NVIDIA GeForce RTX 3060 Ti",
@@ -1434,16 +1437,16 @@ func main() {
 			"version":       "2.0.0",
 		})
 	})
-	
+
 	port := os.Getenv("ADVANCED_CUDA_PORT")
 	if port == "" {
 		port = "8095"
 	}
-	
+
 	// Setup graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	
+
 	// Create HTTP server with proper timeouts
 	srv := &http.Server{
 		Addr:         ":" + port,
@@ -1452,34 +1455,34 @@ func main() {
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
-	
+
 	// Start server in goroutine
 	go func() {
 		log.Printf("Advanced CUDA Service starting on port %s", port)
 		log.Printf("GPU Memory Limit: %d GB", service.getGPUMemoryLimit()/(1024*1024*1024))
 		log.Printf("Cache Size: %d entries", 10000)
-		
+
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Printf("Server failed to start: %v", err)
 		}
 	}()
-	
+
 	// Wait for shutdown signal
 	<-quit
 	log.Printf("Received shutdown signal, shutting down Advanced CUDA Service...")
-	
+
 	// Create shutdown context with timeout
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
-	
+
 	// Shutdown HTTP server
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Printf("Server forced to shutdown: %v", err)
 	}
-	
+
 	// Gracefully shutdown the service
 	service.Shutdown()
-	
+
 	// Wait for service shutdown or timeout
 	select {
 	case <-service.shutdownCh:
@@ -1487,6 +1490,6 @@ func main() {
 	case <-time.After(35 * time.Second):
 		log.Printf("Service shutdown timeout, forcing exit")
 	}
-	
+
 	log.Printf("Advanced CUDA Service stopped gracefully")
 }

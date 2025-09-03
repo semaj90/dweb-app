@@ -1,5 +1,7 @@
 
 import type { RequestHandler } from './$types';
+import { json } from '@sveltejs/kit';
+import { z } from 'zod';
 
 // SIMD JSON Processing API - SvelteKit Integration with Go Microservice
 import { simdRedisClient } from "$lib/services/simd-redis-client";

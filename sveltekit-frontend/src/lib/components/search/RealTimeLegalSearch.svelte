@@ -161,7 +161,7 @@
 </script>
 
 <!-- Enhanced Real-Time Search Interface -->
-<div class="real-time-search-container {class}">
+<div class="real-time-search-container {className}">
   <!-- Search Header with Status -->
   <div class="flex items-center gap-2 mb-4">
     <div class="flex-1">

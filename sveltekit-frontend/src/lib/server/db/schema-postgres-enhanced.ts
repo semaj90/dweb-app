@@ -18,7 +18,7 @@ import { relations } from "drizzle-orm/relations";
 // CREATE EXTENSION IF NOT EXISTS vector;
 
 // Core tables with vector support
-export const cases = pgTable(;
+export const cases = pgTable(
   "cases",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -57,7 +57,7 @@ export const cases = pgTable(;
   }),
 );
 
-export const evidence = pgTable(;
+export const evidence = pgTable(
   "evidence",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -111,7 +111,7 @@ export const evidence = pgTable(;
   }),
 );
 
-export const criminals = pgTable(;
+export const criminals = pgTable(
   "criminals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -168,7 +168,7 @@ export const criminals = pgTable(;
 );
 
 // Enhanced evidence connections for the board
-export const evidenceConnections = pgTable(;
+export const evidenceConnections = pgTable(
   "evidence_connections",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -196,7 +196,7 @@ export const evidenceConnections = pgTable(;
 );
 
 // Vector search metadata
-export const vectorMetadata = pgTable(;
+export const vectorMetadata = pgTable(
   "vector_metadata",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -223,7 +223,7 @@ export const vectorMetadata = pgTable(;
 );
 
 // Embedding cache for performance
-export const embeddingCache = pgTable(;
+export const embeddingCache = pgTable(
   "embedding_cache",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -239,7 +239,7 @@ export const embeddingCache = pgTable(;
 );
 
 // Conversation and message tables for AI chat
-export const conversations = pgTable(;
+export const conversations = pgTable(
   "conversations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -256,7 +256,7 @@ export const conversations = pgTable(;
   }),
 );
 
-export const messages = pgTable(;
+export const messages = pgTable(
   "messages",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -278,7 +278,7 @@ export const messages = pgTable(;
 );
 
 // User activity and audit logging
-export const userActivity = pgTable(;
+export const userActivity = pgTable(
   "user_activity",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -302,7 +302,7 @@ export const userActivity = pgTable(;
 );
 
 // System configuration for AI models and settings
-export const systemConfig = pgTable(;
+export const systemConfig = pgTable(
   "system_config",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -336,7 +336,7 @@ export const evidenceRelations = relations(evidence, ({ one, many }) => ({
   connectionsTo: many(evidenceConnections, { relationName: "to" })
 }));
 
-export const evidenceConnectionsRelations = relations(;
+export const evidenceConnectionsRelations = relations(
   evidenceConnections,
   ({ one }) => ({
     case: one(cases, {

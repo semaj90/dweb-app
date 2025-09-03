@@ -13,14 +13,19 @@
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
-  import { Progress } from '$lib/components/ui/progress';
+  import N64ProgressBar from '$lib/components/ui/gaming/n64/N64ProgressBar.svelte';
+  import N64LoadingRing from '$lib/components/ui/gaming/n64/N64LoadingRing.svelte';
   import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
   import { Loader2, Send, Cpu, Zap, Database, Brain, FileText, Search } from 'lucide-svelte';
   
-  export let caseId: string = '';
-  export let userId: string = '';
-  export let documentId: string = '';
+  interface Props {
+    caseId?: string;
+    userId?: string;
+    documentId?: string;
+  }
+
+  let { caseId = '', userId = '', documentId = '' }: Props = $props();
   
   // Stores
   const messages = writable<Message[]>([]);
@@ -475,9 +480,17 @@ let activeTab = $state('chat');
                   {/if}
                   {#if message.metadata?.confidence}
                     <div class="mt-2">
-                      <Progress value={message.metadata.confidence * 100} class="h-1" />
+                      <N64ProgressBar 
+                        value={message.metadata.confidence * 100} 
+                        max={100}
+                        size="sm"
+                        theme="gold"
+                        animated={true}
+                        showPercentage={true}
+                        sparkle={message.metadata.confidence > 0.8}
+                      />
                       <div class="text-xs text-muted-foreground mt-1">
-                        Confidence: {(message.metadata.confidence * 100).toFixed(1)}%
+                        AI Confidence Level
                       </div>
                     </div>
                   {/if}
@@ -490,9 +503,17 @@ let activeTab = $state('chat');
             <div class="flex justify-start">
               <Card>
                 <CardContent class="p-4">
-                  <div class="flex items-center gap-2">
-                    <Loader2 class="h-4 w-4 animate-spin" />
-                    <span class="text-sm">Gemma3 is analyzing...</span>
+                  <div class="flex items-center gap-4">
+                    <N64LoadingRing 
+                      size="md" 
+                      theme="classic" 
+                      speed="medium"
+                      showPercentage={false}
+                    />
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium">Gemma3 Legal AI Processing</span>
+                      <span class="text-xs text-muted-foreground">Analyzing legal context with 35 GPU layers...</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -569,27 +590,64 @@ let activeTab = $state('chat');
       <div class="grid grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle class="text-sm">Performance</CardTitle>
+            <CardTitle class="text-sm flex items-center gap-2">
+              <Cpu class="h-4 w-4" />
+              Performance Metrics
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-2">
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Tokens/sec</span>
-                <span class="text-sm font-medium">
-                  {$performanceMetrics.tokensPerSecond.toFixed(1)}
-                </span>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">Tokens/sec</span>
+                  <span class="font-medium">
+                    {$performanceMetrics.tokensPerSecond.toFixed(1)}
+                  </span>
+                </div>
+                <N64ProgressBar 
+                  value={Math.min($performanceMetrics.tokensPerSecond, 150)} 
+                  max={150}
+                  size="sm"
+                  theme="green"
+                  animated={$performanceMetrics.tokensPerSecond > 0}
+                  showPercentage={false}
+                />
               </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Latency</span>
-                <span class="text-sm font-medium">
-                  {$performanceMetrics.latency.toFixed(0)}ms
-                </span>
+              
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">Cache Hit Rate</span>
+                  <span class="font-medium">
+                    {($performanceMetrics.cacheHitRate * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <N64ProgressBar 
+                  value={$performanceMetrics.cacheHitRate * 100} 
+                  max={100}
+                  size="sm"
+                  theme="blue"
+                  animated={true}
+                  showPercentage={false}
+                  sparkle={$performanceMetrics.cacheHitRate > 0.8}
+                />
               </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Cache Hit Rate</span>
-                <span class="text-sm font-medium">
-                  {($performanceMetrics.cacheHitRate * 100).toFixed(1)}%
-                </span>
+              
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">Response Time</span>
+                  <span class="font-medium">
+                    {$performanceMetrics.latency.toFixed(0)}ms
+                  </span>
+                </div>
+                <N64ProgressBar 
+                  value={Math.max(0, 5000 - $performanceMetrics.latency)} 
+                  max={5000}
+                  size="sm"
+                  theme={$performanceMetrics.latency < 1000 ? 'green' : 
+                         $performanceMetrics.latency < 3000 ? 'gold' : 'red'}
+                  animated={true}
+                  showPercentage={false}
+                />
               </div>
             </div>
           </CardContent>
@@ -597,31 +655,63 @@ let activeTab = $state('chat');
 
         <Card>
           <CardHeader>
-            <CardTitle class="text-sm">GPU Status</CardTitle>
+            <CardTitle class="text-sm flex items-center gap-2">
+              <Zap class="h-4 w-4" />
+              GPU Status - RTX 3060 Ti
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-2">
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Status</span>
-                <span class="text-sm font-medium">
-                  {$gpuStatus.available ? 'Active' : 'Inactive'}
-                </span>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">GPU Layers</span>
+                  <span class="font-medium">{$gpuStatus.layers}/35</span>
+                </div>
+                <N64ProgressBar 
+                  value={$gpuStatus.layers} 
+                  max={35}
+                  size="sm"
+                  theme="purple"
+                  animated={$gpuStatus.available}
+                  showPercentage={false}
+                  sparkle={$gpuStatus.layers === 35}
+                />
               </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Layers</span>
-                <span class="text-sm font-medium">{$gpuStatus.layers}/35</span>
+              
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">VRAM Usage</span>
+                  <span class="font-medium">
+                    {($gpuStatus.memory / 1024).toFixed(1)}GB / 8.0GB
+                  </span>
+                </div>
+                <N64ProgressBar 
+                  value={$gpuStatus.memory / 1024} 
+                  max={8}
+                  size="sm"
+                  theme={$gpuStatus.memory / 1024 < 6 ? 'green' : 
+                         $gpuStatus.memory / 1024 < 7 ? 'gold' : 'red'}
+                  animated={true}
+                  showPercentage={false}
+                />
               </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">VRAM</span>
-                <span class="text-sm font-medium">
-                  {($gpuStatus.memory / 1024).toFixed(1)}GB
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-muted-foreground">Utilization</span>
-                <span class="text-sm font-medium">
-                  {($performanceMetrics.gpuUtilization * 100).toFixed(0)}%
-                </span>
+              
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted-foreground">GPU Utilization</span>
+                  <span class="font-medium">
+                    {($performanceMetrics.gpuUtilization * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <N64ProgressBar 
+                  value={$performanceMetrics.gpuUtilization * 100} 
+                  max={100}
+                  size="sm"
+                  theme="classic"
+                  animated={$performanceMetrics.gpuUtilization > 0}
+                  showPercentage={false}
+                  sparkle={$performanceMetrics.gpuUtilization > 0.9}
+                />
               </div>
             </div>
           </CardContent>

@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 // GPU Health Monitor and Performance Metrics for Legal AI Platform
 // Real-time monitoring and alerting for GPU services and 37 Go binaries
 
@@ -123,7 +126,7 @@ func NewHealthMonitor() (*HealthMonitor, error) {
 	}
 
 	ctx := context.Background()
-	
+
 	// Initialize Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: config.RedisAddr,
@@ -162,22 +165,22 @@ func (h *HealthMonitor) loadServiceDefinitions() {
 		"ai-enhanced": {Name: "ai-enhanced", Port: 8096, Protocol: "http", HealthPath: "/health", Priority: 1, Categories: []string{"ai", "summary"}},
 		"enhanced-legal-ai": {Name: "enhanced-legal-ai", Port: 8202, Protocol: "http", HealthPath: "/api/health", Priority: 1, Categories: []string{"ai", "legal"}},
 		"live-agent-enhanced": {Name: "live-agent-enhanced", Port: 8200, Protocol: "http", HealthPath: "/health", Priority: 1, Categories: []string{"ai", "realtime"}},
-		
+
 		// File & Upload Services
 		"upload-service": {Name: "upload-service", Port: 8093, Protocol: "http", HealthPath: "/health", Priority: 2, Categories: []string{"file", "upload", "core"}},
 		"gin-upload": {Name: "gin-upload", Port: 8207, Protocol: "http", HealthPath: "/health", Priority: 3, Categories: []string{"file", "upload"}},
-		
+
 		// Protocol Services
 		"grpc-server": {Name: "grpc-server", Port: 50051, Protocol: "grpc", HealthPath: "/health", Priority: 2, Categories: []string{"protocol", "grpc"}},
 		"rag-quic-proxy": {Name: "rag-quic-proxy", Port: 8216, Protocol: "quic", HealthPath: "/health", Priority: 2, Categories: []string{"protocol", "quic"}},
-		
+
 		// Infrastructure Services
 		"gpu-orchestrator": {Name: "gpu-orchestrator", Port: 8231, Protocol: "http", HealthPath: "/api/gpu/health", Priority: 1, Categories: []string{"gpu", "orchestration", "core"}},
 		"multi-protocol-gateway": {Name: "multi-protocol-gateway", Port: 8230, Protocol: "http", HealthPath: "/api/gateway/health", Priority: 1, Categories: []string{"gateway", "protocol"}},
 		"gpu-indexer-service": {Name: "gpu-indexer-service", Port: 8220, Protocol: "http", HealthPath: "/health", Priority: 2, Categories: []string{"gpu", "indexing"}},
 		"cluster-http": {Name: "cluster-http", Port: 8213, Protocol: "http", HealthPath: "/health", Priority: 2, Categories: []string{"cluster", "management"}},
 		"xstate-manager": {Name: "xstate-manager", Port: 8212, Protocol: "http", HealthPath: "/health", Priority: 2, Categories: []string{"state", "management"}},
-		
+
 		// Monitoring & Health
 		"simd-health": {Name: "simd-health", Port: 8217, Protocol: "http", HealthPath: "/health", Priority: 3, Categories: []string{"monitoring", "simd"}},
 	}
@@ -193,15 +196,15 @@ func (h *HealthMonitor) loadServiceDefinitions() {
 func (h *HealthMonitor) Start() error {
 	// Start metrics collection
 	go h.startMetricsCollection()
-	
+
 	// Start service health checks
 	go h.startServiceHealthChecks()
-	
+
 	// Start alert processing
 	if h.config.EnableAlerts {
 		go h.startAlertProcessing()
 	}
-	
+
 	// Start HTTP server
 	return h.startHTTPServer()
 }
@@ -215,7 +218,7 @@ func (h *HealthMonitor) startMetricsCollection() {
 		metrics := h.collectSystemMetrics()
 		h.updateCurrentMetrics(metrics)
 		h.storeMetrics(metrics)
-		
+
 		if h.config.EnableAlerts {
 			h.processAlerts(metrics)
 		}
@@ -328,7 +331,7 @@ func (h *HealthMonitor) checkAllServices() {
 func (h *HealthMonitor) checkService(service ServiceInfo) {
 	var status string
 	var responseTime time.Duration
-	
+
 	switch service.Protocol {
 	case "http":
 		status, responseTime = h.checkHTTPService(service)
@@ -360,20 +363,20 @@ func (h *HealthMonitor) checkService(service ServiceInfo) {
 func (h *HealthMonitor) checkHTTPService(service ServiceInfo) (string, time.Duration) {
 	client := &http.Client{Timeout: 5 * time.Second}
 	url := fmt.Sprintf("http://localhost:%d%s", service.Port, service.HealthPath)
-	
+
 	start := time.Now()
 	resp, err := client.Get(url)
 	responseTime := time.Since(start)
-	
+
 	if err != nil {
 		return "down", responseTime
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode == http.StatusOK {
 		return "healthy", responseTime
 	}
-	
+
 	return "unhealthy", responseTime
 }
 
@@ -424,9 +427,9 @@ func (h *HealthMonitor) processAlerts(metrics *SystemMetrics) {
 			avgCPU += usage
 		}
 		avgCPU /= float64(len(metrics.CPU.UsagePercent))
-		
+
 		if avgCPU > h.config.AlertThresholds.CPUPercent {
-			h.createAlert(AlertTypeSystem, AlertSeverityHigh, "High CPU Usage", 
+			h.createAlert(AlertTypeSystem, AlertSeverityHigh, "High CPU Usage",
 				fmt.Sprintf("CPU usage is %.2f%%, above threshold of %.2f%%", avgCPU, h.config.AlertThresholds.CPUPercent))
 		}
 	}
@@ -460,7 +463,7 @@ func (h *HealthMonitor) processAlerts(metrics *SystemMetrics) {
 
 func (h *HealthMonitor) createAlert(alertType AlertType, severity AlertSeverity, title, message string) {
 	alertID := fmt.Sprintf("%s_%s_%d", alertType, severity, time.Now().Unix())
-	
+
 	alert := &Alert{
 		ID:        alertID,
 		Type:      alertType,
@@ -566,7 +569,7 @@ func (h *HealthMonitor) getOverallHealth(c *gin.Context) {
 
 	healthyServices := 0
 	totalServices := len(metrics.Services)
-	
+
 	for _, service := range metrics.Services {
 		if service.Status == "healthy" {
 			healthyServices++
@@ -615,9 +618,9 @@ func (h *HealthMonitor) getCurrentMetrics(c *gin.Context) {
 func (h *HealthMonitor) getMetricsHistory(c *gin.Context) {
 	hours := c.DefaultQuery("hours", "1")
 	hoursInt, _ := strconv.Atoi(hours)
-	
+
 	since := time.Now().Add(-time.Duration(hoursInt) * time.Hour)
-	
+
 	keys, err := h.redis.Keys(h.ctx, "health:metrics:*").Result()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve metrics"})
@@ -651,18 +654,18 @@ func (h *HealthMonitor) getServiceStatus(c *gin.Context) {
 	h.mutex.RUnlock()
 
 	services := make(map[string]interface{})
-	
+
 	for name, info := range serviceList {
 		serviceData := gin.H{
 			"info": info,
 			"status": "unknown",
 		}
-		
+
 		if metrics != nil && metrics.Services[name].Name != "" {
 			serviceData["metrics"] = metrics.Services[name]
 			serviceData["status"] = metrics.Services[name].Status
 		}
-		
+
 		services[name] = serviceData
 	}
 
@@ -671,7 +674,7 @@ func (h *HealthMonitor) getServiceStatus(c *gin.Context) {
 
 func (h *HealthMonitor) getServiceDetails(c *gin.Context) {
 	serviceName := c.Param("name")
-	
+
 	h.mutex.RLock()
 	serviceInfo, exists := h.serviceList[serviceName]
 	var serviceMetrics ServiceMetrics
@@ -704,7 +707,7 @@ func (h *HealthMonitor) getAlerts(c *gin.Context) {
 
 func (h *HealthMonitor) getAlert(c *gin.Context) {
 	alertID := c.Param("id")
-	
+
 	h.mutex.RLock()
 	alert, exists := h.alerts[alertID]
 	h.mutex.RUnlock()
@@ -719,7 +722,7 @@ func (h *HealthMonitor) getAlert(c *gin.Context) {
 
 func (h *HealthMonitor) resolveAlert(c *gin.Context) {
 	alertID := c.Param("id")
-	
+
 	h.mutex.Lock()
 	alert, exists := h.alerts[alertID]
 	if exists {
@@ -821,7 +824,7 @@ func main() {
 	}
 
 	log.Printf("🔍 Starting GPU Health Monitor for Legal AI Platform...")
-	
+
 	if err := monitor.Start(); err != nil {
 		log.Fatalf("❌ Failed to start Health Monitor: %v", err)
 	}

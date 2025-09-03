@@ -1,82 +1,75 @@
-import type { RequestHandler } from './$types.js';
 import { json } from '@sveltejs/kit';
+import { dev } from '$app/environment';
+import { lucia } from '$lib/server/auth';
+import type { RequestEvent } from '@sveltejs/kit';
 
 /**
- * User Logout API Endpoint
- * POST /api/auth/logout
- * Simple session-based logout for demo purposes
+ * PostgreSQL + Drizzle + Lucia Logout Endpoint
+ * Properly invalidates sessions in the database
  */
 
-export const POST: RequestHandler = async ({ cookies }) => {
+export const POST = async ({ cookies, locals }: RequestEvent) => {
+  // Check if user has an active session
+  if (!locals.session) {
+    return json({ 
+      success: false, 
+      message: 'No active session to logout' 
+    }, { status: 400 });
+  }
+
   try {
-    // Get session tokens from cookies
-    const sessionToken = cookies.get('session_token');
-    const authToken = cookies.get('auth_token');
+    // Invalidate the session in PostgreSQL database via Lucia
+    await lucia.invalidateSession(locals.session.id);
     
-    // Clear all authentication cookies
-    const cookieOptions = {
-      path: '/',
-      httpOnly: true,
-      secure: import.meta.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const
-    };
-    
-    if (sessionToken) {
-      cookies.delete('session_token', cookieOptions);
-    }
-    if (authToken) {
-      cookies.delete('auth_token', cookieOptions);
-    }
-    
-    // Clear any other auth-related cookies
-    cookies.delete('user_preferences', { path: '/' });
-    cookies.delete('remember_me', { path: '/' });
-    
-    // Return successful logout response
-    return json({
-      success: true,
-      message: 'Logout successful',
-      data: null,
-      meta: {
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-      }
+    // Create and set blank session cookie
+    const sessionCookie = lucia.createBlankSessionCookie();
+    cookies.set(sessionCookie.name, sessionCookie.value, {
+      path: '.',
+      ...sessionCookie.attributes
     });
 
-  } catch (error: any) {
-    console.error('Logout API error:', error);
+    // Log successful logout
+    console.log('User logged out successfully:', {
+      sessionId: locals.session.id,
+      userId: locals.user?.id,
+      timestamp: new Date().toISOString()
+    });
 
-    // Even if there's an error, try to clear cookies for security
-    const cookieOptions = {
-      path: '/',
-      httpOnly: true,
-      secure: import.meta.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const
-    };
+    return json({ 
+      success: true, 
+      message: 'Successfully logged out',
+      sessionInvalidated: true 
+    });
+
+  } catch (error) {
+    console.error('Logout error:', error);
     
-    cookies.delete('session_token', cookieOptions);
-    cookies.delete('auth_token', cookieOptions);
+    // Even if database logout fails, clear the cookie
+    const sessionCookie = lucia.createBlankSessionCookie();
+    cookies.set(sessionCookie.name, sessionCookie.value, {
+      path: '.',
+      ...sessionCookie.attributes
+    });
 
-    return json({
-      success: true, // Still return success as cookies are cleared
-      message: 'Logout completed',
-      meta: {
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-      }
+    return json({ 
+      success: true, 
+      message: 'Logged out (with errors)',
+      error: 'Session cleanup encountered issues'
     });
   }
 };
 
-// OPTIONS handler for CORS preflight requests
-export const OPTIONS: RequestHandler = async () => {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': dev ? '*' : 'https://yourdomain.com',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400', // 24 hours
-    }
-  });
+export const GET = async (ctx: any) => {
+  if (!dev) return json({ error: 'GET not allowed in production' }, { status: 405 });
+  return POST(ctx as any);
 };
+
+export const OPTIONS = async () => new Response(null, {
+  status: 200,
+  headers: {
+    'Access-Control-Allow-Origin': dev ? '*' : 'https://yourdomain.com',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400'
+  }
+});

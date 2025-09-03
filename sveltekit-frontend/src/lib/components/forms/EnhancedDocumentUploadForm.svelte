@@ -11,10 +11,10 @@
   } from "$lib/forms/superforms-xstate-integration";
   import { DocumentUploadSchema } from "$lib/state/legal-form-machines";
   // Updated to use melt-ui components
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import Card from '$lib/components/ui/MeltCard.svelte';
   import Select from '$lib/components/ui/MeltSelect.svelte';
-  
+
   // TODO: Replace with melt-ui equivalents when available
   // import {
   //   Alert,

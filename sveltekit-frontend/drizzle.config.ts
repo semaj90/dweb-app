@@ -10,13 +10,10 @@ dotenv.config({ path: '../.env' });
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
-// Database connection with fallback values for development
-const databaseUrl = process.env.DATABASE_URL ||
-  `postgresql://${process.env.DATABASE_USER || 'legal_admin'}:${process.env.DATABASE_PASSWORD || '123456'}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '5432'}/${process.env.DATABASE_NAME || 'legal_ai_db'}`;
+// Database connection with fallback values for development  
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/legal_ai_db';
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL is not configured. Please set DATABASE_URL or individual database environment variables.');
-}
+console.log('Drizzle using DATABASE_URL:', databaseUrl);
 
 export default defineConfig({
   // ===== SCHEMA DISCOVERY - BEST PRACTICES =====
@@ -32,7 +29,7 @@ export default defineConfig({
   dialect: 'postgresql',
 
   dbCredentials: {
-    connectionString: databaseUrl,
+    url: databaseUrl,
     // Enhanced connection options for production
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
   },

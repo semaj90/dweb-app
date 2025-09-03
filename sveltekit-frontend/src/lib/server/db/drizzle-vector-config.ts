@@ -3,7 +3,7 @@
  * Production-ready database schema with pgvector support
  */
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import { 
   pgTable, 
   serial, 

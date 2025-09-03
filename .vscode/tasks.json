@@ -244,7 +244,63 @@
       "detail": "Context7-guided systematic error reduction analysis"
     },
     {
-      "label": "🔍 Vector: Search",
+      "label": "� Perf Monitor: Build Binary",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go build -o ./bin/perf-monitor.exe ./cmd/perf-monitor; Write-Host '✅ perf-monitor.exe built to go-microservice/bin' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Build Go performance monitoring service binary"
+    },
+    {
+      "label": "📊 Perf Monitor: Run (Dev)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin/perf-monitor.exe)) { go build -o ./bin/perf-monitor.exe ./cmd/perf-monitor }; Start-Process -NoNewWindow -FilePath 'bin/perf-monitor.exe'; Write-Host '🚀 perf-monitor started on :8098' -ForegroundColor Cyan"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run performance monitor service locally"
+    },
+    {
+      "label": "📊 Perf Monitor: Collector",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd windows-service; ./perf-monitor-collector.bat"
+      ],
+      "group": "test",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Continuously collect runtime metrics snapshots"
+    },
+    {
+      "label": "�🔍 Vector: Search",
       "type": "shell",
       "command": "npm",
       "args": [
@@ -1247,7 +1303,8 @@
     {
       "label": "Legal AI: Dev Full Startup (Complete Platform)",
       "type": "shell",
-      "command": "START-LEGAL-AI.bat",
+      "command": "cmd",
+      "args": ["/c", "START-LEGAL-AI.bat"],
       "group": "build",
       "isBackground": true,
       "options": {
@@ -2184,6 +2241,190 @@
         "panel": "shared"
       },
       "detail": "Validate WebAssembly llama module import & WebGPU availability (basic)"
+    }
+    ,
+    {
+      "label": "🚀 GPU Orchestrator: Build & Run",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🔧 Building gpu-orchestrator...' -ForegroundColor Cyan; if (!(Test-Path 'cmd/gpu-orchestrator')) { Write-Host '❌ cmd/gpu-orchestrator not found' -ForegroundColor Red; exit 1 }; if (!(Test-Path 'bin')) { New-Item -ItemType Directory -Path bin | Out-Null }; go build -o ./bin/gpu-orchestrator.exe ./cmd/gpu-orchestrator; if ($LASTEXITCODE -ne 0) { Write-Host '❌ Build failed' -ForegroundColor Red; exit 1 }; Write-Host '✅ Build succeeded' -ForegroundColor Green; Write-Host '🚀 Starting gpu-orchestrator on port 8095' -ForegroundColor Yellow; Start-Process -NoNewWindow -FilePath '.\\bin\\gpu-orchestrator.exe'"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Build and launch the internal GPU orchestrator service (port 8095)"
+    },
+    {
+      "label": "🩺 GPU Orchestrator: Health",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$port = $env:GPU_ORCHESTRATOR_PORT; if (-not $port) { $port = 8095 }; try { $resp = Invoke-RestMethod -Uri (\"http://localhost:$port/health\") -TimeoutSec 3; Write-Host ('✅ Orchestrator healthy: ' + ($resp | Out-String)) -ForegroundColor Green } catch { Write-Host '❌ Orchestrator not responding on ' $port -ForegroundColor Red; exit 1 }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Health check request to running GPU orchestrator (/health)"
+    },
+    {
+      "label": "📊 GPU Orchestrator: Metrics Snapshot",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$port = $env:GPU_ORCHESTRATOR_PORT; if (-not $port) { $port = 8095 }; try { (Invoke-WebRequest -Uri (\"http://localhost:$port/metrics\") -TimeoutSec 3).Content.Split('`n') | Select-String 'tasks_total|task_latency_seconds_bucket' | Select-Object -First 20 | ForEach-Object { $_.ToString() } } catch { Write-Host '❌ Metrics endpoint not reachable' -ForegroundColor Red; exit 1 }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Show brief metrics excerpt from orchestrator (/metrics)"
+    },
+    {
+      "label": "🧪 GPU Orchestrator: Submit Sample Task",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$port = $env:GPU_ORCHESTRATOR_PORT; if (-not $port) { $port = 8095 }; $payload = @{ type = 'embedding'; priority = 5; input = 'hello world'; metadata = @{ source = 'task-demo'; user='dev' } } | ConvertTo-Json -Depth 5; Write-Host '➡️ Submitting sample task...' -ForegroundColor Cyan; $resp = Invoke-RestMethod -Uri (\"http://localhost:$port/gpu/task\") -Method Post -Body $payload -ContentType 'application/json'; Write-Host ('✅ Submitted Task ID: ' + $resp.id) -ForegroundColor Green; Start-Sleep 1; $status = Invoke-RestMethod -Uri (\"http://localhost:$port/gpu/task/status?id=$($resp.id)\"); Write-Host ('📌 Status: ' + $status.status) -ForegroundColor Yellow"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Submit a demo embedding task and fetch status"
+    },
+    {
+      "label": "🔌 GPU Orchestrator: Stream Events (WS)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/ws-listen.ps1"
+      ],
+      "group": "test",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Connect to orchestrator WebSocket (/ws) and stream events"
+    },
+    {
+      "label": "📈 GPU Orchestrator: Burst Submit (15)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/submit-burst.ps1"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Submit burst of sample tasks to observe UCB scheduling"
+    },
+    {
+      "label": "🛑 GPU Orchestrator: Cancel Demo",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/cancel-demo.ps1"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Submit delayed task then cancel it"
+    },
+    {
+      "label": "📊 GPU Orchestrator: Tail Metrics",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/metrics-tail.ps1"
+      ],
+      "group": "test",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Tail plain-text metrics every 5s"
+    },
+    {
+      "label": "🛑 GPU Orchestrator: Stop",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/graceful-stop.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Gracefully stop gpu-orchestrator.exe only"
+    },
+    {
+      "label": "⚙️ GPU Orchestrator: Load Generator",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/gpu-orchestrator/load-generator.ps1"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Generate mixed workload to stress scheduler"
     }
   ]
 }

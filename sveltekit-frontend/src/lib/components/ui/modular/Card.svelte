@@ -20,7 +20,7 @@
     variant = 'default',
     size = 'default',
     padding = 'default',
-    class: class,
+    class: className = '',
     children,
     header,
     footer,

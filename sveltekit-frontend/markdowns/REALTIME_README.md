@@ -111,7 +111,7 @@ Required in `.env`:
 REDIS_URL=redis://localhost:6379
 
 # PostgreSQL (required for persistence)
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/prosecutor_db
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/legal_ai_db
 
 # WebSocket server (optional, defaults to 3030)
 WEBSOCKET_PORT=3030
@@ -440,7 +440,7 @@ Svelte store for evidence state management.
 # Production environment variables
 NODE_ENV=production
 REDIS_URL=redis://your-redis-instance:6379
-DATABASE_URL=postgresql://user:pass@your-db:5432/db
+DATABASE_URL=postgresql://postgresql:123456@legal_ai_db:5432/db
 WEBSOCKET_PORT=3030
 ```
 

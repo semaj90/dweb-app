@@ -123,10 +123,10 @@
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
-  on:onclick={() => openFileDialog()}
+  onclick={openFileDialog}
   role="button"
   tabindex={0}
-  on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
+  onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openFileDialog()}
 >
   <input
     bind:this={fileInput}

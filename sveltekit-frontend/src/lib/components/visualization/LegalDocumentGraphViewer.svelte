@@ -589,7 +589,7 @@ let touchStart = $state({ x: 0, y: 0 });
 <!-- COMPONENT TEMPLATE -->
 <!-- ============================================================================ -->
 
-<div class="legal-graph-viewer {class}" style="width: {width}px; height: {height}px;">
+<div class="legal-graph-viewer {className}" style="width: {width}px; height: {height}px;">
   <!-- Loading State -->
   {#if $isLoading}
     <div class="loading-overlay">

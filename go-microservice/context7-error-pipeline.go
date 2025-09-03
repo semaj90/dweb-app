@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -106,7 +106,7 @@ func NewContext7Pipeline(configPath string) (*Context7Pipeline, error) {
 			Capacity: workerConfig.Capacity,
 			Queue:    make(chan ErrorTask, workerConfig.Capacity),
 		}
-		
+
 		// Health check
 		if pipeline.healthCheck(worker) {
 			worker.Active = true
@@ -153,10 +153,10 @@ func (p *Context7Pipeline) getNextWorker() *Context7Worker {
 
 func (p *Context7Pipeline) processErrorBatch(errors []SvelteError) error {
 	log.Printf("📊 Processing batch of %d errors across %d workers", len(errors), len(p.Workers))
-	
+
 	var wg sync.WaitGroup
 	errorChan := make(chan SvelteError, len(errors))
-	
+
 	// Fill error channel
 	for _, err := range errors {
 		errorChan <- err
@@ -168,7 +168,7 @@ func (p *Context7Pipeline) processErrorBatch(errors []SvelteError) error {
 		if !worker.Active {
 			continue
 		}
-		
+
 		wg.Add(1)
 		go p.workerProcessor(worker, errorChan, &wg)
 	}
@@ -183,7 +183,7 @@ func (p *Context7Pipeline) workerProcessor(worker *Context7Worker, errorChan <-c
 
 	for svlErr := range errorChan {
 		// Create descriptive text for embedding
-		errorText := fmt.Sprintf("SvelteKit error in %s at line %d: %s. Context: %s", 
+		errorText := fmt.Sprintf("SvelteKit error in %s at line %d: %s. Context: %s",
 			svlErr.File, svlErr.Line, svlErr.Message, svlErr.Context)
 
 		// Request embedding from Context7 worker
@@ -239,7 +239,7 @@ func (p *Context7Pipeline) requestEmbedding(worker *Context7Worker, text string)
 func (p *Context7Pipeline) storeVector(svlErr SvelteError, vector []float32) error {
 	// Integration point with your vector database (Qdrant/pgvector)
 	// This would make a request to your Enhanced RAG service at port 8094
-	
+
 	vectorData := map[string]interface{}{
 		"id":          fmt.Sprintf("error_%s_%d_%d", filepath.Base(svlErr.File), svlErr.Line, time.Now().Unix()),
 		"vector":      vector,
@@ -266,7 +266,7 @@ func (p *Context7Pipeline) storeVector(svlErr SvelteError, vector []float32) err
 
 func (p *Context7Pipeline) startFileWatcher() error {
 	log.Printf("👁️ Starting file watcher for error pipeline")
-	
+
 	// Watch for error files
 	for _, filename := range p.Config.ErrorPipeline.WatchFiles {
 		err := p.Watcher.Add(filename)
@@ -284,12 +284,12 @@ func (p *Context7Pipeline) startFileWatcher() error {
 				if !ok {
 					return
 				}
-				
+
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					log.Printf("🔥 File modified: %s", event.Name)
 					go p.handleFileChange(event.Name)
 				}
-				
+
 			case err, ok := <-p.Watcher.Errors:
 				if !ok {
 					return
@@ -304,7 +304,7 @@ func (p *Context7Pipeline) startFileWatcher() error {
 
 func (p *Context7Pipeline) handleFileChange(filename string) {
 	log.Printf("📄 Processing file change: %s", filename)
-	
+
 	// Read and parse error file
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -327,7 +327,7 @@ func (p *Context7Pipeline) handleFileChange(filename string) {
 func (p *Context7Pipeline) Start() error {
 	log.Printf("🚀 Starting Context7 Error-to-Vector Pipeline")
 	log.Printf("📊 %d active workers", len(p.Workers))
-	
+
 	if err := p.startFileWatcher(); err != nil {
 		return fmt.Errorf("failed to start file watcher: %v", err)
 	}

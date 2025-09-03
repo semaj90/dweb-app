@@ -19,7 +19,7 @@
 		hint,
 		icon,
 		loading = false,
-		class: class,
+		class: className = '',
 		id = crypto.randomUUID(),
 		value = $bindable(''),
 		...props

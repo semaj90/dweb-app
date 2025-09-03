@@ -4,9 +4,9 @@
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	// Updated to use melt-ui components
-	import Button from '$lib/components/ui/MeltButton.svelte';
+	import Button from '$lib/components/ui/bitsbutton.svelte';
 	import Card from '$lib/components/ui/MeltCard.svelte';
-	
+
 	// TODO: Replace with melt-ui equivalents when available
 	// import { CardContent, CardHeader, CardTitle } from 'bits-ui';
 	// import { Badge } from 'bits-ui';
@@ -125,7 +125,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 		if (fieldIndex !== -1) {
 			populatedFields[fieldIndex].value = value;
 			populatedFields[fieldIndex].confidence = confidence;
-			
+
 			// Clear suggestions once user makes a selection
 			delete activeSuggestions[fieldName];
 			activeSuggestions = { ...activeSuggestions };
@@ -133,7 +133,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 
 		// Validate field
 		validateField(fieldName, value);
-		
+
 		dispatch('fieldChange', { fieldName, value, confidence });
 	};
 
@@ -164,7 +164,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 		}
 
 		formErrors.set(errors);
-		isFormValid = Object.keys(errors).length === 0 && 
+		isFormValid = Object.keys(errors).length === 0 &&
 			populatedFields.filter(f => f.required).every(f => f.value?.trim());
 	};
 
@@ -242,7 +242,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 				<!-- Document Type Selection -->
 				<div class="flex items-center space-x-4">
 					<Label class="text-sm font-medium">Document Type:</Label>
-					<select 
+					<select
 						bind:value={selectedDocumentType}
 						class="px-3 py-2 bg-yorha-bg-secondary border border-yorha-border rounded-md text-yorha-text-primary"
 					>
@@ -254,7 +254,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 				</div>
 
 				<!-- File Drop Zone -->
-				<div 
+				<div
 					class="border-2 border-dashed border-yorha-border rounded-lg p-8 text-center transition-colors duration-200 hover:border-yorha-primary hover:bg-yorha-bg-secondary/50"
 				 class:border-yorha-primary={uploadedFile}
 					ondrop={handleDrop}
@@ -293,10 +293,10 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 							}
 						}}
 					/>
-					
+
 					{#if !uploadedFile}
-						<Button 
-							variant="outline" 
+						<Button
+							variant="outline"
 							class="mt-4"
 							on:on:click={() => fileInput.click()}
 						>
@@ -326,7 +326,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 							</Badge>
 						</div>
 						<div class="text-xs text-yorha-text-secondary">
-							Confidence: {Math.round($ocrResult.confidence)}% | 
+							Confidence: {Math.round($ocrResult.confidence)}% |
 							Processing Time: {$ocrResult.processingTime}ms |
 							Document Type: {$ocrResult.metadata.documentType}
 						</div>
@@ -363,7 +363,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 										<span class="text-yorha-danger">*</span>
 									{/if}
 								</Label>
-								
+
 								<!-- Confidence Indicator -->
 								{#if field.confidence}
 									<div class="flex items-center space-x-1">
@@ -438,7 +438,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 						<Badge class={isFormValid ? 'bg-yorha-success' : 'bg-yorha-warning'}>
 							{isFormValid ? 'Ready to Submit' : 'Incomplete'}
 						</Badge>
-						
+
 						{#if enableOCR && $extractedFields.length > 0}
 							<span class="text-xs text-yorha-text-secondary">
 								{populatedFields.filter(f => f.value).length} / {populatedFields.length} fields completed
@@ -447,7 +447,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 					</div>
 
 					<div class="flex items-center space-x-3">
-						<Button 
+						<Button
 							variant="outline"
 							on:on:click={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
@@ -456,8 +456,8 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 						>
 							Clear All
 						</Button>
-						
-						<Button 
+
+						<Button
 							type="submit"
 							disabled={!isFormValid}
 							class="bg-yorha-primary hover:bg-yorha-primary/80 disabled:opacity-50"
@@ -494,7 +494,7 @@ let suggestionLoading = $state<Record<string, boolean> >({});
 								<span class="text-sm font-medium text-yorha-text-primary">
 									{field.fieldName.replace('_', ' ')}
 								</span>
-								<Badge 
+								<Badge
 									class={
 										field.validationStatus === 'valid' ? 'bg-yorha-success' :
 										field.validationStatus === 'invalid' ? 'bg-yorha-danger' :

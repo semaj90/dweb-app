@@ -5,11 +5,11 @@ https://svelte.dev/e/js_parse_error -->
   import { $props } from 'svelte';
 
   // Updated to use melt-ui components
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import Dialog from '$lib/components/ui/MeltDialog.svelte';
   import Select from '$lib/components/ui/MeltSelect.svelte';
   import Card from '$lib/components/ui/MeltCard.svelte';
-  
+
   // TODO: Replace with melt-ui equivalents when available
   // import {
   //   Badge,
@@ -469,7 +469,7 @@ let comparison = $state(0);
 </script>
 
 <!-- Main Search Interface -->
-<div class="enhanced-vector-search {class}">
+<div class="enhanced-vector-search {className}">
   <!-- Search Header -->
   <div class="search-header">
     <div class="search-input-container">

@@ -4,15 +4,15 @@
 
   // Component library choice - toggle between bits-ui and melt-ui
   import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
-  import MeltButton from '$lib/components/ui/MeltButton.svelte';
+  import MeltButton from '$lib/components/ui/bitsbutton.svelte';
   import MeltDialog from '$lib/components/ui/MeltDialog.svelte';
   import MeltSelect from '$lib/components/ui/MeltSelect.svelte';
   import { fade } from 'svelte/transition';
   import { createToaster, melt } from 'melt';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
-  
-  let { 
+
+  let {
     caseTypes = [
       { value: 'criminal', label: 'Criminal Cases' },
       { value: 'civil', label: 'Civil Cases' },
@@ -20,16 +20,16 @@
       { value: 'corporate', label: 'Corporate Law' }
     ],
     useLibrary = 'melt-ui',
-    class: class,
+    class: className = '',
     id,
     'data-testid': testId
   }: BitsDemoProps = $props();
-  
+
   // Component selection based on library choice
   let SelectedButton = $derived(useLibrary === 'melt-ui' ? MeltButton : Button);
   let SelectedDialog = $derived(useLibrary === 'melt-ui' ? MeltDialog : Dialog);
   let SelectedSelect = $derived(useLibrary === 'melt-ui' ? MeltSelect : Select);
-  
+
   interface ToastData {
     title?: string;
     description?: string;
@@ -37,7 +37,7 @@
   }
 let dialogOpen = $state(false);
 let alertOpen = $state(false);
-  
+
   // Melt-UI Toast/Notification setup
   const {
     elements: { content, title, description, close },
@@ -45,7 +45,7 @@ let alertOpen = $state(false);
     states: { toasts },
     actions: { portal }
   } = createToaster<ToastData>();
-  
+
   // Notification functions with actual API calls
   async function showSuccessNotification() {
     try {
@@ -115,7 +115,7 @@ let alertOpen = $state(false);
   async function showErrorNotification() {
     try {
       const response = await fetch('/api/v1/upload?action=health');
-      
+
       if (response.ok) {
         addToast({
           data: {
@@ -143,7 +143,7 @@ let alertOpen = $state(false);
       const response = await fetch('/api/v1/quic/metrics', {
         method: 'GET'
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         addToast({
@@ -176,7 +176,7 @@ let alertOpen = $state(false);
 
 <div class="mx-auto px-4 max-w-7xl">
   <h2 class="mx-auto px-4 max-w-7xl">Bits UI Components Demo</h2>
-  
+
   <!-- Melt-UI Notification Demo Section -->
   <div class="mx-auto px-4 max-w-7xl">
     <h3 class="mx-auto px-4 max-w-7xl">Melt-UI Notifications Demo</h3>
@@ -195,12 +195,12 @@ let alertOpen = $state(false);
       </button>
     </div>
   </div>
-  
+
   <!-- Bits UI Button -->
   <Button.Root class="mx-auto px-4 max-w-7xl" on:on:click={showSuccessNotification}>
     Create New Case
   </Button.Root>
-  
+
   <!-- Bits UI Select -->
   <div class="mx-auto px-4 max-w-7xl">
     <label class="mx-auto px-4 max-w-7xl" for="practice-area-select">Legal Practice Area</label>
@@ -219,7 +219,7 @@ let alertOpen = $state(false);
       </Select.Portal>
     </SelectRoot>
   </div>
-  
+
   <!-- Bits UI Dialog -->
   <Dialog.Root bind:open={dialogOpen} openchange={(open) => { if (open) showInfoNotification(); }}>
     <Dialog.Trigger class="mx-auto px-4 max-w-7xl">
@@ -232,10 +232,10 @@ let alertOpen = $state(false);
           Case Management System
         </Dialog.Title>
         <Dialog.Description class="mx-auto px-4 max-w-7xl">
-          Manage your legal cases with our comprehensive case management system. 
+          Manage your legal cases with our comprehensive case management system.
           Track evidence, deadlines, and case progress all in one place.
         </Dialog.Description>
-        
+
         <div class="mx-auto px-4 max-w-7xl">
           <div class="mx-auto px-4 max-w-7xl">
             <h4>Evidence Management</h4>
@@ -250,7 +250,7 @@ let alertOpen = $state(false);
             <p>Get AI-powered insights on your cases</p>
           </div>
         </div>
-        
+
         <div class="mx-auto px-4 max-w-7xl">
           <Dialog.Close class="mx-auto px-4 max-w-7xl">
             Close
@@ -262,7 +262,7 @@ let alertOpen = $state(false);
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>
-  
+
   <!-- Bits UI Alert Dialog -->
   <AlertDialog.Root bind:open={alertOpen}>
     <AlertDialog.Trigger class="mx-auto px-4 max-w-7xl">
@@ -277,7 +277,7 @@ let alertOpen = $state(false);
         <AlertDialog.Description class="mx-auto px-4 max-w-7xl">
           Are you sure you want to delete this case? This action cannot be undone and will permanently remove all case data, evidence, and related documents.
         </AlertDialog.Description>
-        
+
         <div class="mx-auto px-4 max-w-7xl">
           <AlertDialog.Cancel class="mx-auto px-4 max-w-7xl">
             Cancel
@@ -289,7 +289,7 @@ let alertOpen = $state(false);
       </AlertDialog.Content>
     </AlertDialog.Portal>
   </AlertDialog.Root>
-  
+
   <div class="mx-auto px-4 max-w-7xl">
     <p class="mx-auto px-4 max-w-7xl">
       <strong>Demo:</strong> Bits UI components provide accessible, unstyled components.

@@ -1139,7 +1139,7 @@ func NewEnhancedRAGV2Service() (*EnhancedRAGV2Service, error) {
 		HTTPPort:         "8097",
 		WSPort:           "8098",
 		GRPCPort:         "50052",
-		PostgresURL:      "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+		PostgresURL:      "postgresql://postgres:123456@localhost:5432/legal_ai_db",
 		RedisURL:         "localhost:6379",
 		NATSURL:          "nats://localhost:4222",
 		RabbitMQURL:      "amqp://guest:guest@localhost:5672/",

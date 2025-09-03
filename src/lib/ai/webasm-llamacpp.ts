@@ -2,6 +2,7 @@
 // Supports Gemma 3 Legal models in browser with hardware acceleration
 
 import '../types/index.js';
+import type { WebAssemblyRankingCache, RankingCacheMetrics, CacheEntry, RankingAlgorithm } from '../webgpu/webasm-ranking-cache';
 
 export interface WebLlamaConfig {
   modelUrl: string;
@@ -12,6 +13,12 @@ export interface WebLlamaConfig {
   enableMultiCore: boolean;
   batchSize: number;
   temperature: number;
+  // Enhanced caching configuration
+  enableRankingCache: boolean;
+  cacheStrategy: RankingAlgorithm;
+  maxCacheSize: number;
+  enableServiceWorker: boolean;
+  quicEndpoint?: string;
 }
 
 export interface WebLlamaResponse {
@@ -20,6 +27,17 @@ export interface WebLlamaResponse {
   processingTime: number;
   confidence: number;
   fromCache: boolean;
+  // Enhanced response metadata
+  cacheHit: boolean;
+  rankingScore?: number;
+  vectorSimilarity?: number;
+  processingPath: 'wasm' | 'worker' | 'cache' | 'fallback';
+  metrics?: {
+    embeddingTime: number;
+    inferenceTime: number;
+    cacheTime: number;
+    totalTime: number;
+  };
 }
 
 class WebAssemblyLlamaService {
@@ -31,6 +49,21 @@ class WebAssemblyLlamaService {
   private maxCacheSize = 100;
   private worker: Worker | null = null;
   private webgpuDevice: GPUDevice | null = null;
+  // Enhanced caching system
+  private rankingCache: WebAssemblyRankingCache | null = null;
+  private serviceWorkerRegistration: ServiceWorkerRegistration | null = null;
+  private cacheMetrics: RankingCacheMetrics = {
+    hitRatio: 0,
+    avgLatency: 0,
+    totalRequests: 0,
+    cacheHits: 0,
+    cacheMisses: 0,
+    evictions: 0,
+    memoryUsage: 0,
+    compressionRatio: 0,
+    integrityChecks: 0,
+    lastUpdated: Date.now()
+  };
 
   constructor(config: Partial<WebLlamaConfig> = {}) {
     this.config = {
@@ -42,11 +75,18 @@ class WebAssemblyLlamaService {
       enableMultiCore: true,
       batchSize: 512,
       temperature: 0.1,
+      // Enhanced caching defaults
+      enableRankingCache: true,
+      cacheStrategy: 'lru_with_frequency',
+      maxCacheSize: 500,
+      enableServiceWorker: true,
+      quicEndpoint: '/api/cache/ranking',
       ...config
     };
 
     this.initializeWebGPU();
     this.initializeWorker();
+    this.initializeRankingCache();
   }
 
   /**
@@ -85,6 +125,47 @@ class WebAssemblyLlamaService {
 
     } catch (error: any) {
       console.error('[WebLlama] WebGPU initialization failed:', error);
+    }
+  }
+
+  /**
+   * Initialize WebAssembly Ranking Cache with service worker support
+   */
+  private async initializeRankingCache(): Promise<void> {
+    if (!this.config.enableRankingCache) return;
+
+    try {
+      // Import the ranking cache module dynamically
+      const { WebAssemblyRankingCache } = await import('../webgpu/webasm-ranking-cache');
+      
+      this.rankingCache = new WebAssemblyRankingCache({
+        strategy: this.config.cacheStrategy,
+        maxSize: this.config.maxCacheSize,
+        enableServiceWorker: this.config.enableServiceWorker,
+        quicEndpoint: this.config.quicEndpoint,
+        concurrency: this.config.threadsCount,
+        compressionLevel: 6, // Balanced compression
+        integrityCheck: true,
+        debug: false
+      });
+
+      await this.rankingCache.initialize();
+
+      // Set up service worker for concurrent processing
+      if (this.config.enableServiceWorker && 'serviceWorker' in navigator) {
+        this.serviceWorkerRegistration = await navigator.serviceWorker.register(
+          '/sw-webasm-cache.js',
+          { scope: '/' }
+        );
+        
+        console.log('[WebLlama] Service Worker registered for cache concurrency');
+      }
+
+      console.log('[WebLlama] Ranking cache initialized successfully');
+      
+    } catch (error: any) {
+      console.error('[WebLlama] Ranking cache initialization failed:', error);
+      this.config.enableRankingCache = false;
     }
   }
 
@@ -219,21 +300,76 @@ class WebAssemblyLlamaService {
   }
 
   /**
-   * Generate text using WebAssembly llama.cpp
+   * Generate text using WebAssembly llama.cpp with enhanced ranking cache
    */
   async generate(prompt: string, options: {
     maxTokens?: number;
     temperature?: number;
     useCache?: boolean;
+    enableRanking?: boolean;
   } = {}): Promise<WebLlamaResponse> {
     const startTime = performance.now();
+    const metrics = {
+      embeddingTime: 0,
+      inferenceTime: 0,
+      cacheTime: 0,
+      totalTime: 0
+    };
     
-    // Check cache first
+    // Enhanced cache lookup with ranking
+    if (options.useCache !== false && this.rankingCache) {
+      const cacheStart = performance.now();
+      
+      try {
+        // Generate embedding for semantic cache lookup
+        const embeddingStart = performance.now();
+        const promptEmbedding = await this.generateEmbedding(prompt);
+        metrics.embeddingTime = performance.now() - embeddingStart;
+        
+        // Search ranking cache
+        const cacheResult = await this.rankingCache.get(prompt, {
+          embedding: promptEmbedding,
+          threshold: 0.85, // High similarity threshold for legal content
+          algorithm: this.config.cacheStrategy
+        });
+        
+        metrics.cacheTime = performance.now() - cacheStart;
+        
+        if (cacheResult) {
+          this.cacheMetrics.cacheHits++;
+          this.cacheMetrics.totalRequests++;
+          this.updateCacheMetrics();
+          
+          return {
+            ...cacheResult.response,
+            fromCache: true,
+            cacheHit: true,
+            vectorSimilarity: cacheResult.similarity,
+            rankingScore: cacheResult.score,
+            processingPath: 'cache',
+            metrics: {
+              ...metrics,
+              totalTime: performance.now() - startTime
+            }
+          };
+        }
+        
+      } catch (cacheError: any) {
+        console.warn('[WebLlama] Cache lookup failed, falling back:', cacheError);
+      }
+    }
+    
+    // Fallback to legacy cache
     if (options.useCache !== false) {
       const cacheKey = this.getCacheKey(prompt, options);
       const cached = this.cache.get(cacheKey);
       if (cached) {
-        return { ...cached, fromCache: true };
+        return { 
+          ...cached, 
+          fromCache: true,
+          cacheHit: true,
+          processingPath: 'cache'
+        };
       }
     }
 
@@ -243,6 +379,7 @@ class WebAssemblyLlamaService {
 
     try {
       let result: WebLlamaResponse;
+      const inferenceStart = performance.now();
 
       if (this.worker && this.config.enableMultiCore) {
         // Use worker for parallel processing
@@ -251,14 +388,26 @@ class WebAssemblyLlamaService {
         // Direct WASM call
         result = await this.generateDirect(prompt, options);
       }
+      
+      metrics.inferenceTime = performance.now() - inferenceStart;
+      metrics.totalTime = performance.now() - startTime;
 
-      // Cache successful results
-      if (options.useCache !== false && result.confidence > 0.7) {
-        this.addToCache(prompt, options, result);
-      }
-
-      result.processingTime = performance.now() - startTime;
+      // Enhanced result metadata
+      result.processingTime = metrics.totalTime;
       result.fromCache = false;
+      result.cacheHit = false;
+      result.processingPath = this.worker && this.config.enableMultiCore ? 'worker' : 'wasm';
+      result.metrics = metrics;
+
+      // Store in enhanced ranking cache
+      if (options.useCache !== false && result.confidence > 0.7) {
+        await this.storeInRankingCache(prompt, result, options);
+        this.addToCache(prompt, options, result); // Legacy cache backup
+      }
+      
+      this.cacheMetrics.cacheMisses++;
+      this.cacheMetrics.totalRequests++;
+      this.updateCacheMetrics();
 
       return result;
 
@@ -308,7 +457,136 @@ class WebAssemblyLlamaService {
   }
 
   /**
-   * Get service health and capabilities
+   * Generate embedding for semantic similarity
+   */
+  private async generateEmbedding(text: string): Promise<Float32Array> {
+    try {
+      // Use WebGPU for embedding if available
+      if (this.webgpuDevice) {
+        return await this.generateEmbeddingWebGPU(text);
+      }
+      
+      // Fallback to WASM embedding
+      return await this.generateEmbeddingWASM(text);
+      
+    } catch (error: any) {
+      console.warn('[WebLlama] Embedding generation failed, using hash fallback:', error);
+      return this.generateHashEmbedding(text);
+    }
+  }
+  
+  private async generateEmbeddingWebGPU(text: string): Promise<Float32Array> {
+    // WebGPU-accelerated embedding generation
+    const encoder = new TextEncoder();
+    const textBytes = encoder.encode(text);
+    
+    // Create GPU buffer
+    const inputBuffer = this.webgpuDevice!.createBuffer({
+      size: textBytes.length,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+    });
+    
+    // Simple hash-based embedding for now (can be replaced with neural network)
+    const embedding = new Float32Array(384); // nomic-embed-text dimensions
+    
+    for (let i = 0; i < embedding.length; i++) {
+      let hash = 0;
+      for (let j = 0; j < textBytes.length; j++) {
+        hash = ((hash << 5) - hash + textBytes[j] + i) >>> 0;
+      }
+      embedding[i] = (hash % 1000) / 1000 - 0.5; // Normalize to [-0.5, 0.5]
+    }
+    
+    // Normalize the embedding
+    const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+    if (norm > 0) {
+      for (let i = 0; i < embedding.length; i++) {
+        embedding[i] /= norm;
+      }
+    }
+    
+    return embedding;
+  }
+  
+  private async generateEmbeddingWASM(text: string): Promise<Float32Array> {
+    // WASM-based embedding (placeholder - would call actual WASM function)
+    return this.generateHashEmbedding(text);
+  }
+  
+  private generateHashEmbedding(text: string): Float32Array {
+    // Simple hash-based embedding as fallback
+    const embedding = new Float32Array(384);
+    const textBytes = new TextEncoder().encode(text);
+    
+    for (let i = 0; i < embedding.length; i++) {
+      let hash = 0;
+      for (let j = 0; j < textBytes.length; j++) {
+        hash = ((hash << 5) - hash + textBytes[j] + i) >>> 0;
+      }
+      embedding[i] = (hash % 1000) / 1000 - 0.5;
+    }
+    
+    // Normalize
+    const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+    if (norm > 0) {
+      for (let i = 0; i < embedding.length; i++) {
+        embedding[i] /= norm;
+      }
+    }
+    
+    return embedding;
+  }
+  
+  /**
+   * Store result in enhanced ranking cache
+   */
+  private async storeInRankingCache(
+    prompt: string, 
+    result: WebLlamaResponse, 
+    options: any
+  ): Promise<void> {
+    if (!this.rankingCache) return;
+    
+    try {
+      const embedding = await this.generateEmbedding(prompt);
+      
+      await this.rankingCache.set(prompt, {
+        response: result,
+        embedding: embedding,
+        metadata: {
+          options,
+          timestamp: Date.now(),
+          model: this.currentModel || 'unknown',
+          confidence: result.confidence,
+          tokensGenerated: result.tokensGenerated
+        }
+      });
+      
+    } catch (error: any) {
+      console.warn('[WebLlama] Failed to store in ranking cache:', error);
+    }
+  }
+  
+  /**
+   * Update cache performance metrics
+   */
+  private updateCacheMetrics(): void {
+    const now = Date.now();
+    this.cacheMetrics.hitRatio = this.cacheMetrics.totalRequests > 0 
+      ? this.cacheMetrics.cacheHits / this.cacheMetrics.totalRequests 
+      : 0;
+    this.cacheMetrics.lastUpdated = now;
+    
+    if (this.rankingCache) {
+      const cacheMetrics = this.rankingCache.getMetrics();
+      this.cacheMetrics.memoryUsage = cacheMetrics.memoryUsage;
+      this.cacheMetrics.compressionRatio = cacheMetrics.compressionRatio;
+      this.cacheMetrics.integrityChecks = cacheMetrics.integrityChecks;
+    }
+  }
+
+  /**
+   * Get comprehensive service health and capabilities
    */
   getHealthStatus(): {
     modelLoaded: boolean;
@@ -318,6 +596,15 @@ class WebAssemblyLlamaService {
     cacheSize: number;
     threadsCount: number;
     wasmSupported: boolean;
+    // Enhanced cache metrics
+    rankingCacheEnabled: boolean;
+    serviceWorkerEnabled: boolean;
+    cacheMetrics: RankingCacheMetrics;
+    performance: {
+      avgLatency: number;
+      hitRatio: number;
+      throughput: number;
+    };
   } {
     return {
       modelLoaded: this.modelLoaded,
@@ -326,8 +613,67 @@ class WebAssemblyLlamaService {
       workerEnabled: !!this.worker,
       cacheSize: this.cache.size,
       threadsCount: this.config.threadsCount,
-      wasmSupported: typeof WebAssembly !== 'undefined'
+      wasmSupported: typeof WebAssembly !== 'undefined',
+      // Enhanced metrics
+      rankingCacheEnabled: !!this.rankingCache,
+      serviceWorkerEnabled: !!this.serviceWorkerRegistration,
+      cacheMetrics: this.cacheMetrics,
+      performance: {
+        avgLatency: this.cacheMetrics.avgLatency,
+        hitRatio: this.cacheMetrics.hitRatio,
+        throughput: this.cacheMetrics.totalRequests / Math.max(1, (Date.now() - this.cacheMetrics.lastUpdated) / 1000)
+      }
     };
+  }
+  
+  /**
+   * Get detailed cache analytics
+   */
+  getCacheAnalytics(): {
+    legacy: { size: number; maxSize: number };
+    ranking: RankingCacheMetrics | null;
+    serviceWorker: { registered: boolean; active: boolean };
+  } {
+    return {
+      legacy: {
+        size: this.cache.size,
+        maxSize: this.maxCacheSize
+      },
+      ranking: this.rankingCache ? this.rankingCache.getMetrics() : null,
+      serviceWorker: {
+        registered: !!this.serviceWorkerRegistration,
+        active: !!this.serviceWorkerRegistration?.active
+      }
+    };
+  }
+  
+  /**
+   * Clear all caches
+   */
+  async clearCaches(): Promise<void> {
+    // Clear legacy cache
+    this.cache.clear();
+    
+    // Clear ranking cache
+    if (this.rankingCache) {
+      await this.rankingCache.clear();
+    }
+    
+    // Reset metrics
+    this.cacheMetrics = {
+      hitRatio: 0,
+      avgLatency: 0,
+      totalRequests: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+      evictions: 0,
+      memoryUsage: 0,
+      compressionRatio: 0,
+      integrityChecks: 0,
+      lastUpdated: Date.now()
+    };
+    
+    console.log('[WebLlama] All caches cleared');
   }
 
   // Private helper methods
@@ -592,20 +938,45 @@ Provide analysis in structured format:
   /**
    * Clean up resources
    */
-  dispose(): void {
+  async dispose(): Promise<void> {
+    console.log('[WebLlama] Disposing resources...');
+    
+    // Terminate worker
     if (this.worker) {
       this.worker.terminate();
       this.worker = null;
     }
     
+    // Clean up WebGPU resources
     if (this.webgpuDevice) {
       // GPUDevice doesn't have a destroy method - it's automatically cleaned up
       this.webgpuDevice = null;
     }
     
+    // Dispose ranking cache
+    if (this.rankingCache) {
+      await this.rankingCache.dispose();
+      this.rankingCache = null;
+    }
+    
+    // Unregister service worker
+    if (this.serviceWorkerRegistration) {
+      try {
+        await this.serviceWorkerRegistration.unregister();
+        this.serviceWorkerRegistration = null;
+      } catch (error: any) {
+        console.warn('[WebLlama] Failed to unregister service worker:', error);
+      }
+    }
+    
+    // Clear legacy cache
     this.cache.clear();
+    
+    // Reset state
     this.module = null;
     this.modelLoaded = false;
+    
+    console.log('[WebLlama] Resource cleanup complete');
   }
 }
 

@@ -13,7 +13,7 @@ export type AutoTagEvent =
   | { type: "RETRY" }
   | { type: "RESET" };
 
-export const autoTaggingMachine = createMachine(;
+export const autoTaggingMachine = createMachine(
   {
     id: "autoTagging",
     initial: "idle",

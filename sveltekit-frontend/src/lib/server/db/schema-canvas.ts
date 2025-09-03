@@ -226,7 +226,7 @@ export const reportsRelations = relations(reports, ({ one }) => ({
   })
 }));
 
-export const personsOfInterestRelations = relations(;
+export const personsOfInterestRelations = relations(
   personsOfInterest,
   ({ one }) => ({
     case: one(cases, {
@@ -240,7 +240,7 @@ export const personsOfInterestRelations = relations(;
   }),
 );
 
-export const canvasConnectionsRelations = relations(;
+export const canvasConnectionsRelations = relations(
   canvasConnections,
   ({ one }) => ({
     case: one(cases, {
@@ -265,7 +265,7 @@ export const canvasLayoutsRelations = relations(canvasLayouts, ({ one }) => ({
   })
 }));
 
-export const canvasAnnotationsRelations = relations(;
+export const canvasAnnotationsRelations = relations(
   canvasAnnotations,
   ({ one }) => ({
     case: one(cases, {

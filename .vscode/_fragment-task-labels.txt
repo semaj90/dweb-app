@@ -1,0 +1,121 @@
+⚡ Batch Fix: Event Handler Deprecations
+⚡ Batch Fix: Priority 1 Parse Errors
+⚡ QUIC: Start Protocol Services
+✅ TypeScript Check - Fixed Barrel Exports
+🌐 Node: Start Cluster Manager
+🏗️ Go-Kratos: Build & Run
+📊 ELK: Start Elasticsearch
+📊 ELK: Start Kibana
+📊 ELK: Start Logstash
+📊 Generate Context7 Best Practices
+📊 Vector Search Status
+📋 Orchestration: Health Check All
+🔄 Reindex Documents
+🔍 Context7: Analyze Codebase Errors
+🔍 Vector: Search
+🔧 MCP Status Check
+🔧 Windows: Start Service Manager
+🗃️ Optimize Vector Database
+🗄️ MinIO: Create Bucket (legal-documents)
+🗄️ MinIO: Open Console
+🗄️ MinIO: Start Server
+🧠 Autosolve EventLoop: Force Cycle
+🧠 Autosolve EventLoop: Health
+🧠 Autosolve EventLoop: Start Multi-Core Solver
+🧠 Autosolve EventLoop: Status
+🧠 Test Vector Search
+🧠 Test Vector Search (5177)
+🧪 Vector Search Demo
+🧾 Vector: Scan and Embed
+🚀 Full Stack: Start All Services
+🚀 NATS: Start Message Queue
+🚀 Quick Check - Ultra Fast
+🚀 Start All - Native Quickstart with MinIO
+🛰️ Logs: WebSocket Server
+AI: gemma3-legal Benchmark & Metrics
+AI: gemma3-legal Document Deep Analysis
+AI: gemma3-legal End-to-End Cycle
+AI: GPU Analyze (vLLM chat test)
+Analyze Error Patterns
+Backup: tasks.json & kratos main.go
+Check and Analyze with Claude
+Check Ollama
+Check PostgreSQL
+Check Qdrant
+Check Redis
+Check: Service Dependencies
+Clear Vite Error Log
+CLI: Detect Installed CLIs
+CLI: Update CLIs (Global)
+Cluster: Build HTTP Service
+Cluster: Run HTTP Service
+Docs: Open Context7 Integration Best Practices
+Docs: Open ELK placeholder
+Docs: Open Enhanced RAG Best Practices
+Docs: Open MCP Context7 Best Practices
+Docs: Open MCP Extension README
+Docs: Open MQ placeholder
+Docs: Open Node Cluster placeholder
+Docs: Open QUIC placeholder
+Docs: Open WebGPU placeholder
+Docs: Open Windows Service placeholder
+Docs: Open XState placeholder
+Frontend: CLI Detect
+Frontend: CLI Update
+Generate Error Report
+Go gRPC: Build Server
+Go gRPC: Open Firewall 8084
+Go gRPC: Run Server
+Go: Run rag-kratos
+Go: Run rag-quic-proxy
+Go: Show Kratos placeholder output
+GPU: Check NVIDIA SMI
+Health Check Services
+Health: MCP Context7 (4000)
+Health: MCP Multi-Core (4100)
+Legal AI: Cluster Manager
+Legal AI: Dev Full Startup (Complete Platform)
+Legal AI: Development Environment Status
+Legal AI: GPU Ollama Everything
+Legal AI: NATS + Full Stack
+Legal AI: npm run dev:full (Optimized)
+Legal AI: Start Individual Services
+Maintenance: Autosolve Cycle (Threshold)
+MCP: Context7 Multi-Core
+MCP: Context7 Server
+MCP: Context7 Server (GPU vLLM)
+MCP: Install Deps
+MCP: Memory Server
+MCP: Postgres Server
+Ollama: Chat (quick test)
+Ollama: Embedding (quick test)
+Ollama: Force GPU Analyze (gemma3-legal)
+Orchestration: Aggregate Health
+Orchestration: Open Discovery JSON
+Orchestration: Open Health Report
+Orchestration: Start-All (Dry-Run)
+Orchestration: Start-All (Execute)
+Orchestration: Validate Configs
+pgvector: Create IVFFLAT (legal_documents)
+pgvector: Create IVFFLAT Index
+Quick Fix TypeScript Errors
+Restart Vite with Clean Logs
+Seed: Law PDFs
+Start Legal AI System
+Start MCP Servers
+Start SvelteKit Dev
+Summarizer: Build HTTP Service
+Summarizer: Run HTTP Service
+Summarizer: Run HTTP Service (Redis)
+Svelte: Generate Error Suggestions
+Tag Legacy Go Files
+Test Vector Search (PowerShell)
+Test: Cluster Health via Proxy
+Test: Summarize via Proxy
+Test: Summarizer (direct)
+Test: Summarizer Health
+Todos: Generate Timestamped
+View Vite Errors
+vLLM: Health (8000)
+vLLM: Start Server (CUDA, OpenAI API)
+WebGPU: Tensor Ops Smoke Test

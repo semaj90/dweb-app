@@ -30,6 +30,8 @@ export default defineConfig({
 			$components: path.resolve('./src/lib/components'),
 			$services: path.resolve('./src/lib/services'),
 			$types: path.resolve('./src/lib/types'),
+			// Provide a lightweight CommonJS interop shim for rare deps that still probe for module/exports
+			'cjs-shim': path.resolve('./src/lib/shims/commonjs-shim.js'),
 			// Shim lucide-svelte during Svelte 5 migration (avoids $$props usage in package)
 			'lucide-svelte': path.resolve('./src/lib/shims/lucide-shim'),
 				// Shim sveltekit-superforms SuperDebug (package ships a duplicate top-level <script> during build)
@@ -41,11 +43,16 @@ export default defineConfig({
 			'dns': path.resolve('./src/lib/shims/dns-browser-shim.js'),
 			'ioredis': path.resolve('./src/lib/shims/ioredis-browser-shim.js'),
 			'os': path.resolve('./src/lib/shims/os-browser-shim.js'),
-			'os-browserify': path.resolve('./src/lib/shims/os-browser-shim.js')
+			'os-browserify': path.resolve('./src/lib/shims/os-browser-shim.js'),
+			'crypto': 'crypto-browserify'
 		}
 	},
 
 	// Define global constants for browser compatibility
+	// NOTE: Removed custom "exports" and "module" define entries that caused esbuild error:
+	//  "Invalid define value (must be an entity name or valid JSON syntax): { exports: {} }"
+	// If a dependency expects CommonJS globals, prefer a proper polyfill plugin instead of
+	// injecting partial objects via `define` (which must be JSON literals or identifiers).
 	define: {
 		global: 'globalThis',
 		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
@@ -57,32 +64,13 @@ export default defineConfig({
 		host: 'localhost',
 		hmr: true,
 		// Enhanced proxy logging
-		proxy: {
-			'/health': {
-				target: 'http://localhost:8080',
-				changeOrigin: true,
-				configure: (proxy, options) => {
-					proxy.on('proxyReq', (proxyReq, req, res) => {
-						console.log(`[PROXY] ${req.method} ${req.url} -> ${options.target}`);
-					});
-					proxy.on('proxyRes', (proxyRes, req, res) => {
-						console.log(`[PROXY] ${req.method} ${req.url} <- ${proxyRes.statusCode}`);
-					});
-				}
-			},
-			'/api/v1': {
-				target: 'http://localhost:8080',
-				changeOrigin: true,
-				configure: (proxy, options) => {
-					proxy.on('proxyReq', (proxyReq, req, res) => {
-						console.log(`[PROXY] ${req.method} ${req.url} -> ${options.target}`);
-					});
-					proxy.on('proxyRes', (proxyRes, req, res) => {
-						console.log(`[PROXY] ${req.method} ${req.url} <- ${proxyRes.statusCode}`);
-					});
-				}
-			}
-		}
+		// Proxy configuration disabled - API routes handled by SvelteKit directly
+		// proxy: {
+		// 	'/api/v1': {
+		// 		target: 'http://localhost:8080',
+		// 		changeOrigin: true
+		// 	}
+		// }
 	},
 	optimizeDeps: {
 		include: [
@@ -111,10 +99,10 @@ export default defineConfig({
 	ssr: {
 		noExternal: ['bits-ui', 'melt'],
 		external: [
-			'fabric', 
-			'canvas', 
-			'fs', 
-			'dns', 
+			'fabric',
+			'canvas',
+			'fs',
+			'dns',
 			'lokijs',
 			'ioredis',
 			'crypto-browserify',

@@ -2,14 +2,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import Button from '$lib/components/ui/MeltButton.svelte';
+  import Button from '$lib/components/ui/bitsbutton.svelte';
   import { ScrollArea } from '$lib/components/ui/scrollarea';
   import { Badge } from '$lib/components/ui/badge';
-  import { 
-    Bot, 
-    FileText, 
-    Shield, 
-    Search, 
+  import {
+    Bot,
+    FileText,
+    Shield,
+    Search,
     Upload,
     Settings,
     Brain,
@@ -57,37 +57,37 @@ let scrollElement = $state<HTMLElement;
       color: 'text-green-400',
       description: 'Artificial Intelligence and Machine Learning demos',
       demos: [
-        { 
-          path: '/enhanced-ai-demo', 
-          title: 'Enhanced AI Demo', 
+        {
+          path: '/enhanced-ai-demo',
+          title: 'Enhanced AI Demo',
           description: 'Advanced AI capabilities with Context7 integration',
           status: 'production',
           tags: ['AI', 'Context7', 'RAG']
         },
-        { 
-          path: '/gpu-chat', 
-          title: 'GPU Chat Interface', 
+        {
+          path: '/gpu-chat',
+          title: 'GPU Chat Interface',
           description: 'GPU-accelerated chat with RTX 3060 Ti optimization',
           status: 'production',
           tags: ['GPU', 'Chat', 'Performance']
         },
-        { 
-          path: '/ai-demo', 
-          title: 'AI Demo Showcase', 
+        {
+          path: '/ai-demo',
+          title: 'AI Demo Showcase',
           description: 'Interactive AI demonstrations and testing',
           status: 'production',
           tags: ['AI', 'Demo', 'Interactive']
         },
-        { 
-          path: '/ai-assistant', 
-          title: 'AI Assistant Interface', 
+        {
+          path: '/ai-assistant',
+          title: 'AI Assistant Interface',
           description: 'Advanced AI chat interface with XState integration',
           status: 'production',
           tags: ['AI', 'XState', 'Assistant']
         },
-        { 
-          path: '/local-ai-demo', 
-          title: 'Local AI Demo', 
+        {
+          path: '/local-ai-demo',
+          title: 'Local AI Demo',
           description: 'Local LLM integration with Ollama',
           status: 'production',
           tags: ['Ollama', 'Local', 'LLM']
@@ -101,37 +101,37 @@ let scrollElement = $state<HTMLElement;
       color: 'text-blue-400',
       description: 'Legal document analysis and case management demos',
       demos: [
-        { 
-          path: '/rag-demo', 
-          title: 'RAG Demo', 
+        {
+          path: '/rag-demo',
+          title: 'RAG Demo',
           description: 'Retrieval-Augmented Generation for legal documents',
           status: 'production',
           tags: ['RAG', 'Legal', 'Documents']
         },
-        { 
-          path: '/semantic-search-demo', 
-          title: 'Semantic Search', 
+        {
+          path: '/semantic-search-demo',
+          title: 'Semantic Search',
           description: 'AI-powered semantic search for legal content',
           status: 'production',
           tags: ['Search', 'Semantic', 'Legal']
         },
-        { 
-          path: '/evidenceboard', 
-          title: 'Evidence Board', 
+        {
+          path: '/evidenceboard',
+          title: 'Evidence Board',
           description: 'Visual evidence management and analysis',
           status: 'production',
           tags: ['Evidence', 'Visualization', 'Legal']
         },
-        { 
-          path: '/evidence-editor', 
-          title: 'Evidence Editor', 
+        {
+          path: '/evidence-editor',
+          title: 'Evidence Editor',
           description: 'Interactive evidence editing and annotation',
           status: 'production',
           tags: ['Evidence', 'Editor', 'Annotation']
         },
-        { 
-          path: '/canvas-editor', 
-          title: 'Canvas Editor', 
+        {
+          path: '/canvas-editor',
+          title: 'Canvas Editor',
           description: 'Visual case canvas with drag-and-drop interface',
           status: 'production',
           tags: ['Canvas', 'Visual', 'Cases']
@@ -145,37 +145,37 @@ let scrollElement = $state<HTMLElement;
       color: 'text-purple-400',
       description: 'User interface components and theming demos',
       demos: [
-        { 
-          path: '/yorha-demo', 
-          title: 'YoRHa Theme Demo', 
+        {
+          path: '/yorha-demo',
+          title: 'YoRHa Theme Demo',
           description: 'YoRHa interface theming and component showcase',
           status: 'production',
           tags: ['YoRHa', 'Theme', 'UI']
         },
-        { 
-          path: '/yorha-dashboard', 
-          title: 'YoRHa Dashboard', 
+        {
+          path: '/yorha-dashboard',
+          title: 'YoRHa Dashboard',
           description: 'Complete YoRHa-themed dashboard interface',
           status: 'production',
           tags: ['YoRHa', 'Dashboard', 'Interface']
         },
-        { 
-          path: '/yorha-terminal', 
-          title: 'YoRHa Terminal', 
+        {
+          path: '/yorha-terminal',
+          title: 'YoRHa Terminal',
           description: 'Command line interface with YoRHa styling',
           status: 'production',
           tags: ['Terminal', 'CLI', 'YoRHa']
         },
-        { 
-          path: '/frameworks-demo', 
-          title: 'Frameworks Demo', 
+        {
+          path: '/frameworks-demo',
+          title: 'Frameworks Demo',
           description: 'UI framework demonstrations and comparisons',
           status: 'production',
           tags: ['Frameworks', 'UI', 'Components']
         },
-        { 
-          path: '/demo/component-gallery', 
-          title: 'Component Gallery', 
+        {
+          path: '/demo/component-gallery',
+          title: 'Component Gallery',
           description: 'Comprehensive UI component showcase',
           status: 'production',
           tags: ['Components', 'Gallery', 'Showcase']
@@ -189,37 +189,37 @@ let scrollElement = $state<HTMLElement;
       color: 'text-yellow-400',
       description: 'Development and testing tool demonstrations',
       demos: [
-        { 
-          path: '/dev/mcp-tools', 
-          title: 'MCP Tools Demo', 
+        {
+          path: '/dev/mcp-tools',
+          title: 'MCP Tools Demo',
           description: 'Model Context Protocol tools and integration testing',
           status: 'production',
           tags: ['MCP', 'Tools', 'Development']
         },
-        { 
-          path: '/dev/self-prompting-demo', 
-          title: 'Self-Prompting Demo', 
+        {
+          path: '/dev/self-prompting-demo',
+          title: 'Self-Prompting Demo',
           description: 'Autonomous AI prompting and decision making',
           status: 'production',
           tags: ['AI', 'Autonomous', 'Prompting']
         },
-        { 
-          path: '/dev/context7-test', 
-          title: 'Context7 Test', 
+        {
+          path: '/dev/context7-test',
+          title: 'Context7 Test',
           description: 'Context7 integration testing and validation',
           status: 'production',
           tags: ['Context7', 'Testing', 'Integration']
         },
-        { 
-          path: '/test', 
-          title: 'System Tests', 
+        {
+          path: '/test',
+          title: 'System Tests',
           description: 'Comprehensive system testing and validation',
           status: 'production',
           tags: ['Testing', 'Validation', 'System']
         },
-        { 
-          path: '/test-simple', 
-          title: 'Simple Tests', 
+        {
+          path: '/test-simple',
+          title: 'Simple Tests',
           description: 'Basic functionality and unit testing',
           status: 'production',
           tags: ['Testing', 'Unit', 'Basic']
@@ -233,9 +233,9 @@ let scrollElement = $state<HTMLElement;
       color: 'text-indigo-400',
       description: 'Real-time messaging and communication demos',
       demos: [
-        { 
-          path: '/demos/nats-messaging', 
-          title: 'NATS Messaging Demo', 
+        {
+          path: '/demos/nats-messaging',
+          title: 'NATS Messaging Demo',
           description: 'Real-time messaging with NATS and WebSocket support',
           status: 'production',
           tags: ['NATS', 'Messaging', 'Real-time']
@@ -249,30 +249,30 @@ let scrollElement = $state<HTMLElement;
       color: 'text-pink-400',
       description: 'System analytics and monitoring demonstrations',
       demos: [
-        { 
-          path: '/dashboard', 
-          title: 'Analytics Dashboard', 
+        {
+          path: '/dashboard',
+          title: 'Analytics Dashboard',
           description: 'System analytics and performance insights',
           status: 'production',
           tags: ['Analytics', 'Dashboard', 'Metrics']
         },
-        { 
-          path: '/memory-dashboard', 
-          title: 'Memory Dashboard', 
+        {
+          path: '/memory-dashboard',
+          title: 'Memory Dashboard',
           description: 'System memory monitoring and optimization',
           status: 'production',
           tags: ['Memory', 'Monitoring', 'Performance']
         },
-        { 
-          path: '/optimization-dashboard', 
-          title: 'Optimization Dashboard', 
+        {
+          path: '/optimization-dashboard',
+          title: 'Optimization Dashboard',
           description: 'Performance optimization and tuning tools',
           status: 'production',
           tags: ['Optimization', 'Performance', 'Tuning']
         },
-        { 
-          path: '/demo/ai-dashboard', 
-          title: 'AI Dashboard Demo', 
+        {
+          path: '/demo/ai-dashboard',
+          title: 'AI Dashboard Demo',
           description: 'AI system monitoring and analytics dashboard',
           status: 'production',
           tags: ['AI', 'Dashboard', 'Monitoring']
@@ -286,16 +286,16 @@ let scrollElement = $state<HTMLElement;
       color: 'text-red-400',
       description: 'System administration and configuration demos',
       demos: [
-        { 
-          path: '/admin/cluster', 
-          title: 'Cluster Administration', 
+        {
+          path: '/admin/cluster',
+          title: 'Cluster Administration',
           description: 'Cluster management and orchestration tools',
           status: 'production',
           tags: ['Cluster', 'Admin', 'Management']
         },
-        { 
-          path: '/admin/gpu-demo', 
-          title: 'GPU Administration', 
+        {
+          path: '/admin/gpu-demo',
+          title: 'GPU Administration',
           description: 'GPU management and monitoring tools',
           status: 'production',
           tags: ['GPU', 'Admin', 'Management']
@@ -367,14 +367,14 @@ let scrollElement = $state<HTMLElement;
     <div class="yorha-header-content">
       <!-- Navigation Bar -->
       <div class="yorha-nav-bar">
-        <Button.Root 
+        <Button.Root
           class="yorha-nav-btn"
           on:on:click={goHome}
         >
           <Home size={16} />
           HOME
         </Button.Root>
-        
+
         <div class="yorha-breadcrumb">
           <span class="yorha-breadcrumb-item">YoRHa Legal AI</span>
           <ChevronRight size={14} />
@@ -410,7 +410,7 @@ let scrollElement = $state<HTMLElement;
       <!-- Category Navigation -->
       <div class="yorha-category-nav">
         {#each demoCategories as category}
-          <button 
+          <button
             class="yorha-category-btn {selectedDemo === category.id ? 'active' : ''}"
             on:onclick={() => scrollToCategory(category.id)}
           >
@@ -433,8 +433,8 @@ let scrollElement = $state<HTMLElement;
             DEMOS OVERVIEW
           </h2>
           <p class="yorha-category-description">
-            Complete collection of interactive demonstrations showcasing the full capabilities 
-            of the YoRHa Legal AI platform including AI services, legal tools, UI components, 
+            Complete collection of interactive demonstrations showcasing the full capabilities
+            of the YoRHa Legal AI platform including AI services, legal tools, UI components,
             and development utilities.
           </p>
         </div>
@@ -492,7 +492,7 @@ let scrollElement = $state<HTMLElement;
                 <div class="yorha-demo-footer">
                   <span class="yorha-demo-path">{demo.path}</span>
                   <div class="yorha-demo-actions">
-                    <Button.Root 
+                    <Button.Root
                       class="yorha-demo-btn"
                       on:on:click={(e) => {
                         e.stopPropagation();
@@ -537,9 +537,9 @@ let scrollElement = $state<HTMLElement;
               <strong>Messaging:</strong> NATS + WebSocket + real-time communication
             </div>
           </div>
-          
+
           <div class="yorha-footer-actions">
-            <Button.Root 
+            <Button.Root
               class="yorha-btn yorha-btn-primary"
               on:on:click={goHome}
             >
@@ -567,7 +567,7 @@ let scrollElement = $state<HTMLElement;
   .yorha-demos-container {
     @apply min-h-screen bg-black text-amber-400 font-mono flex flex-col;
     font-family: 'Courier New', monospace;
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 50%, rgba(255, 191, 0, 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(255, 191, 0, 0.03) 0%, transparent 50%);
   }
@@ -803,19 +803,19 @@ let scrollElement = $state<HTMLElement;
     .yorha-demos-title {
       @apply text-4xl;
     }
-    
+
     .yorha-category-nav {
       @apply grid grid-cols-2 gap-2;
     }
-    
+
     .yorha-overview-grid {
       @apply grid-cols-1 gap-4;
     }
-    
+
     .yorha-demos-grid {
       @apply grid-cols-1 gap-4;
     }
-    
+
     .yorha-tech-specs {
       @apply grid-cols-1 gap-3;
     }

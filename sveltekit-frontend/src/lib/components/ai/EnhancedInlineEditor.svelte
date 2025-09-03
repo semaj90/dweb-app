@@ -332,7 +332,7 @@ let lastProcessedText = $state('');
   });
 </script>
 
-<div class="enhanced-inline-editor {class}" class:processing={isProcessing}>
+<div class="enhanced-inline-editor {className}" class:processing={isProcessing}>
   <!-- Main editor -->
   <div
     bind:this={editorElement}

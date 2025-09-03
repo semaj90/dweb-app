@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2025-09-02T20:42:35.997Z",
+  "allRequired": true,
+  "services": {
+    "Frontend": false,
+    "Main Service": false,
+    "Upload Service": false,
+    "PostgreSQL": true,
+    "Redis": false,
+    "Ollama": true,
+    "MinIO": false,
+    "Qdrant": false
+  },
+  "details": [
+    {
+      "name": "Frontend",
+      "port": 5173,
+      "portOk": false,
+      "httpOk": false,
+      "ok": false,
+      "required": false
+    },
+    {
+      "name": "Main Service",
+      "port": 8080,
+      "portOk": false,
+      "httpOk": false,
+      "ok": false,
+      "required": false
+    },
+    {
+      "name": "Upload Service",
+      "port": 8093,
+      "portOk": false,
+      "httpOk": false,
+      "ok": false,
+      "required": false
+    },
+    {
+      "name": "PostgreSQL",
+      "port": 5432,
+      "portOk": true,
+      "httpOk": true,
+      "ok": true,
+      "required": false
+    },
+    {
+      "name": "Redis",
+      "port": 6379,
+      "portOk": false,
+      "httpOk": true,
+      "ok": false,
+      "required": false
+    },
+    {
+      "name": "Ollama",
+      "port": 11434,
+      "portOk": true,
+      "httpOk": true,
+      "ok": true,
+      "required": false
+    },
+    {
+      "name": "MinIO",
+      "port": 9000,
+      "portOk": false,
+      "httpOk": false,
+      "ok": false,
+      "required": false
+    },
+    {
+      "name": "Qdrant",
+      "port": 6333,
+      "portOk": false,
+      "httpOk": false,
+      "ok": false,
+      "required": false
+    }
+  ]
+}

@@ -1,21 +1,28 @@
 <script lang="ts">
 
 	import type {     Snippet     } from 'svelte';
-  import { $props } from 'svelte';
-	
+
 	let { open = false, title, children }: {
 		open?: boolean;
 		title: string;
 		children?: Snippet;
 	} = $props();
+
+	// Local mutable state derived from the (read-only) prop
+	let isOpen = $state(open);
+
+	// Sync local state if parent updates the prop
+	$effect(() => {
+		if (open !== isOpen) isOpen = open;
+	});
 </script>
 
-{#if open}
+{#if isOpen}
 	<div class="modal-overlay">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2>{title}</h2>
-				<button on:onclick={() => open = false}>×</button>
+				<button type="button" onclick={() => isOpen = false}>×</button>
 			</div>
 			<div class="modal-body">
 				{#if children}

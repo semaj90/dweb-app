@@ -45,17 +45,30 @@ interface Props {
   oncomplete?: (event?: unknown) => void;
 }
 
-// Use exported props instead of $props / $bindable
-export let open: boolean = false;
-export let currentStep: number = 0;
-export let steps: OnboardingStep[] = [];
-export let autoProgress: boolean = false;
-export let progressDelay: number = 3000;
-export let showMinimap: boolean = true;
-export let allowSkip: boolean = true;
-export let onclose: ((event?: unknown) => void) | undefined;
-export let oncomplete: ((event?: unknown) => void) | undefined;
-;
+// Props interface
+interface Props {
+  open?: boolean;
+  currentStep?: number;
+  steps?: OnboardingStep[];
+  autoProgress?: boolean;
+  progressDelay?: number;
+  showMinimap?: boolean;
+  allowSkip?: boolean;
+  onclose?: ((event?: unknown) => void) | undefined;
+  oncomplete?: ((event?: unknown) => void) | undefined;
+}
+
+let {
+  open = false,
+  currentStep = 0,
+  steps = [],
+  autoProgress = false,
+  progressDelay = 3000,
+  showMinimap = true,
+  allowSkip = true,
+  onclose,
+  oncomplete
+}: Props = $props();
 let overlayEl = $state<HTMLElement;
 let autoProgressTimer: number | undefined;
 let isPlaying >(autoProgress);

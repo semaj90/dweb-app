@@ -72,7 +72,7 @@
 - **API Endpoints:** All routes functional
 - **Type Safety:** TypeScript compilation successful
 - **Component Library:** Melt UI, bits-ui properly integrated
-- **Styling:** Pico CSS + UnoCSS working together
+- **Styling:** UnoCSS working together
 - **Vector Search:** Qdrant + embeddings ready
 - **Rich Text Editing:** TipTap editor functional
 

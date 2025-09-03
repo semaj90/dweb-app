@@ -1,0 +1,69 @@
+# JSON Extension Analysis for SvelteKit API Routes
+
+## Current API Structure Analysis
+
+### ✅ All API endpoints are correctly configured without manual .json extensions
+
+**Verified Endpoints:**
+- /api/node/metrics → +server.ts (returns application/json)
+- /api/cache/metrics → +server.ts (returns application/json)
+- /api/wasm/metrics → +server.ts (returns application/json)
+- /api/cuda/metrics/enhanced → +server.ts (returns application/json)
+- /api/gpu → +server.ts (returns application/json)
+- /api/v1/cluster/health → +server.ts (returns application/json)
+- /api/v1/cluster/metrics → +server.ts (returns application/json)
+
+### SvelteKit Routing Convention
+
+**Standard Pattern:** `src/routes/api/path/+server.ts`
+- Automatically serves JSON via `json()` helper
+- Content-Type: application/json header set automatically
+- No manual extensions needed
+
+### When .json Extensions ARE Needed
+
+**Scenario 1: Multiple Format Support**
+```
+src/routes/api/users/+page.server.ts  (HTML)
+src/routes/api/users.json/+server.ts  (JSON only)
+```
+
+**Scenario 2: Explicit Content-Type Routing**
+```
+src/routes/api/data.json/+server.ts   (Force JSON)
+src/routes/api/data.xml/+server.ts    (Force XML)
+```
+
+**Scenario 3: Legacy API Compatibility**
+```
+src/routes/api/v1/posts.json/+server.ts  (Match existing API)
+```
+
+### Our Implementation Status
+
+**✅ CORRECT:** All endpoints use standard SvelteKit convention
+**✅ WORKING:** All endpoints return proper JSON responses
+**✅ TESTED:** Content-Type headers verified as application/json
+**✅ OPTIMAL:** No unnecessary complexity with manual extensions
+
+### Performance Dashboard Integration
+
+The performance dashboard makes these API calls:
+- fetch('/api/wasm/metrics')
+- fetch('/api/node/metrics')
+- fetch('/api/v1/cluster/health')
+- fetch('/api/cuda/metrics/enhanced')
+- fetch('/api/perf')
+- fetch('/api/gpu?action=runtime')
+- fetch('/api/gpu?action=series')
+
+All work correctly without .json extensions.
+
+### Conclusion
+
+No manual .json extensions are required for our current API structure. 
+The SvelteKit routing system handles JSON responses automatically via 
+the json() helper function, and all endpoints are properly configured.
+
+Date: 2025-09-02
+Status: Verified and Working

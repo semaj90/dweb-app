@@ -67,28 +67,52 @@ export class PostgreSQLFirstWorker {
     });
   }
 
-  async start() {
+  // Background task handles
+  private eventStreamTask?: Promise<void>;
+  private pgNotificationsTask?: Promise<void>;
+
+  // Fire-and-forget start: launch background loops without awaiting them
+  async start(): Promise<void> {
+    if (this.isRunning) {
+      console.log('⚠️ Worker already running');
+      return;
+    }
+
+    console.log('🚀 Starting PostgreSQL-First Auto-Tagging Worker (fire-and-forget mode)...');
+
     try {
-      await this.redis.connect();
-      console.log('🔌 Connected to Redis');
+      // Redis connect (guard in case client autoconnects)
+      if (typeof this.redis.connect === 'function') {
+        try {
+          await this.redis.connect();
+          console.log('🔌 Connected to Redis');
+        } catch (err) {
+          console.warn('⚠️ Redis connect attempt failed (may already be connected):', (err as Error).message);
+        }
+      }
 
-      // Setup PostgreSQL notification listener
       await this.setupPostgreSQLNotifications();
-
-      // Ensure Qdrant collection exists
       await this.ensureQdrantCollection();
 
       this.isRunning = true;
-      console.log('🚀 PostgreSQL-First Auto-Tagging Worker started');
+
+      // Start Redis stream processor (does its own loop on this.isRunning)
+      this.eventStreamTask = this.processEventStream().catch(err => {
+        console.error('❌ Event stream task failed:', err);
+        this.isRunning = false;
+      });
+
+      // Start PostgreSQL notification processor
+      this.pgNotificationsTask = this.processPostgreSQLNotifications().catch(err => {
+        console.error('❌ PostgreSQL notification task failed:', err);
+        // Decide if failure should stop everything; for now just log
+      });
+
       console.log('📡 Listening for Redis events on stream:', this.streamName);
       console.log('📡 Listening for PostgreSQL notifications: ingest_completed, evidence_updated');
-
-      // Start both event processors concurrently
-      await Promise.all([
-        this.processEventStream(), // Redis streams
-        this.processPostgreSQLNotifications() // PostgreSQL LISTEN/NOTIFY
-      ]);
-    } catch (error: any) {
+      console.log('✅ Worker tasks launched (running in background)');
+    } catch (error) {
+      this.isRunning = false;
       console.error('❌ Failed to start worker:', error);
       throw error;
     }
@@ -102,7 +126,7 @@ export class PostgreSQLFirstWorker {
       // Create separate client for LISTEN (blocking operation)
       const { Client } = await import('pg');
       this.pgNotificationClient = new Client({
-        connectionString: import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db'
+        connectionString: import.meta.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/legal_ai_db'
       });
 
       await this.pgNotificationClient.connect();

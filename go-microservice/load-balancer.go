@@ -1,5 +1,5 @@
-//go:build loadbalancer
-// +build loadbalancer
+//go:build experimental || loadbalancer
+// +build experimental loadbalancer
 
 // Build with: go build -tags loadbalancer -o bin/load-balancer.exe ./go-microservice/load-balancer.go
 // This tag isolates the load balancer from other 'main' entrypoints in the module to prevent redeclaration.

@@ -211,7 +211,7 @@
   }
 </script>
 
-<div class="yorha-data-grid {class}" class:yorha-glitch-effect={glitchEffect}>
+<div class="yorha-data-grid {className}" class:yorha-glitch-effect={glitchEffect}>
   <!-- Grid Header -->
   <div class="yorha-grid-header">
     <div class="yorha-grid-title">DATA GRID</div>

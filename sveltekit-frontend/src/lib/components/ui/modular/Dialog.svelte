@@ -28,7 +28,7 @@
     onOpenChange,
     variant = 'default',
     size = 'default',
-    class: class,
+    class: className = '',
     title,
     description,
     children,

@@ -42,7 +42,7 @@ const client = postgres(DATABASE_URL, {
 });
 
 // Create Drizzle database instance with schema
-export const db: PostgresJsDatabase<typeof schema> = drizzle(client, { ;
+export const db: PostgresJsDatabase<typeof schema> = drizzle(client, {
   schema,
   logger: import.meta.env.NODE_ENV === 'development'
 });

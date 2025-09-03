@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -28,31 +28,31 @@ int scan_structural_avx2(const char* buf, size_t len, uint64_t* mask) {
         '{', '}', '[', ']', ',', ':', '"', '\\',
         '{', '}', '[', ']', ',', ':', '"', '\\'
     );
-    
+
     int count = 0;
     size_t i = 0;
-    
+
     for (; i + 32 <= len; i += 32) {
         __m256i chunk = _mm256_loadu_si256((const __m256i*)(buf + i));
         __m256i cmp_result = _mm256_cmpeq_epi8(chunk, struct_chars);
         uint32_t bits = _mm256_movemask_epi8(cmp_result);
-        
+
         if (bits) {
             mask[i/64] |= ((uint64_t)bits << (i % 64));
             count += __builtin_popcount(bits);
         }
     }
-    
+
     // Handle remainder
     for (; i < len; i++) {
         char c = buf[i];
-        if (c == '{' || c == '}' || c == '[' || c == ']' || 
+        if (c == '{' || c == '}' || c == '[' || c == ']' ||
             c == ',' || c == ':' || c == '"' || c == '\\') {
             mask[i/64] |= (1ULL << (i % 64));
             count++;
         }
     }
-    
+
     return count;
 }
 
@@ -60,7 +60,7 @@ int scan_structural_avx2(const char* buf, size_t len, uint64_t* mask) {
 int validate_utf8_simd(const char* buf, size_t len) {
     const __m256i ascii_mask = _mm256_set1_epi8(0x80);
     size_t i = 0;
-    
+
     for (; i + 32 <= len; i += 32) {
         __m256i chunk = _mm256_loadu_si256((const __m256i*)(buf + i));
         __m256i test = _mm256_and_si256(chunk, ascii_mask);
@@ -78,6 +78,7 @@ import (
 	"fmt"
 	"time"
 	"unsafe"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -98,27 +99,27 @@ func (p *HomemadeSIMDParser) Parse(data []byte) (map[string]interface{}, error) 
 		p.buffer = make([]byte, len(data))
 		p.mask = make([]uint64, (len(data)+63)/64)
 	}
-	
+
 	copy(p.buffer, data)
-	
+
 	// Clear mask
 	for i := range p.mask {
 		p.mask[i] = 0
 	}
-	
+
 	// SIMD structural scan
 	structCount := C.scan_structural_avx2(
 		(*C.char)(unsafe.Pointer(&p.buffer[0])),
 		C.size_t(len(data)),
 		(*C.uint64_t)(unsafe.Pointer(&p.mask[0])),
 	)
-	
+
 	// Validate UTF-8
 	valid := C.validate_utf8_simd(
 		(*C.char)(unsafe.Pointer(&p.buffer[0])),
 		C.size_t(len(data)),
 	)
-	
+
 	return map[string]interface{}{
 		"structural_chars": int(structCount),
 		"utf8_valid":       valid == 1,
@@ -130,23 +131,23 @@ func (p *HomemadeSIMDParser) Parse(data []byte) (map[string]interface{}, error) 
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	
+
 	parser := NewHomemadeSIMDParser(100 << 20) // 100MB
-	
+
 	r.POST("/parse/homemade", func(c *gin.Context) {
 		data, _ := c.GetRawData()
 		start := time.Now()
-		
+
 		result, err := parser.Parse(data)
 		elapsed := time.Since(start)
-		
+
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		
+
 		throughput := float64(len(data)) / elapsed.Seconds() / (1<<30) // GB/s
-		
+
 		c.JSON(200, gin.H{
 			"parser":      "homemade_avx2",
 			"result":      result,
@@ -154,11 +155,11 @@ func main() {
 			"throughput":  fmt.Sprintf("%.2f GB/s", throughput),
 		})
 	})
-	
+
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "operational", "avx2": true})
 	})
-	
+
 	fmt.Println("Homemade SIMD Parser (AVX2) on :8080")
 	r.Run(":8080")
 }

@@ -207,7 +207,7 @@ func loadConfig() OrchestratorConfig {
 		GRPCPort:     getEnv("GRPC_PORT", "8096"),
 		QUICPort:     getEnv("QUIC_PORT", "8097"),
 		WebSocketPort: getEnv("WS_PORT", "8098"),
-		DatabaseURL:  getEnv("DATABASE_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		DatabaseURL:  getEnv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/legal_ai_db"),
 		RedisURL:     getEnv("REDIS_URL", "redis://localhost:6379"),
 		OllamaURL:    getEnv("OLLAMA_URL", "http://localhost:11434"),
 		MaxWorkers:   getEnvInt("MAX_WORKERS", runtime.NumCPU()*2),

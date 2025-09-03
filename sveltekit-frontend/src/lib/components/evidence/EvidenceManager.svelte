@@ -20,10 +20,13 @@
   }
 
   // Props
-  export let caseId: string;
-  export let onEvidenceSelect: (evidence: Evidence) => void = () => {};
-  export let allowUpload: boolean = true;
-;
+  interface Props {
+    caseId: string;
+    onEvidenceSelect?: (evidence: Evidence) => void;
+    allowUpload?: boolean;
+  }
+  
+  let { caseId, onEvidenceSelect = () => {}, allowUpload = true }: Props = $props();
   // State
 let evidence = $state<Evidence[] >([]);
 let loading = $state(false);

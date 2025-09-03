@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -59,7 +59,7 @@ void cuda_similarity_search(float* query_vector, float* database_vectors, float*
     for (int i = 0; i < num_vectors; i++) {
         float dot_product = 0.0f;
         float norm_a = 0.0f, norm_b = 0.0f;
-        
+
         for (int j = 0; j < dimensions; j++) {
             float a = query_vector[j];
             float b = database_vectors[i * dimensions + j];
@@ -67,7 +67,7 @@ void cuda_similarity_search(float* query_vector, float* database_vectors, float*
             norm_a += a * a;
             norm_b += b * b;
         }
-        
+
         similarities[i] = dot_product / (sqrt(norm_a) * sqrt(norm_b));
     }
 }
@@ -196,11 +196,11 @@ func NewGPUIndexer(dbURL string) (*GPUIndexer, error) {
 	if gpuEnabled {
 		numWorkers = numWorkers * 2 // More workers when GPU is available
 	}
-	
+
 	indexer.workerPool = NewWorkerPool(numWorkers)
 	indexer.workerPool.Start(indexer)
 
-	log.Printf("🚀 GPU Indexer initialized (GPU: %v, Workers: %d, Dim: %d)", 
+	log.Printf("🚀 GPU Indexer initialized (GPU: %v, Workers: %d, Dim: %d)",
 		gpuEnabled, numWorkers, embeddingDim)
 
 	return indexer, nil
@@ -229,14 +229,14 @@ func (wp *WorkerPool) Start(indexer *GPUIndexer) {
 
 func (wp *WorkerPool) worker(id int, indexer *GPUIndexer) {
 	defer wp.wg.Done()
-	
+
 	log.Printf("🔧 Worker %d started", id)
-	
+
 	for {
 		select {
 		case task := <-wp.taskQueue:
 			start := time.Now()
-			
+
 			var err error
 			switch task.Type {
 			case "index":
@@ -313,10 +313,10 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 
 	// Normalize text using SIMD
 	normalizedText := gi.normalizeText(text)
-	
+
 	// Tokenize using SIMD
 	tokens := gi.tokenizeText(normalizedText)
-	
+
 	// Convert to input features (simplified)
 	input := make([]float32, gi.embeddingDim)
 	for i, token := range tokens {
@@ -328,7 +328,7 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 
 	// Generate embeddings
 	embeddings := make([]float32, gi.embeddingDim)
-	
+
 	if gi.gpuEnabled {
 		// Use GPU acceleration
 		gi.computeEmbeddingsGPU(input, embeddings)
@@ -339,7 +339,7 @@ func (gi *GPUIndexer) generateEmbeddings(text string) ([]float32, error) {
 
 	// Cache the result
 	gi.embeddingCache.Store(hash, embeddings)
-	
+
 	return embeddings, nil
 }
 
@@ -367,12 +367,12 @@ func (gi *GPUIndexer) normalizeText(text string) string {
 	// Use SIMD for text normalization
 	cText := C.CString(text)
 	defer C.free(unsafe.Pointer(cText))
-	
+
 	cNormalized := (*C.char)(C.malloc(C.size_t(len(text) + 1)))
 	defer C.free(unsafe.Pointer(cNormalized))
-	
+
 	C.simd_normalize_text(cText, cNormalized, C.int(len(text)))
-	
+
 	return C.GoString(cNormalized)
 }
 
@@ -426,10 +426,10 @@ func (gi *GPUIndexer) searchDatabase(queryEmbeddings []float32, query SearchQuer
 	// Build SQL query with metadata filters
 	sqlQuery := `
 		SELECT id, content, metadata, embeddings, token_count, hash, indexed_at
-		FROM documents 
+		FROM documents
 		WHERE 1=1
 	`
-	
+
 	args := []interface{}{}
 	argIndex := 1
 
@@ -479,7 +479,7 @@ func (gi *GPUIndexer) searchDatabase(queryEmbeddings []float32, query SearchQuer
 	// Compute similarities
 	if len(documents) > 0 {
 		similarities := gi.computeSimilarities(queryEmbeddings, allEmbeddings)
-		
+
 		// Filter by minimum similarity and assign search ranks
 		filteredDocs := make([]Document, 0)
 		for i, doc := range documents {
@@ -536,24 +536,24 @@ func (gi *GPUIndexer) computeSimilaritiesCPU(query []float32, docEmbeddings [][]
 
 func (gi *GPUIndexer) cosineSimilarity(a, b []float32) float32 {
 	var dotProduct, normA, normB float32
-	
+
 	for i := 0; i < len(a) && i < len(b); i++ {
 		dotProduct += a[i] * b[i]
 		normA += a[i] * a[i]
 		normB += b[i] * b[i]
 	}
-	
+
 	if normA == 0 || normB == 0 {
 		return 0
 	}
-	
+
 	return dotProduct / (float32(math.Sqrt(float64(normA))) * float32(math.Sqrt(float64(normB))))
 }
 
 func (gi *GPUIndexer) sortResults(documents []Document, sortBy, sortOrder string) {
 	sort.Slice(documents, func(i, j int) bool {
 		var less bool
-		
+
 		switch sortBy {
 		case "similarity", "search_rank":
 			less = documents[i].SearchRank > documents[j].SearchRank // Higher similarity first
@@ -566,11 +566,11 @@ func (gi *GPUIndexer) sortResults(documents []Document, sortBy, sortOrder string
 		default:
 			less = documents[i].SearchRank > documents[j].SearchRank
 		}
-		
+
 		if sortOrder == "asc" {
 			less = !less
 		}
-		
+
 		return less
 	})
 }
@@ -723,7 +723,7 @@ func initializeTables(db *sql.DB) error {
 		indexed_at TIMESTAMP,
 		UNIQUE(hash)
 	);
-	
+
 	CREATE INDEX IF NOT EXISTS idx_documents_metadata ON documents USING GIN(metadata);
 	CREATE INDEX IF NOT EXISTS idx_documents_indexed_at ON documents(indexed_at);
 	CREATE INDEX IF NOT EXISTS idx_documents_hash ON documents(hash);
@@ -736,7 +736,7 @@ func initializeTables(db *sql.DB) error {
 func main() {
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		databaseURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+		databaseURL = "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
 	}
 
 	indexer, err := NewGPUIndexer(databaseURL)

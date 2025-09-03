@@ -1,26 +1,23 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"runtime"
 	"sync"
 	"time"
 	"unsafe"
 
+	"github.com/bytedance/sonic"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/minio/simdjson-go"
 	"github.com/redis/go-redis/v9"
-	"github.com/bytedance/sonic"
-	"github.com/tidwall/gjson"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 /*
@@ -30,11 +27,11 @@ import (
 #include <immintrin.h>
 
 // GPU-accelerated recommendation similarity
-__global__ void recommendation_similarity_kernel(float* queries, float* candidates, float* scores, 
+__global__ void recommendation_similarity_kernel(float* queries, float* candidates, float* scores,
                                                 int num_queries, int num_candidates, int dim) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     int query_idx = blockIdx.y * blockDim.y + threadIdx.y;
-    
+
     if (idx < num_candidates && query_idx < num_queries) {
         float sum = 0.0f;
         for (int i = 0; i < dim; i++) {
@@ -67,12 +64,12 @@ SOM* create_som(int width, int height, int input_dim) {
     som->input_dim = input_dim;
     som->learning_rate = 0.1f;
     som->weights = (float*)malloc(width * height * input_dim * sizeof(float));
-    
+
     // Initialize weights randomly
     for (int i = 0; i < width * height * input_dim; i++) {
         som->weights[i] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
     }
-    
+
     return som;
 }
 
@@ -80,17 +77,17 @@ void som_train_step(SOM* som, float* input, int epoch) {
     // Find best matching unit (BMU)
     int bmu_x = 0, bmu_y = 0;
     float min_dist = 1e9;
-    
+
     for (int x = 0; x < som->width; x++) {
         for (int y = 0; y < som->height; y++) {
             float dist = 0.0f;
             int idx = (y * som->width + x) * som->input_dim;
-            
+
             for (int i = 0; i < som->input_dim; i++) {
                 float diff = input[i] - som->weights[idx + i];
                 dist += diff * diff;
             }
-            
+
             if (dist < min_dist) {
                 min_dist = dist;
                 bmu_x = x;
@@ -98,18 +95,18 @@ void som_train_step(SOM* som, float* input, int epoch) {
             }
         }
     }
-    
+
     // Update weights in neighborhood
     float radius = som->width / 2.0f * exp(-epoch / 1000.0f);
-    
+
     for (int x = 0; x < som->width; x++) {
         for (int y = 0; y < som->height; y++) {
             float dist = sqrt((x - bmu_x) * (x - bmu_x) + (y - bmu_y) * (y - bmu_y));
-            
+
             if (dist <= radius) {
                 float influence = exp(-(dist * dist) / (2 * radius * radius));
                 int idx = (y * som->width + x) * som->input_dim;
-                
+
                 for (int i = 0; i < som->input_dim; i++) {
                     som->weights[idx + i] += som->learning_rate * influence * (input[i] - som->weights[idx + i]);
                 }
@@ -273,10 +270,10 @@ func main() {
 
 	// Setup HTTP server
 	router := setupRouter()
-	
+
 	log.Printf("🚀 Enhanced Legal AI System starting on :8080")
 	log.Printf("📊 Workers: %d | GPU: enabled | Redis: connected", workerPool.workers)
-	
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
@@ -289,10 +286,10 @@ func initializeSystem() error {
 		Password: "",
 		DB:       0,
 	})
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if err := redisClient.Ping(ctx).Err(); err != nil {
 		return fmt.Errorf("Redis connection failed: %v", err)
 	}
@@ -442,7 +439,7 @@ func handleEnhancedRAG(c *gin.Context) {
 		Timestamp: time.Now(),
 		SessionID: req.SessionID,
 	}
-	
+
 	go func() {
 		updateUserActivity(userActivity)
 		trainRecommendationSOM(req.Query, rankedResults)
@@ -470,7 +467,7 @@ func handleEnhancedRAG(c *gin.Context) {
 
 func startJobConsumer() {
 	ctx := context.Background()
-	
+
 	for {
 		// BullMQ compatible job consumption from Redis
 		result, err := redisClient.BLPop(ctx, 0, "bull:legal-processor:waiting").Result()
@@ -481,7 +478,7 @@ func startJobConsumer() {
 		}
 
 		jobData := result[1]
-		
+
 		// Parse job with SIMD JSON parser
 		doc, err := simdParser.Parse([]byte(jobData))
 		if err != nil {
@@ -492,7 +489,7 @@ func startJobConsumer() {
 		// Extract job information
 		jobID, _ := doc.Root().GetString("id")
 		jobType, _ := doc.Root().GetString("name")
-		
+
 		job := Job{
 			ID:        jobID,
 			Type:      jobType,
@@ -508,7 +505,7 @@ func generateDidYouMeanSuggestions(query string) []string {
 	// Use SIMD-accelerated fuzzy matching for "did you mean" suggestions
 	candidates := getCandidateQueries(query)
 	scores := make([]float32, len(candidates))
-	
+
 	// Convert candidates to C strings
 	cCandidates := make([]*C.char, len(candidates))
 	for i, candidate := range candidates {
@@ -561,7 +558,7 @@ func performEnhancedRetrieval(req EnhancedRAGRequest) ([]RankedResult, string) {
 func generateRecommendations(userID, query string, results []RankedResult) []string {
 	// Use the trained SOM for generating personalized recommendations
 	userEmbedding := getUserEmbedding(userID)
-	
+
 	// Train SOM with current query context
 	if userEmbedding != nil {
 		C.som_train_step(recommendationSOM, (*C.float)(unsafe.Pointer(&userEmbedding[0])), C.int(1))
@@ -584,22 +581,22 @@ func getCandidateQueries(query string) []string {
 func getUserHistory(userID, sessionID string) []UserActivity {
 	userActivityStore.mutex.RLock()
 	defer userActivityStore.mutex.RUnlock()
-	
+
 	activities, exists := userActivityStore.activities[userID]
 	if !exists {
 		return []UserActivity{}
 	}
-	
+
 	// Filter by session or return recent activities
 	recent := []UserActivity{}
 	cutoff := time.Now().Add(-24 * time.Hour)
-	
+
 	for _, activity := range activities {
 		if activity.Timestamp.After(cutoff) {
 			recent = append(recent, activity)
 		}
 	}
-	
+
 	return recent
 }
 
@@ -608,13 +605,13 @@ func enhanceQueryWithHistory(query string, history []UserActivity) string {
 	if len(history) == 0 {
 		return query
 	}
-	
+
 	// Extract common themes from history
 	themes := extractThemes(history)
 	if len(themes) > 0 {
 		return fmt.Sprintf("%s (context: %s)", query, themes[0])
 	}
-	
+
 	return query
 }
 
@@ -626,9 +623,9 @@ func synthesizeAnswer(req EnhancedRAGRequest, results []RankedResult) string {
 			context += result.Summary + "\n"
 		}
 	}
-	
+
 	prompt := fmt.Sprintf("Based on the following context, provide a comprehensive answer to: %s\n\nContext:\n%s", req.Query, context)
-	
+
 	// Call LLM provider (simplified)
 	return fmt.Sprintf("Synthesized answer based on %d documents using %s", len(results), req.LLMProvider)
 }
@@ -644,22 +641,22 @@ func extractResultIDs(results []RankedResult) []string {
 func updateUserActivity(activity *UserActivity) {
 	userActivityStore.mutex.Lock()
 	defer userActivityStore.mutex.Unlock()
-	
+
 	if _, exists := userActivityStore.activities[activity.UserID]; !exists {
 		userActivityStore.activities[activity.UserID] = []UserActivity{}
 	}
-	
+
 	userActivityStore.activities[activity.UserID] = append(
-		userActivityStore.activities[activity.UserID], 
+		userActivityStore.activities[activity.UserID],
 		*activity,
 	)
-	
+
 	// Async: Store to Redis cache
 	go func() {
 		activityJSON, _ := sonic.Marshal(activity)
-		redisClient.Set(context.Background(), 
+		redisClient.Set(context.Background(),
 			fmt.Sprintf("activity:%s:%d", activity.UserID, activity.Timestamp.Unix()),
-			activityJSON, 
+			activityJSON,
 			24*time.Hour,
 		)
 	}()
@@ -709,7 +706,7 @@ func extractThemes(activities []UserActivity) []string {
 func handleHealthCheck(c *gin.Context) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":           "ok",
 		"gpu_enabled":      true,
@@ -760,14 +757,14 @@ func handleUserActivity(c *gin.Context) {
 
 	activity.Timestamp = time.Now()
 	updateUserActivity(&activity)
-	
+
 	c.JSON(http.StatusOK, gin.H{"status": "recorded"})
 }
 
 func handleGetUserActivity(c *gin.Context) {
 	userID := c.Param("userId")
 	activities := getUserHistory(userID, "")
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"userId":     userID,
 		"activities": activities,
@@ -801,7 +798,7 @@ func handleEnqueueJob(c *gin.Context) {
 
 func handleGetJobStatus(c *gin.Context) {
 	jobID := c.Param("id")
-	
+
 	// Check job status in Redis
 	status, err := redisClient.Get(context.Background(), fmt.Sprintf("job:status:%s", jobID)).Result()
 	if err != nil {
@@ -824,7 +821,7 @@ func handleBulkProcess(c *gin.Context) {
 	var req struct {
 		Jobs []Job `json:"jobs"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid bulk request"})
 		return
@@ -863,14 +860,14 @@ func (wp *WorkerPool) Start() {
 
 func (wp *WorkerPool) worker() {
 	defer wp.wg.Done()
-	
+
 	for job := range wp.jobs {
 		wp.semaphore <- struct{}{} // Acquire semaphore
-		
+
 		startTime := time.Now()
 		result := processJob(job)
 		result.TimingMs = time.Since(startTime).Milliseconds()
-		
+
 		wp.results <- result
 		<-wp.semaphore // Release semaphore
 	}
@@ -951,10 +948,10 @@ func startMetricsCollector() {
 		// Update system metrics
 		var m runtime.MemStats
 		runtime.ReadMemStats(&m)
-		
+
 		systemMetrics.MemoryUsage = m.HeapAlloc
 		systemMetrics.LastUpdated = time.Now()
-		
+
 		// Get queue size from Redis
 		queueSize, _ := redisClient.LLen(context.Background(), "bull:legal-processor:waiting").Result()
 		systemMetrics.QueueSize = queueSize

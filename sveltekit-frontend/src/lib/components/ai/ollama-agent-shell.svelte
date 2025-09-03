@@ -19,7 +19,7 @@
     maxTokens = 2048,
     onResponse,
     onError,
-    class: class,
+    class: className = '',
     id,
     'data-testid': testId,
     // Legacy props for compatibility

@@ -44,7 +44,7 @@ export interface DialogProps extends BaseProps {
   closeOnOutsideClick?: boolean;
 }
 
-// Input component props  
+// Input component props
 export interface InputProps extends Omit<HTMLInputAttributes, 'size'>, BaseProps {
   variant?: 'default' | 'outlined' | 'filled' | 'ghost' | 'yorha' | 'legal';
   size?: 'sm' | 'default' | 'lg';
@@ -127,16 +127,16 @@ export interface FileUploadProps extends HTMLAttributes<HTMLDivElement>, BasePro
 }
 
 // Common variant types
-export type ComponentVariant = 
-  | 'default' 
-  | 'secondary' 
-  | 'destructive' 
-  | 'success' 
-  | 'warning' 
-  | 'info' 
-  | 'yorha' 
-  | 'legal' ;
-  | 'evidence' ;
+export type ComponentVariant =
+  | 'default'
+  | 'secondary'
+  | 'destructive'
+  | 'success'
+  | 'warning'
+  | 'info'
+  | 'yorha'
+  | 'legal'
+  | 'evidence'
   | 'case';
 
 export type ComponentSize = 'sm' | 'default' | 'lg';

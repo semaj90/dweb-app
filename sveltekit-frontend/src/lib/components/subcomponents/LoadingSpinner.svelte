@@ -1,44 +1,28 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'size' has already been declared
-https://svelte.dev/e/js_parse_error -->
-<!-- Loading Spinner Component -->
+<!-- Loading Spinner (Svelte 5 runes-compatible, simplified props) -->
 <script lang="ts">
-  import { $props, $derived } from 'svelte';
+  // Runes mode: derive props via $props()
+  interface P { size?: 'sm'|'md'|'lg'|'xl'; color?: 'blue'|'green'|'red'|'yellow'|'gray'|'white'; label?: string; inline?: boolean }
+  let { size='md', color='blue', label='Loading...', inline=false }: P = $props();
 
-  interface Props {
-    size: 'sm' | 'md' | 'lg' | 'xl' ;
-    color: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' ;
-    label: string ;
-    inline: boolean ;
-  }
-  let {
-    size = 'md',
-    color = 'blue',
-    label = 'Loading...',
-    inline = false
-  }: Props = $props();
-
-
-
-  let sizeClasses = $derived({
+  const sizeClasses: Record<string,string> = {
     sm: 'w-4 h-4',
-    md: 'w-6 h-6', 
+    md: 'w-6 h-6',
     lg: 'w-8 h-8',
     xl: 'w-12 h-12'
-  });
-
-  let colorClasses = $derived({
+  };
+  const colorClasses: Record<string,string> = {
     blue: 'text-blue-600',
     green: 'text-green-600',
     red: 'text-red-600',
     yellow: 'text-yellow-600',
     gray: 'text-gray-600',
     white: 'text-white'
-  });
+  };
 </script>
 
-<div class="loading-spinner {inline ? 'inline-flex' : 'flex'} items-center justify-center">
+<div class={"loading-spinner " + (inline ? 'inline-flex' : 'flex') + ' items-center justify-center'}>
     <svg
-        class="animate-spin {sizeClasses[size]} {colorClasses[color]}"
+  class={"animate-spin " + sizeClasses[size] + ' ' + colorClasses[color]}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

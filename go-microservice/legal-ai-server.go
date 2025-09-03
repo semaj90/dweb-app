@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -140,8 +140,8 @@ func main() {
 	// CORS configuration for SvelteKit integration
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{
-		"http://localhost:5173", 
-		"http://localhost:5175", 
+		"http://localhost:5173",
+		"http://localhost:5175",
 		"http://localhost:3000",
 		"http://localhost:4173", // SvelteKit preview
 	}
@@ -170,7 +170,7 @@ func main() {
 	// Auto-indexer endpoints
 	r.POST("/index", indexFilesHandler)
 	r.POST("/analyze", analyzeErrorsHandler)
-	
+
 	// Utility endpoints
 	r.GET("/metrics", metricsHandler)
 	r.GET("/ollama-status", ollamaStatusHandler)
@@ -185,7 +185,7 @@ func main() {
 	log.Printf("🧠 AI Model: gemma3-legal:latest via Ollama")
 	log.Printf("💻 CPU Cores: %d", runtime.NumCPU())
 	log.Printf("💾 Database: PostgreSQL + pgvector")
-	
+
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
@@ -195,7 +195,7 @@ func main() {
 func initDatabase() (*pgxpool.Pool, error) {
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		databaseURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+		databaseURL = "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
 	}
 
 	config, err := pgxpool.ParseConfig(databaseURL)
@@ -297,7 +297,7 @@ func processDocumentHandler(c *gin.Context) {
 		return
 	}
 
-	log.Printf("🔄 Processing document: ID=%s, Type=%s, Length=%d chars", 
+	log.Printf("🔄 Processing document: ID=%s, Type=%s, Length=%d chars",
 		req.DocumentID, req.DocumentType, len(req.Content))
 
 	response := DocumentProcessResponse{
@@ -502,14 +502,14 @@ Respond with valid JSON only in this format:
 func generateTextEmbedding(content string) ([]float32, error) {
 	// For now, create a simple hash-based embedding
 	// In production, use proper embedding models via Ollama or dedicated service
-	
+
 	embedding := make([]float32, 384) // Common embedding dimension
 	hash := 0
 	for i, char := range content {
 		hash = (hash*31 + int(char)) % len(embedding)
 		embedding[hash] += float32(i%256) / 255.0
 	}
-	
+
 	// Normalize
 	var sum float32
 	for _, val := range embedding {
@@ -519,11 +519,11 @@ func generateTextEmbedding(content string) ([]float32, error) {
 	if sum > 0 {
 		norm = 1.0 / float32(len(embedding)) * sum
 	}
-	
+
 	for i := range embedding {
 		embedding[i] *= norm
 	}
-	
+
 	return embedding, nil
 }
 
@@ -585,7 +585,7 @@ func healthCheck(c *gin.Context) {
 		"goroutines":     runtime.NumGoroutine(),
 		"capabilities": []string{
 			"document_processing",
-			"legal_analysis", 
+			"legal_analysis",
 			"entity_extraction",
 			"risk_assessment",
 			"text_summarization",
@@ -700,17 +700,17 @@ func databaseStatusHandler(c *gin.Context) {
 func indexFilesHandler(c *gin.Context) {
 	// Implementation for file indexing
 	log.Printf("📂 Starting file indexing process...")
-	
+
 	// Simulate indexing different file types
 	indexedFiles := []string{
 		"src/lib/components/*.svelte",
-		"src/routes/**/*.ts", 
+		"src/routes/**/*.ts",
 		"src/lib/services/*.ts",
 		"go-microservice/*.go",
 		"*.json",
 		"*.md",
 	}
-	
+
 	result := gin.H{
 		"status": "success",
 		"message": "File indexing completed",
@@ -719,7 +719,7 @@ func indexFilesHandler(c *gin.Context) {
 		"timestamp": time.Now().Format(time.RFC3339),
 		"indexer_version": "v1.0.0",
 	}
-	
+
 	log.Printf("✅ Indexed %d file patterns successfully", len(indexedFiles))
 	c.JSON(http.StatusOK, result)
 }
@@ -727,7 +727,7 @@ func indexFilesHandler(c *gin.Context) {
 func analyzeErrorsHandler(c *gin.Context) {
 	// Implementation for error analysis
 	log.Printf("🔍 Starting error analysis...")
-	
+
 	var errors []map[string]interface{}
 	if err := c.ShouldBindJSON(&errors); err != nil {
 		log.Printf("❌ Failed to parse error data: %v", err)
@@ -738,12 +738,12 @@ func analyzeErrorsHandler(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Analyze the errors and provide suggestions
 	analysis := make([]gin.H, 0, len(errors))
 	for i, errorItem := range errors {
 		errorStr, _ := errorItem["error"].(string)
-		
+
 		var suggestion, severity, category string
 		switch {
 		case strings.Contains(errorStr, "TS2322"):
@@ -763,7 +763,7 @@ func analyzeErrorsHandler(c *gin.Context) {
 			severity = "low"
 			category = "general_error"
 		}
-		
+
 		analysis = append(analysis, gin.H{
 			"index": i,
 			"original_error": errorStr,
@@ -773,16 +773,16 @@ func analyzeErrorsHandler(c *gin.Context) {
 			"auto_fixable": severity != "high",
 		})
 	}
-	
+
 	result := gin.H{
-		"status": "success", 
+		"status": "success",
 		"message": "Error analysis completed",
 		"total_errors": len(errors),
 		"analysis": analysis,
 		"timestamp": time.Now().Format(time.RFC3339),
 		"analyzer_version": "v1.0.0",
 	}
-	
+
 	log.Printf("✅ Analyzed %d errors successfully", len(errors))
 	c.JSON(http.StatusOK, result)
 }

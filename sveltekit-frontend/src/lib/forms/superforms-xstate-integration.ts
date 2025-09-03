@@ -51,7 +51,7 @@ export interface FormOptions {
 // DOCUMENT UPLOAD FORM INTEGRATION
 // ============================================================================
 
-export function createDocumentUploadForm(;
+export function createDocumentUploadForm(
   data: any, // SuperValidated<Infer<typeof DocumentUploadSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
@@ -183,7 +183,7 @@ export function createDocumentUploadForm(;
 // CASE CREATION FORM INTEGRATION
 // ============================================================================
 
-export function createCaseCreationForm(;
+export function createCaseCreationForm(
   data: any, // SuperValidated<Infer<typeof CaseCreationSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
@@ -288,7 +288,7 @@ export function createCaseCreationForm(;
 // SEARCH FORM INTEGRATION
 // ============================================================================
 
-export function createSearchForm(;
+export function createSearchForm(
   data: any, // SuperValidated<Infer<typeof SearchQuerySchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
@@ -396,7 +396,7 @@ export function createSearchForm(;
 // AI ANALYSIS FORM INTEGRATION
 // ============================================================================
 
-export function createAIAnalysisForm(;
+export function createAIAnalysisForm(
   data: any, // SuperValidated<Infer<typeof AIAnalysisSchema>>,
   options: FormOptions = {}
 ): unknown { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {

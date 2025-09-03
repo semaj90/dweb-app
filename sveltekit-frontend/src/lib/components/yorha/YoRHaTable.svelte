@@ -165,7 +165,7 @@
   }
 </script>
 
-<div class="yorha-table-container {class}" class:yorha-table-loading={loading} class:yorha-glitch-effect={glitchEffect}>
+<div class="yorha-table-container {className}" class:yorha-table-loading={loading} class:yorha-glitch-effect={glitchEffect}>
   <!-- Table Header with Search -->
   <div class="yorha-table-header">
     <div class="yorha-table-search">

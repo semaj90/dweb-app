@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -118,7 +118,7 @@ type SOM struct {
 	Radius       float64     `json:"radius"`
 	Iterations   int         `json:"iterations"`
 	Nodes        [][]SOMNode `json:"nodes"`
-	
+
 	// Performance optimization fields
 	totalTraining    int64       // atomic counter
 	totalInference   int64       // atomic counter
@@ -298,9 +298,9 @@ func (l *LlamaService) GenerateResponse(prompt string, maxTokens int) (string, e
 	}
 
 	jsonBody, _ := json.Marshal(requestBody)
-	
-	resp, err := http.Post("http://127.0.0.1:8085/completion", 
-		"application/json", 
+
+	resp, err := http.Post("http://127.0.0.1:8085/completion",
+		"application/json",
 		strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return "", err
@@ -333,9 +333,9 @@ func (l *LlamaService) StreamResponse(prompt string, maxTokens int, callback fun
 	}
 
 	jsonBody, _ := json.Marshal(requestBody)
-	
-	resp, err := http.Post("http://127.0.0.1:8085/completion", 
-		"application/json", 
+
+	resp, err := http.Post("http://127.0.0.1:8085/completion",
+		"application/json",
 		strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return err
@@ -381,11 +381,11 @@ func (r *EnhancedRAGEngine) SearchRelevantDocuments(query string, caseID string,
 
 	// Vector similarity search using pgvector
 	searchQuery := `
-		SELECT 
+		SELECT
 			id, title, content, metadata,
 			1 - (embedding <=> $1) as similarity
-		FROM legal_documents 
-		WHERE case_id = $2 
+		FROM legal_documents
+		WHERE case_id = $2
 			AND (1 - (embedding <=> $1)) > $3
 		ORDER BY similarity DESC
 		LIMIT $4
@@ -401,17 +401,17 @@ func (r *EnhancedRAGEngine) SearchRelevantDocuments(query string, caseID string,
 	for rows.Next() {
 		var doc RelevantDocument
 		var metadataJSON string
-		
+
 		err := rows.Scan(&doc.ID, &doc.Title, &doc.Content, &metadataJSON, &doc.Relevance)
 		if err != nil {
 			continue
 		}
 
 		json.Unmarshal([]byte(metadataJSON), &doc.Metadata)
-		
+
 		// Generate highlights
 		doc.Highlights = r.generateHighlights(doc.Content, query)
-		
+
 		documents = append(documents, doc)
 	}
 
@@ -426,9 +426,9 @@ func (r *EnhancedRAGEngine) generateEmbedding(text string) ([]float64, error) {
 	}
 
 	jsonBody, _ := json.Marshal(requestBody)
-	
-	resp, err := http.Post("http://localhost:8083/embed", 
-		"application/json", 
+
+	resp, err := http.Post("http://localhost:8083/embed",
+		"application/json",
 		strings.NewReader(string(jsonBody)))
 	if err != nil {
 		return nil, err
@@ -456,13 +456,13 @@ func (r *EnhancedRAGEngine) generateEmbedding(text string) ([]float64, error) {
 }
 
 func (r *EnhancedRAGEngine) generateHighlights(content, query string) []string {
-	// Simple keyword highlighting  
+	// Simple keyword highlighting
 	words := strings.Fields(strings.ToLower(query))
 	_ = strings.ToLower(content) // Store for potential future use
-	
+
 	var highlights []string
 	sentences := strings.Split(content, ".")
-	
+
 	for _, sentence := range sentences {
 		sentenceLower := strings.ToLower(sentence)
 		for _, word := range words {
@@ -472,11 +472,11 @@ func (r *EnhancedRAGEngine) generateHighlights(content, query string) []string {
 			}
 		}
 	}
-	
+
 	if len(highlights) > 3 {
 		highlights = highlights[:3]
 	}
-	
+
 	return highlights
 }
 
@@ -489,12 +489,12 @@ func (s *AIChatService) setupRoutes() *gin.Engine {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
 
@@ -631,7 +631,7 @@ func (s *AIChatService) analyzeUserMessage(message *ChatMessage) (*MessageAnalys
 	intent := extractIntent(message.Content)
 	entities := extractEntities(message.Content)
 	sentiment := analyzeSentiment(message.Content)
-	
+
 	analysis := &MessageAnalysis{
 		Intent:        intent,
 		Entities:      entities,
@@ -713,7 +713,7 @@ func (s *AIChatService) buildEnhancedPrompt(userMessage *ChatMessage) string {
 	var promptBuilder strings.Builder
 
 	promptBuilder.WriteString("[INST] You are a specialized legal AI assistant. ")
-	
+
 	// Add relevant documents context
 	if userMessage.Context != nil && len(userMessage.Context.RelevantDocs) > 0 {
 		promptBuilder.WriteString("\n\nRelevant documents:\n")
@@ -741,7 +741,7 @@ func (s *AIChatService) buildEnhancedPrompt(userMessage *ChatMessage) string {
 
 func (s *AIChatService) handleWebSocket(c *gin.Context) {
 	sessionID := c.Param("sessionId")
-	
+
 	conn, err := s.upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Printf("WebSocket upgrade failed: %v", err)
@@ -845,7 +845,7 @@ func extractIntent(content string) []string {
 	// Simplified intent extraction
 	intents := []string{}
 	content = strings.ToLower(content)
-	
+
 	if strings.Contains(content, "search") || strings.Contains(content, "find") {
 		intents = append(intents, "search")
 	}
@@ -858,14 +858,14 @@ func extractIntent(content string) []string {
 	if strings.Contains(content, "explain") || strings.Contains(content, "what") {
 		intents = append(intents, "explanation")
 	}
-	
+
 	return intents
 }
 
 func extractEntities(content string) []Entity {
 	// Simplified entity extraction
 	entities := []Entity{}
-	
+
 	// Look for common legal entities
 	words := strings.Fields(content)
 	for i, word := range words {
@@ -879,7 +879,7 @@ func extractEntities(content string) []Entity {
 			})
 		}
 	}
-	
+
 	return entities
 }
 
@@ -898,22 +898,22 @@ func analyzeSentiment(content string) float64 {
 	// Simplified sentiment analysis
 	positive := []string{"good", "great", "excellent", "positive", "helpful"}
 	negative := []string{"bad", "terrible", "negative", "problem", "issue"}
-	
+
 	content = strings.ToLower(content)
 	score := 0.0
-	
+
 	for _, word := range positive {
 		if strings.Contains(content, word) {
 			score += 0.1
 		}
 	}
-	
+
 	for _, word := range negative {
 		if strings.Contains(content, word) {
 			score -= 0.1
 		}
 	}
-	
+
 	// Normalize to [-1, 1]
 	if score > 1 {
 		score = 1
@@ -921,7 +921,7 @@ func analyzeSentiment(content string) float64 {
 	if score < -1 {
 		score = -1
 	}
-	
+
 	return score
 }
 
@@ -929,7 +929,7 @@ func extractTopics(content string) []string {
 	// Simplified topic extraction
 	topics := []string{}
 	content = strings.ToLower(content)
-	
+
 	topicMap := map[string]string{
 		"contract": "Contract Law",
 		"property": "Property Law",
@@ -938,13 +938,13 @@ func extractTopics(content string) []string {
 		"business": "Business Law",
 		"tax":      "Tax Law",
 	}
-	
+
 	for keyword, topic := range topicMap {
 		if strings.Contains(content, keyword) {
 			topics = append(topics, topic)
 		}
 	}
-	
+
 	return topics
 }
 
@@ -952,7 +952,7 @@ func extractLegalConcepts(content string) []string {
 	// Simplified legal concept extraction
 	concepts := []string{}
 	content = strings.ToLower(content)
-	
+
 	conceptMap := map[string]string{
 		"liability":     "Legal Liability",
 		"negligence":    "Negligence",
@@ -961,64 +961,64 @@ func extractLegalConcepts(content string) []string {
 		"jurisdiction":  "Jurisdiction",
 		"precedent":     "Legal Precedent",
 	}
-	
+
 	for keyword, concept := range conceptMap {
 		if strings.Contains(content, keyword) {
 			concepts = append(concepts, concept)
 		}
 	}
-	
+
 	return concepts
 }
 
 func (s *AIChatService) storeMessage(message *ChatMessage) error {
 	query := `
-		INSERT INTO chat_messages 
+		INSERT INTO chat_messages
 		(id, session_id, user_id, case_id, role, content, timestamp, token_count, metadata)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
-	
+
 	metadataJSON, _ := json.Marshal(message.Metadata)
-	
-	_, err := s.db.Exec(query, message.ID, message.SessionID, message.UserID, 
-		message.CaseID, message.Role, message.Content, message.Timestamp, 
+
+	_, err := s.db.Exec(query, message.ID, message.SessionID, message.UserID,
+		message.CaseID, message.Role, message.Content, message.Timestamp,
 		message.TokenCount, metadataJSON)
-	
+
 	return err
 }
 
 func (s *AIChatService) getUserHistory(userID string, limit int) ([]ChatMessage, error) {
 	query := `
 		SELECT id, session_id, user_id, case_id, role, content, timestamp, token_count
-		FROM chat_messages 
-		WHERE user_id = $1 
-		ORDER BY timestamp DESC 
+		FROM chat_messages
+		WHERE user_id = $1
+		ORDER BY timestamp DESC
 		LIMIT $2
 	`
-	
+
 	rows, err := s.db.Query(query, userID, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var messages []ChatMessage
 	for rows.Next() {
 		var msg ChatMessage
-		err := rows.Scan(&msg.ID, &msg.SessionID, &msg.UserID, &msg.CaseID, 
+		err := rows.Scan(&msg.ID, &msg.SessionID, &msg.UserID, &msg.CaseID,
 			&msg.Role, &msg.Content, &msg.Timestamp, &msg.TokenCount)
 		if err != nil {
 			continue
 		}
 		messages = append(messages, msg)
 	}
-	
+
 	return messages, nil
 }
 
 func (s *AIChatService) generateRecommendations(message *ChatMessage, docs []RelevantDocument, history []ChatMessage) []Recommendation {
 	recommendations := []Recommendation{}
-	
+
 	// Analyze user intent and suggest actions
 	if message.Analysis != nil {
 		for _, intent := range message.Analysis.Intent {
@@ -1050,7 +1050,7 @@ func (s *AIChatService) generateRecommendations(message *ChatMessage, docs []Rel
 			}
 		}
 	}
-	
+
 	// Recommend based on similar cases
 	if len(docs) > 0 {
 		recommendations = append(recommendations, Recommendation{
@@ -1061,14 +1061,14 @@ func (s *AIChatService) generateRecommendations(message *ChatMessage, docs []Rel
 			Action:      "view_similar_cases",
 		})
 	}
-	
+
 	return recommendations
 }
 
 func (s *AIChatService) generateDidYouMean(query string) []string {
 	// Simple "did you mean" implementation
 	suggestions := []string{}
-	
+
 	// Common legal term corrections
 	corrections := map[string]string{
 		"agrement":    "agreement",
@@ -1078,7 +1078,7 @@ func (s *AIChatService) generateDidYouMean(query string) []string {
 		"guarentee":   "guarantee",
 		"recieve":     "receive",
 	}
-	
+
 	words := strings.Fields(strings.ToLower(query))
 	for i, word := range words {
 		if correction, exists := corrections[word]; exists {
@@ -1088,7 +1088,7 @@ func (s *AIChatService) generateDidYouMean(query string) []string {
 			suggestions = append(suggestions, strings.Join(newWords, " "))
 		}
 	}
-	
+
 	return suggestions
 }
 
@@ -1105,7 +1105,7 @@ func (s *AIChatService) handleAttentionTracking(sessionID string, message map[st
 		"type":       message["attention_type"],
 		"data":       message["data"],
 	}
-	
+
 	// Store in Redis for analysis
 	key := fmt.Sprintf("attention:%s:%d", sessionID, time.Now().Unix())
 	data, _ := json.Marshal(attentionData)
@@ -1115,17 +1115,17 @@ func (s *AIChatService) handleAttentionTracking(sessionID string, message map[st
 // Missing handler methods implementation with Context7 best practices
 func (s *AIChatService) getChatSession(c *gin.Context) {
 	sessionID := c.Param("sessionId")
-	
+
 	// Try in-memory first (fast path)
 	s.sessionMux.RLock()
 	session, exists := s.sessions[sessionID]
 	s.sessionMux.RUnlock()
-	
+
 	if exists {
 		c.JSON(200, session)
 		return
 	}
-	
+
 	// Fallback to Redis
 	key := fmt.Sprintf("session:%s", sessionID)
 	sessionJSON, err := s.redis.Get(context.Background(), key).Result()
@@ -1133,25 +1133,25 @@ func (s *AIChatService) getChatSession(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "Session not found"})
 		return
 	}
-	
+
 	var redisSession ChatSession
 	if err := json.Unmarshal([]byte(sessionJSON), &redisSession); err != nil {
 		c.JSON(500, gin.H{"error": "Failed to parse session"})
 		return
 	}
-	
+
 	// Cache in memory for future requests
 	s.sessionMux.Lock()
 	s.sessions[sessionID] = &redisSession
 	s.sessionMux.Unlock()
-	
+
 	c.JSON(200, redisSession)
 }
 
 func (s *AIChatService) getChatHistory(c *gin.Context) {
 	sessionID := c.Param("sessionId")
 	limit := 50 // Default limit
-	
+
 	if limitStr := c.Query("limit"); limitStr != "" {
 		if parsedLimit, err := fmt.Sscanf(limitStr, "%d", &limit); err == nil && parsedLimit == 1 {
 			if limit > 100 {
@@ -1159,41 +1159,41 @@ func (s *AIChatService) getChatHistory(c *gin.Context) {
 			}
 		}
 	}
-	
+
 	query := `
 		SELECT id, session_id, user_id, case_id, role, content, timestamp, token_count, metadata
-		FROM chat_messages 
-		WHERE session_id = $1 
-		ORDER BY timestamp DESC 
+		FROM chat_messages
+		WHERE session_id = $1
+		ORDER BY timestamp DESC
 		LIMIT $2
 	`
-	
+
 	rows, err := s.db.Query(query, sessionID, limit)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch chat history"})
 		return
 	}
 	defer rows.Close()
-	
+
 	var messages []ChatMessage
 	for rows.Next() {
 		var msg ChatMessage
 		var metadataJSON string
-		
+
 		err := rows.Scan(&msg.ID, &msg.SessionID, &msg.UserID, &msg.CaseID,
 			&msg.Role, &msg.Content, &msg.Timestamp, &msg.TokenCount, &metadataJSON)
 		if err != nil {
 			continue
 		}
-		
+
 		// Parse metadata JSON
 		if metadataJSON != "" {
 			json.Unmarshal([]byte(metadataJSON), &msg.Metadata)
 		}
-		
+
 		messages = append(messages, msg)
 	}
-	
+
 	c.JSON(200, gin.H{
 		"messages": messages,
 		"count":    len(messages),
@@ -1206,25 +1206,25 @@ func (s *AIChatService) analyzeMessage(c *gin.Context) {
 		Content string `json:"content"`
 		Context map[string]interface{} `json:"context,omitempty"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Create temporary message for analysis
 	tempMessage := &ChatMessage{
 		Content:   req.Content,
 		Timestamp: time.Now(),
 		Metadata:  req.Context,
 	}
-	
+
 	analysis, err := s.analyzeUserMessage(tempMessage)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Analysis failed"})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{
 		"analysis": analysis,
 		"content":  req.Content,
@@ -1234,30 +1234,30 @@ func (s *AIChatService) analyzeMessage(c *gin.Context) {
 
 func (s *AIChatService) getRecommendations(c *gin.Context) {
 	sessionID := c.Param("sessionId")
-	
+
 	// Get session context
 	session, exists := s.sessions[sessionID]
 	if !exists {
 		c.JSON(404, gin.H{"error": "Session not found"})
 		return
 	}
-	
+
 	// Get recent messages for context
 	recentMessages, err := s.getUserHistory(session.UserID, 5)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get user history"})
 		return
 	}
-	
+
 	var recommendations []Recommendation
-	
+
 	// Generate context-aware recommendations
 	if len(recentMessages) > 0 {
 		lastMessage := &recentMessages[0]
-		
+
 		// Get relevant documents for context
 		relevantDocs, _ := s.ragEngine.SearchRelevantDocuments(lastMessage.Content, session.CaseID, session.UserID)
-		
+
 		// Generate recommendations
 		recommendations = s.generateRecommendations(lastMessage, relevantDocs, recentMessages)
 	} else {
@@ -1272,7 +1272,7 @@ func (s *AIChatService) getRecommendations(c *gin.Context) {
 			},
 		}
 	}
-	
+
 	c.JSON(200, gin.H{
 		"recommendations": recommendations,
 		"session_id":      sessionID,
@@ -1286,12 +1286,12 @@ func (s *AIChatService) generateReport(c *gin.Context) {
 		UserID    string `json:"user_id"`
 		Type      string `json:"type"` // "session", "case", "user_activity"
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	switch req.Type {
 	case "session":
 		report, err := s.generateSessionReport(req.SessionID)
@@ -1300,7 +1300,7 @@ func (s *AIChatService) generateReport(c *gin.Context) {
 			return
 		}
 		c.JSON(200, report)
-		
+
 	case "user_activity":
 		report, err := s.generateUserActivityReport(req.UserID)
 		if err != nil {
@@ -1308,7 +1308,7 @@ func (s *AIChatService) generateReport(c *gin.Context) {
 			return
 		}
 		c.JSON(200, report)
-		
+
 	default:
 		c.JSON(400, gin.H{"error": "Invalid report type"})
 	}
@@ -1320,7 +1320,7 @@ func (s *AIChatService) generateSessionReport(sessionID string) (map[string]inte
 	if err != nil {
 		return nil, err
 	}
-	
+
 	report := map[string]interface{}{
 		"session_id":     sessionID,
 		"message_count":  len(messages),
@@ -1332,15 +1332,15 @@ func (s *AIChatService) generateSessionReport(sessionID string) (map[string]inte
 			"topics_discussed": []string{},
 		},
 	}
-	
+
 	totalTokens := 0
 	userMessages := 0
 	aiResponses := 0
 	topicSet := make(map[string]bool)
-	
+
 	for _, msg := range messages {
 		totalTokens += msg.TokenCount
-		
+
 		if msg.Role == "user" {
 			userMessages++
 			if msg.Analysis != nil {
@@ -1352,19 +1352,19 @@ func (s *AIChatService) generateSessionReport(sessionID string) (map[string]inte
 			aiResponses++
 		}
 	}
-	
+
 	// Convert topic set to slice
 	topics := make([]string, 0, len(topicSet))
 	for topic := range topicSet {
 		topics = append(topics, topic)
 	}
-	
+
 	summary := report["summary"].(map[string]interface{})
 	summary["total_tokens"] = totalTokens
 	summary["user_messages"] = userMessages
 	summary["ai_responses"] = aiResponses
 	summary["topics_discussed"] = topics
-	
+
 	return report, nil
 }
 
@@ -1374,7 +1374,7 @@ func (s *AIChatService) generateUserActivityReport(userID string) (map[string]in
 	if err != nil {
 		return nil, err
 	}
-	
+
 	report := map[string]interface{}{
 		"user_id":      userID,
 		"generated_at": time.Now(),
@@ -1386,27 +1386,27 @@ func (s *AIChatService) generateUserActivityReport(userID string) (map[string]in
 			"most_active_hours": []int{},
 		},
 	}
-	
+
 	totalTokens := 0
 	sessionSet := make(map[string]bool)
 	topicSet := make(map[string]bool)
 	hourCount := make(map[int]int)
-	
+
 	for _, msg := range messages {
 		totalTokens += msg.TokenCount
 		sessionSet[msg.SessionID] = true
-		
+
 		// Track activity by hour
 		hour := msg.Timestamp.Hour()
 		hourCount[hour]++
-		
+
 		if msg.Analysis != nil {
 			for _, topic := range msg.Analysis.Topics {
 				topicSet[topic] = true
 			}
 		}
 	}
-	
+
 	// Find most active hours (top 3)
 	type hourActivity struct {
 		hour  int
@@ -1416,7 +1416,7 @@ func (s *AIChatService) generateUserActivityReport(userID string) (map[string]in
 	for h, count := range hourCount {
 		hours = append(hours, hourActivity{h, count})
 	}
-	
+
 	// Simple sorting by count (descending)
 	for i := 0; i < len(hours)-1; i++ {
 		for j := i + 1; j < len(hours); j++ {
@@ -1425,24 +1425,24 @@ func (s *AIChatService) generateUserActivityReport(userID string) (map[string]in
 			}
 		}
 	}
-	
+
 	mostActiveHours := []int{}
 	for i := 0; i < 3 && i < len(hours); i++ {
 		mostActiveHours = append(mostActiveHours, hours[i].hour)
 	}
-	
+
 	topics := make([]string, 0, len(topicSet))
 	for topic := range topicSet {
 		topics = append(topics, topic)
 	}
-	
+
 	activity := report["activity"].(map[string]interface{})
 	activity["total_messages"] = len(messages)
 	activity["total_tokens"] = totalTokens
 	activity["session_count"] = len(sessionSet)
 	activity["topics"] = topics
 	activity["most_active_hours"] = mostActiveHours
-	
+
 	return report, nil
 }
 
@@ -1454,16 +1454,16 @@ func (som *SOM) initializeNodes(dimensions int) {
 		latency := time.Since(start).Microseconds()
 		atomic.StoreInt64(&som.averageLatency, latency)
 	}()
-	
+
 	som.mutex.Lock()
 	defer som.mutex.Unlock()
-	
+
 	// Pre-allocate 2D slice with proper capacity
 	som.Nodes = make([][]SOMNode, som.Height)
 	for i := range som.Nodes {
 		som.Nodes[i] = make([]SOMNode, som.Width)
 	}
-	
+
 	// Initialize each node with random weights
 	for y := 0; y < som.Height; y++ {
 		for x := 0; x < som.Width; x++ {
@@ -1471,7 +1471,7 @@ func (som *SOM) initializeNodes(dimensions int) {
 			node.Weights = make([]float32, dimensions)
 			node.Position = [2]int{x, y}
 			node.Metadata = make(map[string]interface{})
-			
+
 			// Initialize with small random values
 			for i := range node.Weights {
 				node.Weights[i] = (float32(time.Now().UnixNano()%100) - 50) / 1000.0
@@ -1490,18 +1490,18 @@ func (som *SOM) findBestMatchingUnit(input []float32) (int, float64) {
 		newAvg := (currentAvg + latency) / 2
 		atomic.StoreInt64(&som.averageLatency, newAvg)
 	}()
-	
+
 	som.mutex.RLock()
 	defer som.mutex.RUnlock()
-	
+
 	minDistance := math.MaxFloat64
 	bestNodeIndex := 0
-	
+
 	nodeIndex := 0
 	for y := 0; y < som.Height; y++ {
 		for x := 0; x < som.Width; x++ {
 			node := &som.Nodes[y][x]
-			
+
 			// Calculate Euclidean distance using optimized loop
 			distance := 0.0
 			for i := range input {
@@ -1509,46 +1509,46 @@ func (som *SOM) findBestMatchingUnit(input []float32) (int, float64) {
 				distance += diff * diff
 			}
 			distance = math.Sqrt(distance)
-			
+
 			if distance < minDistance {
 				minDistance = distance
 				bestNodeIndex = nodeIndex
 			}
-			
+
 			nodeIndex++
 		}
 	}
-	
+
 	// Update hit counter atomically
 	y := bestNodeIndex / som.Width
 	x := bestNodeIndex % som.Width
 	atomic.AddInt64(&som.Nodes[y][x].TrainingHits, 1)
-	
+
 	return bestNodeIndex, minDistance
 }
 
 func main() {
 	service := NewAIChatService()
-	
+
 	// Setup HTTP routes
 	router := service.setupRoutes()
-	
+
 	// Start gRPC server (for internal service communication)
 	go func() {
 		lis, err := net.Listen("tcp", ":50052")
 		if err != nil {
 			log.Fatalf("Failed to listen: %v", err)
 		}
-		
+
 		s := grpc.NewServer()
 		reflection.Register(s)
-		
+
 		log.Println("🚀 gRPC server starting on :50052")
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("Failed to serve gRPC: %v", err)
 		}
 	}()
-	
+
 	// Start HTTP server
 	log.Println("🚀 AI Chat Service starting on :8086")
 	log.Fatal(http.ListenAndServe(":8086", router))

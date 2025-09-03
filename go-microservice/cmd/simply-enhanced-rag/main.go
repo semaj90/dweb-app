@@ -60,7 +60,7 @@ type ServiceMetrics struct {
 func NewSimplifiedRAGService() (*SimplifiedRAGService, error) {
 	config := &ServiceConfig{
 		HTTPPort:    "8096",
-		PostgresURL: "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+		PostgresURL: "postgresql://postgres:123456@localhost:5432/legal_ai_db",
 		RedisURL:    "localhost:6379",
 	}
 	

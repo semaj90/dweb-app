@@ -60,6 +60,27 @@
     "mcp-context7-assistant": 1
   },
 
+  // Memory Optimization for Large Codebase
+  "typescript.tsc.autoDetect": "off",
+  "eslint.validate": [],
+  "search.searchOnType": false,
+  "search.followSymlinks": false,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.svelte-kit/**": true,
+    "**/.svelte-check-tmp/**": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.enabled": false,
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+  "html.validate.scripts": false,
+  "css.validate": false,
+
   // Editor Configuration
   "editor.codeActionsOnSave": {
     "source.organizeImports": "never",

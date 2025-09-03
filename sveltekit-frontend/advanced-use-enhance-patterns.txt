@@ -1,0 +1,259 @@
+# Advanced use:enhance Patterns with applyAction and SubmitFunction
+
+## Enhanced Form Submission Control
+
+### Basic SubmitFunction Pattern:
+```svelte
+<script>
+  import { enhance, applyAction } from '$app/forms';
+  import { invalidateAll } from '$app/navigation';
+
+  const handleSubmit = enhance(({ formElement, formData, action, cancel, submitter }) => {
+    // Runs immediately before form submission
+    console.log('Form submitting...', { formData, action });
+    
+    // Optional: modify formData
+    formData.append('timestamp', Date.now().toString());
+    
+    // Optional: cancel submission based on conditions
+    if (someCondition) {
+      cancel();
+      return;
+    }
+    
+    // Return callback that runs with ActionResult
+    return async ({ result, update }) => {
+      console.log('Action result:', result);
+      
+      // Custom behavior based on result type
+      if (result.type === 'success') {
+        // Custom success handling
+        await applyAction(result);
+        await invalidateAll(); // Refresh page data
+      } else if (result.type === 'failure') {
+        // Custom error handling
+        console.error('Form submission failed:', result.data);
+        await applyAction(result);
+      } else {
+        // For 'redirect' and other types
+        await applyAction(result);
+      }
+      
+      // Optional: always call update() to refresh the page if needed
+      // await update();
+    };
+  });
+</script>
+
+<form method="POST" action="?/createCase" use:enhance={handleSubmit}>
+  <!-- form fields -->
+</form>
+```
+
+## Real-World Examples for Our Legal AI Platform:
+
+### 1. Case Creation Form with Progress Tracking:
+```svelte
+<script>
+  import { enhance, applyAction } from '$app/forms';
+  import { writable } from 'svelte/store';
+  
+  const submitting = writable(false);
+  const progress = writable(0);
+
+  const handleCaseSubmit = enhance(({ formData, cancel }) => {
+    // Pre-submission validation
+    const title = formData.get('title');
+    if (!title || title.length < 3) {
+      alert('Case title must be at least 3 characters');
+      cancel();
+      return;
+    }
+    
+    // Start progress indicator
+    submitting.set(true);
+    progress.set(25);
+    
+    return async ({ result }) => {
+      progress.set(75);
+      
+      if (result.type === 'success') {
+        progress.set(100);
+        
+        // Custom success actions
+        await applyAction(result);
+        
+        // Trigger background processing
+        await fetch('/api/worker/autotag/trigger', {
+          method: 'POST',
+          body: JSON.stringify({
+            caseId: result.data?.caseId,
+            action: 'process'
+          })
+        });
+        
+        // Reset form state
+        setTimeout(() => {
+          submitting.set(false);
+          progress.set(0);
+        }, 1000);
+        
+      } else {
+        submitting.set(false);
+        progress.set(0);
+        await applyAction(result);
+      }
+    };
+  });
+</script>
+
+<form method="POST" action="?/createCase" use:enhance={handleCaseSubmit}>
+  {#if $submitting}
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {$progress}%"></div>
+    </div>
+  {/if}
+  
+  <input name="title" required />
+  <button disabled={$submitting}>
+    {$submitting ? 'Creating...' : 'Create Case'}
+  </button>
+</form>
+```
+
+### 2. Evidence Upload with File Processing:
+```svelte
+<script>
+  import { enhance, applyAction } from '$app/forms';
+  import { invalidate } from '$app/navigation';
+
+  const handleEvidenceUpload = enhance(({ formData, cancel }) => {
+    // Validate file upload
+    const files = formData.getAll('evidence_files');
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    
+    if (totalSize > 50 * 1024 * 1024) { // 50MB limit
+      alert('Total file size cannot exceed 50MB');
+      cancel();
+      return;
+    }
+    
+    // Add metadata
+    formData.append('upload_source', 'web_interface');
+    formData.append('client_timestamp', new Date().toISOString());
+    
+    return async ({ result }) => {
+      if (result.type === 'success') {
+        // Apply the default action (updates form, shows success message)
+        await applyAction(result);
+        
+        // Invalidate specific cache entries
+        await invalidate('evidence:list');
+        await invalidate('case:details');
+        
+        // Trigger background OCR processing
+        if (result.data?.evidenceIds) {
+          for (const evidenceId of result.data.evidenceIds) {
+            await fetch('/api/ai/process-evidence', {
+              method: 'POST',
+              body: JSON.stringify({ evidenceId, priority: 'high' })
+            });
+          }
+        }
+        
+      } else if (result.type === 'failure') {
+        console.error('Upload failed:', result.data);
+        await applyAction(result);
+        
+      } else {
+        await applyAction(result);
+      }
+    };
+  });
+</script>
+```
+
+### 3. Search Form with Real-time Validation:
+```svelte
+<script>
+  import { enhance, applyAction } from '$app/forms';
+  import { goto } from '$app/navigation';
+
+  const handleSearch = enhance(({ formData, action, cancel }) => {
+    const query = formData.get('query');
+    const filters = formData.getAll('filters');
+    
+    // Real-time validation
+    if (query.length < 2) {
+      cancel();
+      return;
+    }
+    
+    // Add search analytics
+    formData.append('search_session', crypto.randomUUID());
+    formData.append('user_agent', navigator.userAgent);
+    
+    return async ({ result }) => {
+      if (result.type === 'success') {
+        // Instead of default behavior, navigate with search params
+        const searchParams = new URLSearchParams({
+          q: query,
+          filters: filters.join(','),
+          timestamp: Date.now().toString()
+        });
+        
+        await goto(`/search/results?${searchParams}`, {
+          invalidateAll: true
+        });
+        
+      } else {
+        await applyAction(result);
+      }
+    };
+  });
+</script>
+```
+
+## Key Benefits of Custom SubmitFunction:
+
+### 1. **Pre-submission Control:**
+- Validate data before sending
+- Modify FormData dynamically  
+- Cancel submission conditionally
+
+### 2. **Custom Result Handling:**
+- Different behaviors for success/failure/redirect
+- Trigger additional API calls
+- Update specific cache entries
+- Custom navigation logic
+
+### 3. **Enhanced UX:**
+- Progress indicators
+- Loading states
+- Custom success/error messages
+- Background task triggers
+
+### 4. **Integration with Stores:**
+- Update Svelte stores based on results
+- Synchronize with global application state
+- Trigger XState machine transitions
+
+## Best Practices:
+
+1. **Always call `applyAction(result)`** unless you want to completely override default behavior
+2. **Use `invalidate()` or `invalidateAll()`** to refresh specific data
+3. **Handle all result types** (success, failure, redirect, error)
+4. **Use `cancel()`** for client-side validation failures
+5. **Add metadata to FormData** for analytics and processing
+
+## Our Current Usage Status:
+
+✅ **Basic use:enhance working** in auth forms and case creation
+🔄 **Can be enhanced** with custom SubmitFunction patterns for:
+- Progress tracking in case/evidence forms
+- Background task triggers
+- Custom validation and error handling
+- Real-time search with analytics
+
+Date: 2025-09-02
+Status: Advanced patterns documented for future implementation

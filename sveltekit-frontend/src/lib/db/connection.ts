@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 // Database connection for Legal AI platform
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 // Database configuration - using environment variables or defaults
 const DATABASE_URL = import.meta.env.DATABASE_URL || 

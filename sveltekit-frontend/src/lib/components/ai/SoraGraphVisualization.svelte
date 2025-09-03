@@ -12,18 +12,33 @@
   import { LegalAIReranker } from '$lib/ai/custom-reranker.js';
   
   // Props
-  export let query: string = '';
-  export let startNodeId: string = '';
-  export let neo4jDriver: any = null;
-  export let config: Partial<SoraTraversalOptions & MoogleVisualizationConfig> = {};
-  export let mode: '2d' | '3d' | 'both' = '2d';
-  export let width: number = 800;
-  export let height: number = 600;
-  export let enableReinforcementLearning: boolean = true;
-  export let enableGPUAcceleration: boolean = true;
-  export let theme: 'dark' | 'light' | 'legal' = 'legal';
-  export let interactive: boolean = true;
-;
+  interface Props {
+    query?: string;
+    startNodeId?: string;
+    neo4jDriver?: any;
+    config?: Partial<SoraTraversalOptions & MoogleVisualizationConfig>;
+    mode?: '2d' | '3d' | 'both';
+    width?: number;
+    height?: number;
+    enableReinforcementLearning?: boolean;
+    enableGPUAcceleration?: boolean;
+    theme?: 'dark' | 'light' | 'legal';
+    interactive?: boolean;
+  }
+
+  let {
+    query = '',
+    startNodeId = '',
+    neo4jDriver = null,
+    config = {},
+    mode = '2d',
+    width = 800,
+    height = 600,
+    enableReinforcementLearning = true,
+    enableGPUAcceleration = true,
+    theme = 'legal',
+    interactive = true
+  }: Props = $props();
   // Event dispatcher
   const dispatch = createEventDispatcher<{
     pathSelected: { path: SoraTraversalPath };

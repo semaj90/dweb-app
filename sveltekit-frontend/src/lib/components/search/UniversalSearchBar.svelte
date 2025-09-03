@@ -31,6 +31,7 @@
   let recentSearches: string[] = $state([]);
 
   // Search configuration
+  // TODO(metrics-ext): Consolidate searchOptions with future cross-index ranking & vector rerank pipeline after metrics auth/anomaly endpoints deployed.
   let searchOptions: SearchOptions = $state({
     categories: ['cases', 'evidence', 'precedents', 'statutes', 'criminals', 'documents'],
     enableVectorSearch: true,
@@ -62,11 +63,11 @@ let trendingSearches = $state([
   ]);
 
   // Debounced search
-let searchTimeout = $state<NodeJS.Timeout;
+let searchTimeout = $state<NodeJS.Timeout | null>(null);
 
-  $effect(() >(> {
+  $effect(() => {
     if (searchInput) {
-      clearTimeout(searchTimeout));
+      if (searchTimeout) clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => performSearch(), 300);
     } else {
       results = [];
@@ -320,7 +321,7 @@ let searchTimeout = $state<NodeJS.Timeout;
   }[theme]);
 </script>
 
-<div class="universal-search-container w-full max-w-4xl mx-auto relative gpu-accelerated gpu-smooth-scroll">
+<div class="universal-search-container nes-search-bar w-full max-w-4xl mx-auto relative gpu-accelerated gpu-smooth-scroll">
   <!-- Main Search Bar -->
   <div class="search-bar-wrapper relative {themeClasses} rounded-lg shadow-lg">
     <div class="flex items-center p-2">
@@ -460,11 +461,12 @@ let searchTimeout = $state<NodeJS.Timeout;
           {#each results as result}
             <button
               class="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border-b border-current/10 last:border-b-0 transition-colors"
+              data-result-type={result.type}
               onclick={() => selectResult(result)}
             >
               <div class="flex items-start gap-3">
                 <!-- Result Type Icon -->
-                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold mt-1">
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold mt-1" data-result-type={result.type}>
                   {#if result.type === 'case'}📁
                   {:else if result.type === 'criminal'}👤
                   {:else if result.type === 'evidence'}🔍
@@ -533,6 +535,161 @@ let searchTimeout = $state<NodeJS.Timeout;
 </div>
 
 <style>
+  /* NES.css Legal AI Search Bar Integration */
+  .nes-search-bar {
+    font-family: 'Courier New', monospace;
+  }
+
+  /* NES-style Search Container */
+  :global(.nes-search-bar .search-bar-wrapper) {
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+    transition: all 0.2s ease;
+  }
+
+  :global(.nes-search-bar .search-bar-wrapper:focus-within) {
+    box-shadow: 8px 8px 0px rgba(0, 100, 200, 0.4), 6px 6px 0px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* NES-style Input */
+  :global(.nes-search-bar input) {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 16px;
+    background: transparent;
+  }
+
+  :global(.nes-search-bar input::placeholder) {
+    color: #666;
+    font-style: italic;
+  }
+
+  /* NES-style Category Chips */
+  :global(.nes-search-bar .category-chip) {
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+  }
+
+  :global(.nes-search-bar .category-chip:hover) {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.nes-search-bar .category-chip:active) {
+    transform: translateY(1px);
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Legal Priority Color Coding for Categories */
+  :global(.nes-search-bar .category-chip.selected) {
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    color: white !important;
+    border-color: #2E7D32;
+    box-shadow: 3px 3px 0px rgba(46, 125, 50, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
+  }
+
+  /* NES-style Search Results Dropdown */
+  :global(.nes-search-bar .search-dropdown) {
+    border: 3px solid #000;
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #fafafa, #f0f0f0);
+    backdrop-filter: blur(8px);
+  }
+
+  /* NES-style Result Items */
+  :global(.nes-search-bar .search-dropdown button) {
+    font-family: 'Courier New', monospace;
+    transition: all 0.2s ease;
+  }
+
+  :global(.nes-search-bar .search-dropdown button:hover) {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
+    transform: translateX(4px);
+    box-shadow: inset 3px 0 0 rgba(33, 150, 243, 0.5);
+  }
+
+  /* NES-style Search Result Type Icons */
+  :global(.nes-search-bar .search-dropdown .w-8.h-8) {
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #FF6B6B, #FF5252) !important;
+  }
+
+  /* Legal-specific Result Categories */
+  :global(.nes-search-bar [data-result-type="case"]) {
+    background: linear-gradient(135deg, #2196F3, #1976D2) !important;
+  }
+
+  :global(.nes-search-bar [data-result-type="criminal"]) {
+    background: linear-gradient(135deg, #F44336, #D32F2F) !important;
+  }
+
+  :global(.nes-search-bar [data-result-type="evidence"]) {
+    background: linear-gradient(135deg, #4CAF50, #388E3C) !important;
+  }
+
+  :global(.nes-search-bar [data-result-type="precedent"]) {
+    background: linear-gradient(135deg, #FF9800, #F57C00) !important;
+  }
+
+  /* NES-style Loading Animation */
+  :global(.nes-search-bar .animate-spin) {
+    border-color: #000;
+    border-top-color: transparent;
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  /* NES-style Clear/Action Buttons */
+  :global(.nes-search-bar .p-2) {
+    border-radius: 0;
+    transition: all 0.15s ease;
+  }
+
+  :global(.nes-search-bar .p-2:hover) {
+    background: linear-gradient(135deg, #ffecb3, #fff3c4) !important;
+    transform: scale(1.1);
+  }
+
+  /* NES-style Trending/Recent Search Buttons */
+  :global(.nes-search-bar .px-3.py-1) {
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+  }
+
+  :global(.nes-search-bar .px-3.py-1:hover) {
+    background: linear-gradient(135deg, #c8e6c9, #dcedc8);
+    transform: translateY(-1px);
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Custom Legal AI Color Scheme */
+  :global(.nes-search-bar .text-blue-800) { color: #1565C0 !important; }
+  :global(.nes-search-bar .text-blue-200) { color: #BBDEFB !important; }
+  :global(.nes-search-bar .bg-blue-100) { background: linear-gradient(135deg, #E3F2FD, #BBDEFB) !important; }
+  :global(.nes-search-bar .bg-blue-900) { background: linear-gradient(135deg, #0D47A1, #1565C0) !important; }
+
+  /* Enhanced Visual Feedback */
+  :global(.nes-search-bar .border-current) {
+    border-width: 2px;
+    border-style: solid;
+  }
+
+  /* GPU Performance Optimizations */
+  :global(.nes-search-bar *) {
+    transform-origin: center;
+  }
+
+  /* Original styles preserved */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

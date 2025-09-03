@@ -2,6 +2,9 @@
 // Production Go service that consumes Redis Streams, processes vectors with CUDA worker, and updates databases
 // Build: go build -o vector-consumer-service.exe vector-consumer-service.go
 
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -84,7 +87,7 @@ type VectorConsumerService struct {
 func NewConfig() *Config {
 	return &Config{
 		RedisURL:         getEnv("REDIS_URL", "redis://localhost:6379"),
-		DatabaseURL:      getEnv("DATABASE_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		DatabaseURL:      getEnv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/legal_ai_db"),
 		RabbitMQURL:      getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"),
 		StreamName:       getEnv("REDIS_STREAM", "vector:jobs"),
 		ConsumerGroup:    getEnv("CONSUMER_GROUP", "vector-processors"),
@@ -117,7 +120,7 @@ func getEnvInt(key string, defaultValue int) int {
 
 func NewVectorConsumerService(config *Config) *VectorConsumerService {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	return &VectorConsumerService{
 		config: config,
 		ctx:    ctx,
@@ -174,25 +177,25 @@ func (s *VectorConsumerService) Initialize() error {
 
 func (s *VectorConsumerService) Start() {
 	log.Printf("🚀 Starting Vector Consumer Service with %d workers", s.config.WorkerCount)
-	
+
 	// Start worker goroutines
 	for i := 0; i < s.config.WorkerCount; i++ {
 		s.wg.Add(1)
 		go s.worker(i)
 	}
-	
+
 	// Start health check endpoint (simple HTTP server)
 	go s.startHealthServer()
-	
+
 	log.Println("✅ All workers started successfully")
 }
 
 func (s *VectorConsumerService) worker(workerID int) {
 	defer s.wg.Done()
-	
+
 	workerName := fmt.Sprintf("%s-worker-%d", s.config.ConsumerName, workerID)
 	log.Printf("Worker %d started as %s", workerID, workerName)
-	
+
 	for {
 		select {
 		case <-s.ctx.Done():
@@ -301,20 +304,20 @@ func (s *VectorConsumerService) processEmbeddingJob(job *VectorJob) error {
 	if job.Text == "" {
 		return fmt.Errorf("embedding job missing text")
 	}
-	
+
 	log.Printf("Processing embedding job for text: %.50s...", job.Text)
-	
+
 	// Call embedding microservice (placeholder - would use HTTP client)
 	embedding, err := s.callEmbeddingService(job.Text)
 	if err != nil {
 		return fmt.Errorf("embedding service failed: %w", err)
 	}
-	
+
 	// Store embedding in database
 	if err := s.storeEmbedding(job.OwnerType, job.OwnerID, embedding); err != nil {
 		return fmt.Errorf("failed to store embedding: %w", err)
 	}
-	
+
 	// Publish completion event
 	return s.publishCompletionEvent("embedding", job.OwnerType, job.OwnerID, map[string]interface{}{
 		"embedding_dimensions": len(embedding),
@@ -324,24 +327,24 @@ func (s *VectorConsumerService) processEmbeddingJob(job *VectorJob) error {
 
 func (s *VectorConsumerService) processSimilarityJob(job *VectorJob) error {
 	log.Printf("Processing similarity job for %s/%s", job.OwnerType, job.OwnerID)
-	
+
 	// Extract similarity parameters from job data
 	vectorA, vectorB, err := s.extractSimilarityVectors(job)
 	if err != nil {
 		return fmt.Errorf("failed to extract vectors: %w", err)
 	}
-	
+
 	// Compute similarity using CUDA worker
 	similarityScore, err := s.computeSimilarity(vectorA, vectorB)
 	if err != nil {
 		return fmt.Errorf("similarity computation failed: %w", err)
 	}
-	
+
 	// Store similarity result
 	if err := s.storeSimilarityResult(job.OwnerType, job.OwnerID, similarityScore); err != nil {
 		return fmt.Errorf("failed to store similarity result: %w", err)
 	}
-	
+
 	// Publish completion event
 	return s.publishCompletionEvent("similarity", job.OwnerType, job.OwnerID, map[string]interface{}{
 		"similarity_score": similarityScore,
@@ -389,12 +392,12 @@ func (s *VectorConsumerService) updateRotatedPoints(ownerType, ownerID string, r
 	switch ownerType {
 	case "chunk":
 		query = `
-			UPDATE chunks 
+			UPDATE chunks
 			SET rotated_points = $1::jsonb, updated_at = NOW()
 			WHERE id = $2::uuid`
 	case "document":
 		query = `
-			UPDATE documents 
+			UPDATE documents
 			SET rotated_points = $1::jsonb, updated_at = NOW()
 			WHERE id = $2::uuid`
 	default:
@@ -441,7 +444,7 @@ func (s *VectorConsumerService) publishCompletionEvent(eventType, ownerType, own
 
 func (s *VectorConsumerService) startHealthServer() {
 	mux := http.NewServeMux()
-	
+
 	// Health check endpoint
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		status := map[string]interface{}{
@@ -454,11 +457,11 @@ func (s *VectorConsumerService) startHealthServer() {
 				"rabbitmq":   s.checkRabbitMQHealth(),
 			},
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(status)
 	})
-	
+
 	// Metrics endpoint
 	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
 		metrics := map[string]interface{}{
@@ -466,16 +469,16 @@ func (s *VectorConsumerService) startHealthServer() {
 			"workers": s.config.WorkerCount,
 			"batch_size": s.config.BatchSize,
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(metrics)
 	})
-	
+
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
 	}
-	
+
 	log.Println("✅ Health check server starting on :8080")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Printf("Health server error: %v", err)
@@ -486,13 +489,13 @@ func (s *VectorConsumerService) startHealthServer() {
 func (s *VectorConsumerService) callEmbeddingService(text string) ([]float32, error) {
 	// Placeholder implementation - would make HTTP request to embedding service
 	log.Printf("Calling embedding service for text length: %d", len(text))
-	
+
 	// Mock embedding vector (384 dimensions for nomic-embed-text)
 	embedding := make([]float32, 384)
 	for i := range embedding {
 		embedding[i] = float32(i) * 0.001 // Simple pattern for testing
 	}
-	
+
 	return embedding, nil
 }
 
@@ -502,7 +505,7 @@ func (s *VectorConsumerService) storeEmbedding(ownerType, ownerID string, embedd
 	if err != nil {
 		return fmt.Errorf("failed to marshal embedding: %w", err)
 	}
-	
+
 	var query string
 	switch ownerType {
 	case "chunk":
@@ -512,7 +515,7 @@ func (s *VectorConsumerService) storeEmbedding(ownerType, ownerID string, embedd
 	default:
 		return fmt.Errorf("unsupported owner type for embedding: %s", ownerType)
 	}
-	
+
 	_, err = s.db.Exec(query, string(embeddingJSON), ownerID)
 	return err
 }
@@ -523,23 +526,23 @@ func (s *VectorConsumerService) extractSimilarityVectors(job *VectorJob) ([]floa
 	if !exists {
 		return nil, nil, fmt.Errorf("missing vector_a in job data")
 	}
-	
+
 	vectorBData, exists := job.Data["vector_b"]
 	if !exists {
 		return nil, nil, fmt.Errorf("missing vector_b in job data")
 	}
-	
+
 	// Convert interface{} to []float32
 	vectorA, err := s.convertToFloat32Slice(vectorAData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to convert vector_a: %w", err)
 	}
-	
+
 	vectorB, err := s.convertToFloat32Slice(vectorBData)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to convert vector_b: %w", err)
 	}
-	
+
 	return vectorA, vectorB, nil
 }
 
@@ -572,23 +575,23 @@ func (s *VectorConsumerService) computeSimilarity(vectorA, vectorB []float32) (f
 		"vector_a": vectorA,
 		"vector_b": vectorB,
 	}
-	
+
 	// Execute CUDA worker (reusing existing executeCUDAWorker function)
 	result, err := s.executeCUDAWorker(cudaInput)
 	if err != nil {
 		return 0, fmt.Errorf("CUDA worker failed: %w", err)
 	}
-	
+
 	if result.Status != "success" {
 		return 0, fmt.Errorf("CUDA worker error: %s", result.Error)
 	}
-	
+
 	// Extract similarity score from result
 	// This assumes the CUDA worker returns similarity score in a known format
 	if len(result.Rotated) > 0 {
 		return result.Rotated[0], nil // First element as similarity score
 	}
-	
+
 	return 0.85, nil // Default similarity score for testing
 }
 
@@ -603,7 +606,7 @@ func (s *VectorConsumerService) storeSimilarityResult(ownerType, ownerID string,
 	default:
 		return fmt.Errorf("unsupported owner type for similarity: %s", ownerType)
 	}
-	
+
 	_, err := s.db.Exec(query, similarityScore, ownerID)
 	return err
 }
@@ -632,46 +635,46 @@ func (s *VectorConsumerService) checkRabbitMQHealth() string {
 
 func (s *VectorConsumerService) Shutdown() {
 	log.Println("🔄 Shutting down Vector Consumer Service...")
-	
+
 	s.cancel()
 	s.wg.Wait()
-	
+
 	if s.redisClient != nil {
 		s.redisClient.Close()
 	}
-	
+
 	if s.db != nil {
 		s.db.Close()
 	}
-	
+
 	if s.rabbitConn != nil {
 		s.rabbitConn.Close()
 	}
-	
+
 	log.Println("✅ Vector Consumer Service shutdown complete")
 }
 
 func main() {
 	// Load configuration
 	config := NewConfig()
-	
+
 	// Create and initialize service
 	service := NewVectorConsumerService(config)
-	
+
 	if err := service.Initialize(); err != nil {
 		log.Fatalf("Failed to initialize service: %v", err)
 	}
-	
+
 	// Handle graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	
+
 	// Start service
 	service.Start()
-	
+
 	// Wait for shutdown signal
 	<-sigChan
-	
+
 	// Graceful shutdown
 	service.Shutdown()
 }

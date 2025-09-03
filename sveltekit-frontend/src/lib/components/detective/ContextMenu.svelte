@@ -2,9 +2,12 @@
 https://svelte.dev/e/js_parse_error -->
 
 <script lang="ts">
-  import { $props } from 'svelte';
+  import { $props, onMount, tick } from 'svelte';
 
   interface Props {
+    x: number;
+    y: number;
+    item: Evidence | null;
     onauditResults?: (event?: unknown) => void;
     onauditError?: (event?: unknown) => void;
     onagentReviewResult?: (event?: unknown) => void;
@@ -12,21 +15,24 @@ https://svelte.dev/e/js_parse_error -->
     onsendToCase?: (event?: unknown) => void;
     onclose?: (event?: unknown) => void;
   }
+  // Destructure all props (Svelte 5 runes)
   let {
     x,
     y,
-    item
+    item,
+    onauditResults,
+    onauditError,
+    onagentReviewResult,
+    onagentReviewError,
+    onsendToCase,
+    onclose
   }: Props = $props();
-
-
 
   import DropdownMenuContent from "$lib/components/ui/dropdown-menu/DropdownMenuContent.svelte";
   import DropdownMenuItem from "$lib/components/ui/dropdown-menu/DropdownMenuItem.svelte";
   import DropdownMenuRoot from "$lib/components/ui/dropdown-menu/DropdownMenuRoot.svelte";
   import DropdownMenuSeparator from "$lib/components/ui/dropdown-menu/DropdownMenuSeparator.svelte";
   import type { Case, Evidence } from "$lib/types/index";
-  
-
 
   // --- Phase 10: Context7 Evidence Actions ---
   // Trigger semantic audit, agent review, or vector search for this evidence
@@ -41,12 +47,12 @@ https://svelte.dev/e/js_parse_error -->
       if (!res.ok) throw new Error('Failed to audit evidence');
       const data = await res.json();
       onauditResults?.();
-    } catch (error) {
-      onauditError?.({ message: error.message, evidence: item });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      onauditError?.({ message, evidence: item });
     }
     closeMenu();
   }
-
   async function triggerAgentReview() {
     if (!item) return;
     try {
@@ -56,12 +62,14 @@ https://svelte.dev/e/js_parse_error -->
         body: JSON.stringify({ evidenceId: item.id })
       });
       if (!res.ok) throw new Error('Failed to trigger agent review');
-      const data = await res.json();
-      onagentReviewResult?.();
-    } catch (error) {
-      onagentReviewError?.(error.message, item);
+    closeMenu();
+  }
+
+let cases = $state<Case[]>([]);
+let menuOpen = $state(true);
     }
     closeMenu();
+  }
   }
 let cases = $state<Case[] >([]);
 let menuOpen = $state(true);
@@ -118,25 +126,24 @@ let menuOpen = $state(true);
     onclose?.();
 }
 </script>
-<DropdownMenuRoot
-  openchange={(e) => {
-    if (!e.detail.open) closeMenu();
-  }}
->
-  <!-- Hidden trigger for programmatic open -->
   <button
     style="position:fixed;left:-9999px;top:-9999px;"
     aria-label="Open context menu"
-    tabindex={-1}
-  ></button>
-  {#if menuOpen}
-    <DropdownMenuContent
-      menu={menuOpen}
-      class="space-y-4"
-      style="position:fixed;left:{x}px;top:{y}px;"
-      keydown={(e) => {
-        if (e.detail && e.detail.key === "Escape") closeMenu();
+    tabindex={-1}>
+  </button>
+  <DropdownMenuContent
+    menu={menuOpen}
+    class="space-y-4"
+    style="position:fixed;left:{x}px;top:{y}px;"
+    on:keydown={(e) => {
+      if (e.key === "Escape") closeMenu();
+    }}
+    aria-label="Evidence context menu"
+  >
+        if (e.key === "Escape") closeMenu();
       }}
+      aria-label="Evidence context menu"
+    >
       aria-label="Evidence context menu"
     >
       <div class="space-y-4">
@@ -195,9 +202,8 @@ let menuOpen = $state(true);
       </div>
       <DropdownMenuItem
         select={deleteEvidence}
-        class="space-y-4"
-      >
-        <i class="space-y-4"></i>
+    </DropdownMenuContent>
+</DropdownMenuRoot>
         <span class="space-y-4">Delete</span>
       </DropdownMenuItem>
     </DropdownMenuContent>

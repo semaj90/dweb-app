@@ -1,3 +1,6 @@
+//go:build experimental
+// +build experimental
+
 package main
 
 import (
@@ -104,7 +107,7 @@ func (gs *GraphService) Start() {
 			"recent_queries": len(gs.queries),
 			"capabilities": []string{
 				"node_creation",
-				"relationship_creation", 
+				"relationship_creation",
 				"property_storage",
 				"basic_traversal",
 				"pattern_matching",
@@ -164,7 +167,7 @@ func (gs *GraphService) Start() {
 		})
 	})
 
-	// Create relationship endpoint  
+	// Create relationship endpoint
 	r.POST("/api/graph/relationships", func(c *gin.Context) {
 		var edge GraphEdge
 		if err := c.ShouldBindJSON(&edge); err != nil {
@@ -179,7 +182,7 @@ func (gs *GraphService) Start() {
 
 		c.JSON(http.StatusCreated, gin.H{
 			"id": edge.ID,
-			"status": "created", 
+			"status": "created",
 			"relationship": edge,
 		})
 	})
@@ -187,9 +190,9 @@ func (gs *GraphService) Start() {
 	// Legal AI specific endpoints
 	r.GET("/api/graph/legal/cases/:id/related", func(c *gin.Context) {
 		caseID := c.Param("id")
-		
+
 		relatedCases := gs.findRelatedLegalCases(caseID)
-		
+
 		c.JSON(http.StatusOK, gin.H{
 			"case_id": caseID,
 			"related_cases": relatedCases,
@@ -199,7 +202,7 @@ func (gs *GraphService) Start() {
 
 	r.GET("/api/graph/legal/precedents", func(c *gin.Context) {
 		precedents := gs.getLegalPrecedents()
-		
+
 		c.JSON(http.StatusOK, gin.H{
 			"precedents": precedents,
 			"total_count": len(precedents),
@@ -213,7 +216,7 @@ func (gs *GraphService) Start() {
 	log.Printf("🔗 Simple Graph Database Service starting on port %s", gs.port)
 	log.Printf("📊 Compatible with neo4j-driver JavaScript/TypeScript")
 	log.Printf("🏛️ Legal AI graph queries available at /api/graph/legal/*")
-	
+
 	if err := r.Run(":" + gs.port); err != nil {
 		log.Fatalf("Failed to start graph service: %v", err)
 	}
@@ -222,9 +225,9 @@ func (gs *GraphService) Start() {
 func (gs *GraphService) executeCypherQuery(query string, params map[string]interface{}) []map[string]interface{} {
 	// Basic Cypher-like query execution
 	// This is a simplified implementation for demonstration
-	
+
 	results := make([]map[string]interface{}, 0)
-	
+
 	// Handle MATCH queries
 	if query == "MATCH (n) RETURN n" {
 		for _, node := range gs.nodes {
@@ -233,7 +236,7 @@ func (gs *GraphService) executeCypherQuery(query string, params map[string]inter
 			})
 		}
 	}
-	
+
 	// Handle CREATE queries
 	if query == "CREATE (n:Case {title: $title}) RETURN n" {
 		if title, ok := params["title"].(string); ok {
@@ -254,7 +257,7 @@ func (gs *GraphService) executeCypherQuery(query string, params map[string]inter
 
 func (gs *GraphService) findRelatedLegalCases(caseID string) []map[string]interface{} {
 	related := make([]map[string]interface{}, 0)
-	
+
 	// Find edges connected to this case
 	for _, edge := range gs.edges {
 		if edge.FromNodeID == caseID || edge.ToNodeID == caseID {
@@ -264,7 +267,7 @@ func (gs *GraphService) findRelatedLegalCases(caseID string) []map[string]interf
 			} else {
 				relatedNodeID = edge.FromNodeID
 			}
-			
+
 			if relatedNode, exists := gs.nodes[relatedNodeID]; exists {
 				related = append(related, map[string]interface{}{
 					"node": relatedNode,
@@ -274,13 +277,13 @@ func (gs *GraphService) findRelatedLegalCases(caseID string) []map[string]interf
 			}
 		}
 	}
-	
+
 	return related
 }
 
 func (gs *GraphService) getLegalPrecedents() []map[string]interface{} {
 	precedents := make([]map[string]interface{}, 0)
-	
+
 	for _, node := range gs.nodes {
 		if node.Label == "Precedent" {
 			precedents = append(precedents, map[string]interface{}{
@@ -290,7 +293,7 @@ func (gs *GraphService) getLegalPrecedents() []map[string]interface{} {
 			})
 		}
 	}
-	
+
 	return precedents
 }
 
@@ -310,12 +313,12 @@ func (gs *GraphService) initializeSampleLegalData() {
 			UpdatedAt: time.Now(),
 		},
 		{
-			ID:    "case_tort_001", 
+			ID:    "case_tort_001",
 			Label: "Case",
 			Properties: map[string]interface{}{
 				"title":        "Personal Injury - Vehicle Accident",
 				"case_type":    "tort",
-				"jurisdiction": "state", 
+				"jurisdiction": "state",
 				"year":         2023,
 			},
 			CreatedAt: time.Now(),
@@ -326,7 +329,7 @@ func (gs *GraphService) initializeSampleLegalData() {
 	precedents := []*GraphNode{
 		{
 			ID:    "precedent_001",
-			Label: "Precedent", 
+			Label: "Precedent",
 			Properties: map[string]interface{}{
 				"title":     "Landmark Contract Interpretation",
 				"citation":  "123 F.3d 456 (2022)",

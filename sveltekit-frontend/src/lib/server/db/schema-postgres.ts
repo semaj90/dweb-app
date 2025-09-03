@@ -42,7 +42,7 @@ export const users = pgTable('users', {
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   deleted_at: timestamp('deleted_at', { withTimezone: true, mode: 'date' })
-}, (table) => ({
+}, (table: typeof users) => ({
   // Indexes matching database structure
   emailIdx: index('users_email_idx').on(table.email),
   usernameIdx: index('users_username_idx').on(table.username),
@@ -70,7 +70,7 @@ export const sessions = pgTable("sessions", {
     withTimezone: true,
     mode: "date"
   }).defaultNow().notNull()
-}, (table) => ({
+}, (table: typeof sessions) => ({
   // Indexes matching database structure (use snake_case keys)
   expires_at_idx: index('sessions_expires_at_idx').on(table.expires_at),
   user_id_idx: index('sessions_user_id_idx').on(table.user_id)
@@ -113,12 +113,17 @@ export const evidence = pgTable('evidence', {
   isPublic: boolean('is_public').default(false),
   ocrText: text('ocr_text'),
   contentText: text('content_text'),
+  // OCR integration enhancement fields (nullable to avoid migration breakage if not yet applied)
+  ocr_confidence: varchar('ocr_confidence', { length: 32 }),
+  ocr_word_count: varchar('ocr_word_count', { length: 32 }),
+  ocr_processing_time_ms: varchar('ocr_processing_time_ms', { length: 32 }),
+  ocr_metadata: jsonb('ocr_metadata').default({}),
   embedding: vector('embedding', { dimensions: 384 }),
   uploadedAt: timestamp('uploaded_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   processedAt: timestamp('processed_at', { withTimezone: true, mode: 'date' }),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
-}, (table) => ({
+}, (table: typeof evidence) => ({
   caseIdIdx: index('evidence_case_id_idx').on(table.case_id),
   fileTypeIdx: index('evidence_file_type_idx').on(table.fileType),
   uploadedAtIdx: index('evidence_uploaded_at_idx').on(table.uploadedAt),
@@ -143,7 +148,7 @@ export const documentChunks = pgTable('document_chunks', {
   content: text('content').notNull(),
   embedding: vector('embedding', { dimensions: 384 }),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
-}, (table) => ({
+}, (table: typeof documentChunks) => ({
   documentIdIdx: index('document_chunks_document_id_idx').on(table.document_id),
   embeddingIdx: index('document_chunks_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
 }));
@@ -187,6 +192,8 @@ export const evidenceRelations = relations(evidence, ({ one }) => ({
   })
 }));
 
+// Relations defined later to avoid circular dependencies
+
 // Type exports for Lucia auth compatibility
 // Additional missing tables that are referenced in errors
 export const userProfiles = pgTable('user_profiles', {
@@ -198,9 +205,19 @@ export const userProfiles = pgTable('user_profiles', {
 export const reports = pgTable('reports', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
+  content: text('content'),
+  report_type: varchar('report_type', { length: 100 }).default('analysis').notNull(),
   status: varchar('status', { length: 50 }).default('draft').notNull(),
-  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
-});
+  case_id: uuid('case_id').references(() => cases.id, { onDelete: 'cascade' }),
+  created_by: uuid('created_by').references(() => users.id, { onDelete: 'cascade' }),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+}, (table: typeof reports) => ({
+  createdByIdx: index('reports_created_by_idx').on(table.created_by),
+  caseIdIdx: index('reports_case_id_idx').on(table.case_id),
+  statusIdx: index('reports_status_idx').on(table.status)
+}));
 
 export const statutes = pgTable('statutes', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -252,6 +269,41 @@ export const ragMessages = pgTable('rag_messages', {
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
 });
 
+// Enhanced conversation tables for AI Assistant
+export const conversations = pgTable('conversations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  case_id: uuid('case_id').references(() => cases.id, { onDelete: 'set null' }),
+  title: varchar('title', { length: 255 }).notNull(),
+  context: jsonb('context').default({}),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  archived_at: timestamp('archived_at', { withTimezone: true, mode: 'date' })
+}, (table: typeof conversations) => ({
+  userIdIdx: index('conversations_user_id_idx').on(table.user_id),
+  caseIdIdx: index('conversations_case_id_idx').on(table.case_id),
+  createdAtIdx: index('conversations_created_at_idx').on(table.created_at)
+}));
+
+export const conversationMessages = pgTable('conversation_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  conversation_id: uuid('conversation_id').references(() => conversations.id, { onDelete: 'cascade' }),
+  role: varchar('role', { length: 20 }).notNull(), // 'user' or 'assistant'
+  content: text('content').notNull(),
+  model: varchar('model', { length: 100 }),
+  token_count: varchar('token_count', { length: 50 }),
+  processing_time: varchar('processing_time', { length: 50 }),
+  confidence: varchar('confidence', { length: 50 }),
+  vector_search_results: jsonb('vector_search_results').default([]),
+  metadata: jsonb('metadata').default({}),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
+}, (table: typeof conversationMessages) => ({
+  conversationIdIdx: index('conversation_messages_conversation_id_idx').on(table.conversation_id),
+  roleIdx: index('conversation_messages_role_idx').on(table.role),
+  createdAtIdx: index('conversation_messages_created_at_idx').on(table.created_at)
+}));
+
 export const vectorMetadata = pgTable('vector_metadata', {
   id: uuid('id').primaryKey().defaultRandom(),
   document_id: uuid('document_id').notNull(),
@@ -259,7 +311,7 @@ export const vectorMetadata = pgTable('vector_metadata', {
   embedding: vector('embedding', { dimensions: 384 }),
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
-}, (table) => ({
+}, (table: typeof vectorMetadata) => ({
   documentIdIdx: index('vector_metadata_document_id_idx').on(table.document_id),
   embeddingIdx: index('vector_metadata_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
 }));
@@ -285,10 +337,17 @@ export const personsOfInterest = pgTable('persons_of_interest', {
   case_ids: jsonb('case_ids').default([]),
   risk_level: varchar('risk_level', { length: 50 }).default('low'),
   status: varchar('status', { length: 50 }).default('active'),
+  contact_info: jsonb('contact_info').default({}),
+  created_by: uuid('created_by').references(() => users.id, { onDelete: 'cascade' }),
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull()
-});
+}, (table: typeof personsOfInterest) => ({
+  createdByIdx: index('persons_of_interest_created_by_idx').on(table.created_by),
+  nameIdx: index('persons_of_interest_name_idx').on(table.name),
+  riskLevelIdx: index('persons_of_interest_risk_level_idx').on(table.risk_level),
+  statusIdx: index('persons_of_interest_status_idx').on(table.status)
+}));
 
 export const canvasStates = pgTable('canvas_states', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -309,7 +368,7 @@ export const embeddingCache = pgTable('embedding_cache', {
   metadata: jsonb('metadata').default({}),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   expires_at: timestamp('expires_at', { withTimezone: true, mode: 'date' })
-}, (table) => ({
+}, (table: typeof ragMessages) => ({
   contentHashIdx: index('embedding_cache_content_hash_idx').on(table.content_hash),
   embeddingIdx: index('embedding_cache_embedding_hnsw_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))
 }));
@@ -334,6 +393,10 @@ export type AutoTagType = typeof autoTags.$inferSelect;
 export type CaseScoreType = typeof caseScores.$inferSelect;
 export type RagSessionType = typeof ragSessions.$inferSelect;
 export type RagMessageType = typeof ragMessages.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type ConversationMessage = typeof conversationMessages.$inferSelect;
+export type NewConversation = typeof conversations.$inferInsert;
+export type NewConversationMessage = typeof conversationMessages.$inferInsert;
 export type VectorMetadataType = typeof vectorMetadata.$inferSelect;
 export type Criminal = typeof criminals.$inferSelect;
 export type PersonOfInterest = typeof personsOfInterest.$inferSelect;
@@ -443,3 +506,23 @@ export const document_chunks = documentChunks;
 export const documents = legal_documents;
 export const persons_of_interest = personsOfInterest;
 export const embedding_cache = embeddingCache;
+
+// Conversation relations (defined at end to avoid circular dependencies)
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
+  user: one(users, {
+    fields: [conversations.user_id],
+    references: [users.id]
+  }),
+  case: one(cases, {
+    fields: [conversations.case_id],
+    references: [cases.id]
+  }),
+  messages: many(conversationMessages)
+}));
+
+export const conversationMessagesRelations = relations(conversationMessages, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [conversationMessages.conversation_id],
+    references: [conversations.id]
+  })
+}));

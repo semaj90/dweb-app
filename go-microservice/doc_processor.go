@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -24,10 +24,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/minio/simdjson-go"
 	"github.com/valyala/fastjson"
-	"github.com/gorilla/websocket"
 )
 
 type DocProcessor struct {
@@ -68,7 +68,7 @@ type OllamaClient struct {
 
 func NewDocProcessor() *DocProcessor {
 	ctx := context.Background()
-	
+
 	// Redis connection
 	redisOpts := &redis.Options{
 		Addr:         "localhost:6379",
@@ -76,15 +76,15 @@ func NewDocProcessor() *DocProcessor {
 		MinIdleConns: 8,
 	}
 	redisClient := redis.NewClient(redisOpts)
-	
+
 	// PostgreSQL connection
 	pgConfig, _ := pgxpool.ParseConfig("postgres://postgres:postgres@localhost:5432/docs_db?pool_max_conns=25")
 	pgPool, _ := pgxpool.NewWithConfig(ctx, pgConfig)
-	
+
 	// SIMD parser with 10MB capacity
 	simdParser := simdjson.NewParser()
 	simdParser.SetCapacity(10 << 20)
-	
+
 	return &DocProcessor{
 		redisClient:  redisClient,
 		pgPool:       pgPool,
@@ -107,16 +107,16 @@ func (dp *DocProcessor) ProcessDocument(c *gin.Context) {
 		Content string                 `json:"content"`
 		Options map[string]interface{} `json:"options"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Acquire worker slot
 	dp.workerPool <- struct{}{}
 	defer func() { <-dp.workerPool }()
-	
+
 	start := time.Now()
 	doc := &Document{
 		ID:        fmt.Sprintf("doc_%d", time.Now().UnixNano()),
@@ -124,7 +124,7 @@ func (dp *DocProcessor) ProcessDocument(c *gin.Context) {
 		Timestamp: time.Now(),
 		Metadata:  make(map[string]interface{}),
 	}
-	
+
 	// Fetch content if URL provided
 	if req.URL != "" {
 		content, err := dp.fetchDocument(req.URL)
@@ -136,34 +136,34 @@ func (dp *DocProcessor) ProcessDocument(c *gin.Context) {
 	} else {
 		doc.Content = req.Content
 	}
-	
+
 	// Parse with SIMD
 	parsed, parseTime := dp.parseWithSIMD([]byte(doc.Content))
 	doc.Parsed = parsed
 	doc.Metadata["parse_time_us"] = parseTime
-	
+
 	// Generate embedding and summary concurrently
 	var wg sync.WaitGroup
 	wg.Add(2)
-	
+
 	go func() {
 		defer wg.Done()
 		embedding, _ := dp.generateEmbedding(doc.Content)
 		doc.Embedding = embedding
 	}()
-	
+
 	go func() {
 		defer wg.Done()
 		summary, _ := dp.generateSummary(doc.Content)
 		doc.Summary = summary
 	}()
-	
+
 	wg.Wait()
-	
+
 	// Store in databases
 	dp.storeInPostgres(doc)
 	dp.cacheInRedis(doc)
-	
+
 	// Update stats
 	dp.mu.Lock()
 	dp.stats.DocsProcessed++
@@ -171,7 +171,7 @@ func (dp *DocProcessor) ProcessDocument(c *gin.Context) {
 	processingTime := time.Since(start).Seconds()
 	dp.stats.AvgProcessTime = (dp.stats.AvgProcessTime + processingTime) / 2
 	dp.mu.Unlock()
-	
+
 	c.JSON(200, gin.H{
 		"id":             doc.ID,
 		"summary":        doc.Summary,
@@ -184,35 +184,35 @@ func (dp *DocProcessor) ProcessDocument(c *gin.Context) {
 
 func (dp *DocProcessor) parseWithSIMD(data []byte) (map[string]interface{}, int64) {
 	start := time.Now()
-	
+
 	// Try SIMD first
 	pj, err := dp.simdParser.Parse(data, nil)
 	if err == nil {
 		result := make(map[string]interface{})
 		iter := pj.Iter()
 		iter.Advance()
-		
+
 		if iter.Type() == simdjson.TypeObject {
 			obj, _ := iter.Object(nil)
 			obj.ForEach(func(key []byte, val simdjson.Iter) {
 				result[string(key)] = dp.extractValue(val)
 			}, nil)
 		}
-		
+
 		return result, time.Since(start).Microseconds()
 	}
-	
+
 	// Fallback to fastjson
 	val, err := dp.fastParser.ParseBytes(data)
 	if err != nil {
 		return map[string]interface{}{"raw": string(data)}, time.Since(start).Microseconds()
 	}
-	
+
 	result := make(map[string]interface{})
 	val.GetObject().Visit(func(key []byte, v *fastjson.Value) {
 		result[string(key)] = v.String()
 	})
-	
+
 	return result, time.Since(start).Microseconds()
 }
 
@@ -241,7 +241,7 @@ func (dp *DocProcessor) fetchDocument(url string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	return string(body), err
 }
@@ -253,22 +253,22 @@ func (dp *DocProcessor) generateEmbedding(text string) ([]float32, error) {
 		dp.mu.Lock()
 		dp.stats.CacheHits++
 		dp.mu.Unlock()
-		
+
 		var embedding []float32
 		json.Unmarshal([]byte(cached), &embedding)
 		return embedding, nil
 	}
-	
+
 	dp.mu.Lock()
 	dp.stats.CacheMisses++
 	dp.mu.Unlock()
-	
+
 	// Generate with Ollama
 	req := map[string]interface{}{
 		"model":  "nomic-embed-text",
 		"prompt": text,
 	}
-	
+
 	body, _ := json.Marshal(req)
 	resp, err := dp.ollamaClient.client.Post(
 		dp.ollamaClient.baseURL+"/api/embeddings",
@@ -279,22 +279,22 @@ func (dp *DocProcessor) generateEmbedding(text string) ([]float32, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	var result struct {
 		Embedding []float32 `json:"embedding"`
 	}
 	json.NewDecoder(resp.Body).Decode(&result)
-	
+
 	// Cache for future use
 	embeddingJSON, _ := json.Marshal(result.Embedding)
 	dp.redisClient.Set(context.Background(), "embed:"+text[:min(50, len(text))], embeddingJSON, 1*time.Hour)
-	
+
 	return result.Embedding, nil
 }
 
 func (dp *DocProcessor) generateSummary(text string) (string, error) {
 	prompt := fmt.Sprintf("Summarize this document in 2-3 sentences:\n\n%s", text[:min(2000, len(text))])
-	
+
 	req := map[string]interface{}{
 		"model":  "llama3",
 		"prompt": prompt,
@@ -304,7 +304,7 @@ func (dp *DocProcessor) generateSummary(text string) (string, error) {
 			"max_tokens":  150,
 		},
 	}
-	
+
 	body, _ := json.Marshal(req)
 	resp, err := dp.ollamaClient.client.Post(
 		dp.ollamaClient.baseURL+"/api/generate",
@@ -315,7 +315,7 @@ func (dp *DocProcessor) generateSummary(text string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	
+
 	var result struct {
 		Response string `json:"response"`
 	}
@@ -325,7 +325,7 @@ func (dp *DocProcessor) generateSummary(text string) (string, error) {
 
 func (dp *DocProcessor) storeInPostgres(doc *Document) error {
 	ctx := context.Background()
-	
+
 	query := `
 		INSERT INTO documents (id, url, content, parsed, summary, embedding, metadata, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -336,10 +336,10 @@ func (dp *DocProcessor) storeInPostgres(doc *Document) error {
 			embedding = EXCLUDED.embedding,
 			updated_at = NOW()
 	`
-	
+
 	parsedJSON, _ := json.Marshal(doc.Parsed)
 	metadataJSON, _ := json.Marshal(doc.Metadata)
-	
+
 	_, err := dp.pgPool.Exec(ctx, query,
 		doc.ID, doc.URL, doc.Content, parsedJSON,
 		doc.Summary, doc.Embedding, metadataJSON, doc.Timestamp,
@@ -349,20 +349,20 @@ func (dp *DocProcessor) storeInPostgres(doc *Document) error {
 
 func (dp *DocProcessor) cacheInRedis(doc *Document) error {
 	ctx := context.Background()
-	
+
 	// Cache summary
 	dp.redisClient.Set(ctx, "summary:"+doc.ID, doc.Summary, 24*time.Hour)
-	
+
 	// Cache full document
 	docJSON, _ := json.Marshal(doc)
 	dp.redisClient.Set(ctx, "doc:"+doc.ID, docJSON, 1*time.Hour)
-	
+
 	// Add to sorted set for ranking
 	dp.redisClient.ZAdd(ctx, "docs:recent", redis.Z{
 		Score:  float64(doc.Timestamp.Unix()),
 		Member: doc.ID,
 	})
-	
+
 	return nil
 }
 
@@ -372,13 +372,13 @@ func (dp *DocProcessor) WebSocketHandler(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	// Stream processing updates
 	for {
 		dp.mu.RLock()
 		stats := dp.stats
 		dp.mu.RUnlock()
-		
+
 		conn.WriteJSON(gin.H{
 			"docs_processed": stats.DocsProcessed,
 			"embeddings":     stats.EmbeddingsGen,
@@ -386,7 +386,7 @@ func (dp *DocProcessor) WebSocketHandler(c *gin.Context) {
 			"cache_misses":   stats.CacheMisses,
 			"avg_time":       stats.AvgProcessTime,
 		})
-		
+
 		time.Sleep(1 * time.Second)
 	}
 }
@@ -396,36 +396,36 @@ func (dp *DocProcessor) SearchSimilar(c *gin.Context) {
 		Query string `json:"query"`
 		Limit int    `json:"limit"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if req.Limit == 0 {
 		req.Limit = 10
 	}
-	
+
 	// Generate query embedding
 	embedding, _ := dp.generateEmbedding(req.Query)
-	
+
 	// Search in PostgreSQL using pgvector
 	ctx := context.Background()
 	query := `
-		SELECT id, url, summary, 
+		SELECT id, url, summary,
 		       1 - (embedding <=> $1::vector) as similarity
 		FROM documents
 		ORDER BY embedding <=> $1::vector
 		LIMIT $2
 	`
-	
+
 	rows, err := dp.pgPool.Query(ctx, query, embedding, req.Limit)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
-	
+
 	results := []gin.H{}
 	for rows.Next() {
 		var id, url, summary string
@@ -438,7 +438,7 @@ func (dp *DocProcessor) SearchSimilar(c *gin.Context) {
 			"similarity": similarity,
 		})
 	}
-	
+
 	c.JSON(200, gin.H{
 		"query":   req.Query,
 		"results": results,
@@ -457,19 +457,19 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	dp := NewDocProcessor()
-	
+
 	// API endpoints
 	r.POST("/process-document", dp.ProcessDocument)
 	r.POST("/search-similar", dp.SearchSimilar)
 	r.GET("/ws", dp.WebSocketHandler)
-	
+
 	r.GET("/stats", func(c *gin.Context) {
 		dp.mu.RLock()
 		stats := dp.stats
 		dp.mu.RUnlock()
 		c.JSON(200, stats)
 	})
-	
+
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "operational",
@@ -478,7 +478,7 @@ func main() {
 			"pg":      dp.pgPool.Ping(context.Background()) == nil,
 		})
 	})
-	
+
 	log.Println("🚀 Document Processing Microservice on :8080")
 	log.Println("   SIMD: ✓ | Redis: ✓ | PostgreSQL: ✓ | WebSocket: ✓")
 	r.Run(":8080")

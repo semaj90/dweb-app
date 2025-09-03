@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -30,16 +30,16 @@ type MulticoreService struct {
 	redis      *redis.Client
 	config     MulticoreConfig
 	wsUpgrader websocket.Upgrader
-	
+
 	// Processing pools
 	tensorPool    *TensorProcessorPool
 	jsonPool      *JSONProcessorPool
 	simdProcessor *SIMDProcessor
-	
+
 	// Metrics and monitoring
 	metrics       *ServiceMetrics
 	mu            sync.RWMutex
-	
+
 	// Worker management
 	workers       map[int]*WorkerInstance
 	jobQueue      chan ProcessingJob
@@ -183,7 +183,7 @@ type JSONParser struct {
 
 func NewMulticoreService() *MulticoreService {
 	config := loadMulticoreConfig()
-	
+
 	service := &MulticoreService{
 		config:        config,
 		workers:       make(map[int]*WorkerInstance),
@@ -194,7 +194,7 @@ func NewMulticoreService() *MulticoreService {
 			CheckOrigin: func(r *http.Request) bool { return true },
 		},
 	}
-	
+
 	return service
 }
 
@@ -215,39 +215,39 @@ func loadMulticoreConfig() MulticoreConfig {
 
 func (s *MulticoreService) Initialize() error {
 	log.Println("🚀 Initializing Enhanced Multicore Service...")
-	
+
 	// Initialize database
 	var err error
 	s.db, err = pgxpool.New(context.Background(), s.config.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("database connection failed: %w", err)
 	}
-	
+
 	// Initialize Redis
 	opt, err := redis.ParseURL(s.config.RedisURL)
 	if err != nil {
 		return fmt.Errorf("redis URL parsing failed: %w", err)
 	}
 	s.redis = redis.NewClient(opt)
-	
+
 	// Initialize SIMD processor
 	s.simdProcessor = NewSIMDProcessor(s.config.SIMDOptimized)
-	
+
 	// Initialize tensor processor pool
 	s.tensorPool = NewTensorProcessorPool(s.config.EnableGPU, s.config.TensorCacheSize)
-	
+
 	// Initialize JSON processor pool
 	s.jsonPool = NewJSONProcessorPool(s.config.JSONBufferSize)
-	
+
 	// Initialize workers
 	s.initializeWorkers()
-	
+
 	// Start metric collection
 	go s.collectMetrics()
-	
+
 	// Start job processing
 	go s.processJobs()
-	
+
 	log.Printf("✅ Enhanced Multicore Service initialized with %d workers", s.config.WorkerCount)
 	return nil
 }
@@ -262,7 +262,7 @@ func (s *MulticoreService) initializeWorkers() {
 			LastActivity: time.Now(),
 			Performance:  ProcessingMetrics{},
 		}
-		
+
 		s.workers[worker.ID] = worker
 		go s.runWorker(worker)
 	}
@@ -273,24 +273,24 @@ func (s *MulticoreService) runWorker(worker *WorkerInstance) {
 		if worker.Status != "idle" {
 			continue
 		}
-		
+
 		worker.Status = "busy"
 		worker.CurrentJob = &job
 		worker.LastActivity = time.Now()
-		
+
 		startTime := time.Now()
 		result := s.processJob(worker, &job)
 		processingTime := time.Since(startTime)
-		
+
 		result.ProcessingTime = processingTime
 		result.WorkerID = worker.ID
 		result.Timestamp = time.Now()
-		
+
 		worker.JobsProcessed++
 		worker.Status = "idle"
 		worker.CurrentJob = nil
 		worker.LastActivity = time.Now()
-		
+
 		s.resultChannel <- result
 	}
 }
@@ -300,12 +300,12 @@ func (s *MulticoreService) processJob(worker *WorkerInstance, job *ProcessingJob
 		JobID:   job.ID,
 		Success: false,
 	}
-	
+
 	startTime := time.Now()
 	job.StartedAt = &startTime
 	job.Status = "processing"
 	job.WorkerID = worker.ID
-	
+
 	defer func() {
 		completedTime := time.Now()
 		job.CompletedAt = &completedTime
@@ -314,7 +314,7 @@ func (s *MulticoreService) processJob(worker *WorkerInstance, job *ProcessingJob
 			job.Status = "error"
 		}
 	}()
-	
+
 	switch job.Type {
 	case "tensor":
 		result = s.processTensorJob(worker, job)
@@ -328,13 +328,13 @@ func (s *MulticoreService) processJob(worker *WorkerInstance, job *ProcessingJob
 		result.Error = fmt.Sprintf("unknown job type: %s", job.Type)
 		return result
 	}
-	
+
 	return result
 }
 
 func (s *MulticoreService) processTensorJob(worker *WorkerInstance, job *ProcessingJob) ProcessingResult {
 	result := ProcessingResult{JobID: job.ID}
-	
+
 	// Convert job data to tensor data
 	tensorData, ok := job.Data.(*TensorData)
 	if !ok {
@@ -344,14 +344,14 @@ func (s *MulticoreService) processTensorJob(worker *WorkerInstance, job *Process
 			result.Error = fmt.Sprintf("failed to marshal tensor data: %v", err)
 			return result
 		}
-		
+
 		tensorData = &TensorData{}
 		if err := json.Unmarshal(dataBytes, tensorData); err != nil {
 			result.Error = fmt.Sprintf("failed to unmarshal tensor data: %v", err)
 			return result
 		}
 	}
-	
+
 	// Get tensor processor from pool
 	processor := s.tensorPool.GetProcessor()
 	if processor == nil {
@@ -359,16 +359,16 @@ func (s *MulticoreService) processTensorJob(worker *WorkerInstance, job *Process
 		return result
 	}
 	defer s.tensorPool.ReleaseProcessor(processor)
-	
+
 	// Process tensor based on operation
 	operation := job.Context["operation"].(string)
 	if operation == "" {
 		operation = "compute"
 	}
-	
+
 	var tensorResult interface{}
 	var err error
-	
+
 	switch operation {
 	case "embedding":
 		tensorResult, err = s.computeEmbedding(processor, tensorData)
@@ -381,22 +381,22 @@ func (s *MulticoreService) processTensorJob(worker *WorkerInstance, job *Process
 	default:
 		tensorResult, err = s.computeGenericTensor(processor, tensorData, job.Context)
 	}
-	
+
 	if err != nil {
 		result.Error = err.Error()
 		return result
 	}
-	
+
 	result.Success = true
 	result.Result = tensorResult
 	result.Metrics.TensorOps = 1
-	
+
 	return result
 }
 
 func (s *MulticoreService) processJSONJob(worker *WorkerInstance, job *ProcessingJob) ProcessingResult {
 	result := ProcessingResult{JobID: job.ID}
-	
+
 	// Get JSON parser from pool
 	parser := s.jsonPool.GetParser()
 	if parser == nil {
@@ -404,16 +404,16 @@ func (s *MulticoreService) processJSONJob(worker *WorkerInstance, job *Processin
 		return result
 	}
 	defer s.jsonPool.ReleaseParser(parser)
-	
+
 	// Process JSON based on operation
 	operation := job.Context["operation"].(string)
 	if operation == "" {
 		operation = "parse"
 	}
-	
+
 	var jsonResult interface{}
 	var err error
-	
+
 	switch operation {
 	case "parse":
 		jsonResult, err = s.parseJSON(parser, job.Data)
@@ -426,31 +426,31 @@ func (s *MulticoreService) processJSONJob(worker *WorkerInstance, job *Processin
 	default:
 		jsonResult, err = s.processGenericJSON(parser, job.Data, job.Context)
 	}
-	
+
 	if err != nil {
 		result.Error = err.Error()
 		return result
 	}
-	
+
 	result.Success = true
 	result.Result = jsonResult
 	result.Metrics.JSONOps = 1
-	
+
 	return result
 }
 
 func (s *MulticoreService) processSIMDJob(worker *WorkerInstance, job *ProcessingJob) ProcessingResult {
 	result := ProcessingResult{JobID: job.ID}
-	
+
 	// Process SIMD operation
 	operation := job.Context["operation"].(string)
 	if operation == "" {
 		operation = "vector_ops"
 	}
-	
+
 	var simdResult interface{}
 	var err error
-	
+
 	switch operation {
 	case "vector_add":
 		simdResult, err = s.simdProcessor.VectorAdd(job.Data, job.Context)
@@ -463,25 +463,25 @@ func (s *MulticoreService) processSIMDJob(worker *WorkerInstance, job *Processin
 	default:
 		simdResult, err = s.simdProcessor.GenericOperation(job.Data, job.Context)
 	}
-	
+
 	if err != nil {
 		result.Error = err.Error()
 		return result
 	}
-	
+
 	result.Success = true
 	result.Result = simdResult
 	result.Metrics.SIMDOps = 1
-	
+
 	return result
 }
 
 func (s *MulticoreService) processHybridJob(worker *WorkerInstance, job *ProcessingJob) ProcessingResult {
 	result := ProcessingResult{JobID: job.ID}
-	
+
 	// Hybrid processing combines multiple techniques
 	operation := job.Context["operation"].(string)
-	
+
 	switch operation {
 	case "json_to_tensor":
 		// Parse JSON, then convert to tensor
@@ -490,36 +490,36 @@ func (s *MulticoreService) processHybridJob(worker *WorkerInstance, job *Process
 			result.Error = "no JSON parsers available"
 			return result
 		}
-		
+
 		parsedData, err := s.parseJSON(jsonParser, job.Data)
 		s.jsonPool.ReleaseParser(jsonParser)
-		
+
 		if err != nil {
 			result.Error = fmt.Sprintf("JSON parsing failed: %v", err)
 			return result
 		}
-		
+
 		// Convert to tensor
 		tensorProcessor := s.tensorPool.GetProcessor()
 		if tensorProcessor == nil {
 			result.Error = "no tensor processors available"
 			return result
 		}
-		
+
 		tensorData := s.convertJSONToTensor(parsedData, job.Context)
 		tensorResult, err := s.computeGenericTensor(tensorProcessor, tensorData, job.Context)
 		s.tensorPool.ReleaseProcessor(tensorProcessor)
-		
+
 		if err != nil {
 			result.Error = fmt.Sprintf("tensor processing failed: %v", err)
 			return result
 		}
-		
+
 		result.Success = true
 		result.Result = tensorResult
 		result.Metrics.JSONOps = 1
 		result.Metrics.TensorOps = 1
-		
+
 	case "simd_json_processing":
 		// Use SIMD for accelerated JSON processing
 		jsonResult, err := s.simdProcessor.AcceleratedJSONProcessing(job.Data, job.Context)
@@ -527,17 +527,17 @@ func (s *MulticoreService) processHybridJob(worker *WorkerInstance, job *Process
 			result.Error = err.Error()
 			return result
 		}
-		
+
 		result.Success = true
 		result.Result = jsonResult
 		result.Metrics.SIMDOps = 1
 		result.Metrics.JSONOps = 1
-		
+
 	default:
 		result.Error = fmt.Sprintf("unknown hybrid operation: %s", operation)
 		return result
 	}
-	
+
 	return result
 }
 
@@ -549,7 +549,7 @@ func (s *MulticoreService) HandleProcessJob(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Set defaults
 	if job.ID == "" {
 		job.ID = fmt.Sprintf("job_%d_%d", time.Now().UnixNano(), len(s.jobQueue))
@@ -562,7 +562,7 @@ func (s *MulticoreService) HandleProcessJob(c *gin.Context) {
 	}
 	job.CreatedAt = time.Now()
 	job.Status = "pending"
-	
+
 	// Add to queue
 	select {
 	case s.jobQueue <- job:
@@ -581,7 +581,7 @@ func (s *MulticoreService) HandleProcessJob(c *gin.Context) {
 
 func (s *MulticoreService) HandleGetJobStatus(c *gin.Context) {
 	jobID := c.Param("job_id")
-	
+
 	// Check if job is in queue
 	for _, worker := range s.workers {
 		if worker.CurrentJob != nil && worker.CurrentJob.ID == jobID {
@@ -594,7 +594,7 @@ func (s *MulticoreService) HandleGetJobStatus(c *gin.Context) {
 			return
 		}
 	}
-	
+
 	// Check Redis for completed jobs
 	result, err := s.redis.Get(context.Background(), "job_result:"+jobID).Result()
 	if err == nil {
@@ -604,7 +604,7 @@ func (s *MulticoreService) HandleGetJobStatus(c *gin.Context) {
 			return
 		}
 	}
-	
+
 	c.JSON(http.StatusNotFound, gin.H{
 		"error": "job not found",
 		"job_id": jobID,
@@ -615,19 +615,19 @@ func (s *MulticoreService) HandleGetMetrics(c *gin.Context) {
 	s.mu.RLock()
 	metrics := *s.metrics
 	s.mu.RUnlock()
-	
+
 	// Update real-time metrics
 	metrics.QueueLength = len(s.jobQueue)
 	metrics.ActiveWorkers = 0
-	
+
 	for _, worker := range s.workers {
 		if worker.Status == "busy" {
 			metrics.ActiveWorkers++
 		}
 	}
-	
+
 	metrics.LastUpdated = time.Now()
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"service": "Enhanced Multicore Service",
 		"metrics": metrics,
@@ -643,39 +643,39 @@ func (s *MulticoreService) HandleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	// Send real-time updates
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ticker.C:
 			s.mu.RLock()
 			metrics := *s.metrics
 			s.mu.RUnlock()
-			
+
 			update := map[string]interface{}{
 				"type": "metrics_update",
 				"metrics": metrics,
 				"timestamp": time.Now(),
 			}
-			
+
 			if err := conn.WriteJSON(update); err != nil {
 				return
 			}
-			
+
 		case result := <-s.resultChannel:
 			update := map[string]interface{}{
 				"type": "job_completed",
 				"result": result,
 				"timestamp": time.Now(),
 			}
-			
+
 			if err := conn.WriteJSON(update); err != nil {
 				return
 			}
-			
+
 			// Store result in Redis
 			resultJSON, _ := json.Marshal(result)
 			s.redis.Set(context.Background(), "job_result:"+result.JobID, resultJSON, time.Hour)
@@ -687,21 +687,21 @@ func (s *MulticoreService) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
@@ -720,35 +720,35 @@ func (s *MulticoreService) setupRoutes() *gin.Engine {
 			})
 		})
 	}
-	
+
 	// WebSocket endpoint
 	router.GET("/ws", s.HandleWebSocket)
-	
+
 	return router
 }
 
 func (s *MulticoreService) collectMetrics() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		s.mu.Lock()
-		
+
 		// Update basic metrics
 		s.metrics.QueueLength = len(s.jobQueue)
 		s.metrics.ActiveWorkers = 0
-		
+
 		for _, worker := range s.workers {
 			if worker.Status == "busy" {
 				s.metrics.ActiveWorkers++
 			}
 		}
-		
+
 		// Update memory usage
 		var memStats runtime.MemStats
 		runtime.ReadMemStats(&memStats)
 		s.metrics.MemoryUsage = int64(memStats.Alloc)
-		
+
 		s.metrics.LastUpdated = time.Now()
 		s.mu.Unlock()
 	}
@@ -758,13 +758,13 @@ func (s *MulticoreService) Run() error {
 	if err := s.Initialize(); err != nil {
 		return err
 	}
-	
+
 	router := s.setupRoutes()
-	
+
 	log.Printf("🚀 Enhanced Multicore Service starting on port %s", s.config.Port)
 	log.Printf("🔧 GPU Enabled: %v, SIMD Optimized: %v", s.config.EnableGPU, s.config.SIMDOptimized)
 	log.Printf("👥 Workers: %d, Queue Size: %d", s.config.WorkerCount, s.config.QueueSize)
-	
+
 	return router.Run(":" + s.config.Port)
 }
 

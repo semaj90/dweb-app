@@ -582,11 +582,44 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "citations" ADD CONSTRAINT "citations_document_id_legal_documents_id_fk" FOREIGN KEY ("document_id") REFERENCES "public"."legal_documents"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
+DO $$
+DECLARE
+	t_cit_doc text;
+	t_doc_id text;
+BEGIN
+	-- Ensure tables/columns exist
+	IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'citations') THEN
+		RAISE NOTICE 'citations table not present; skipping document_id FK creation';
+		RETURN;
+	END IF;
+	IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'legal_documents') THEN
+		RAISE NOTICE 'legal_documents table not present; skipping document_id FK creation';
+		RETURN;
+	END IF;
+
+	SELECT format_type(a.atttypid, a.atttypmod) INTO t_cit_doc
+	FROM pg_attribute a
+	WHERE a.attrelid = 'public.citations'::regclass AND a.attname = 'document_id' LIMIT 1;
+
+	SELECT format_type(a.atttypid, a.atttypmod) INTO t_doc_id
+	FROM pg_attribute a
+	WHERE a.attrelid = 'public.legal_documents'::regclass AND a.attname = 'id' LIMIT 1;
+
+	IF t_cit_doc IS NULL OR t_doc_id IS NULL THEN
+		RAISE NOTICE 'Could not determine types for citations.document_id or legal_documents.id; skipping FK creation';
+		RETURN;
+	END IF;
+
+	-- Only create FK if types are compatible (both integer-like or both uuid-like)
+	IF (t_cit_doc LIKE 'integer%%' AND t_doc_id LIKE 'integer%%') OR (t_cit_doc LIKE 'uuid%%' AND t_doc_id LIKE 'uuid%%') THEN
+		BEGIN
+			ALTER TABLE "citations" ADD CONSTRAINT "citations_document_id_legal_documents_id_fk" FOREIGN KEY ("document_id") REFERENCES "public"."legal_documents"("id") ON DELETE cascade ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN null;
+		END;
+	ELSE
+		RAISE NOTICE 'Skipping FK creation due to incompatible column types: % vs %', t_cit_doc, t_doc_id;
+	END IF;
+END$$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "citations" ADD CONSTRAINT "citations_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
@@ -630,11 +663,42 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "legal_documents" ADD CONSTRAINT "legal_documents_case_id_cases_id_fk" FOREIGN KEY ("case_id") REFERENCES "public"."cases"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
+DO $$
+DECLARE
+	t_ld_case text;
+	t_cases_id text;
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'legal_documents') THEN
+		RAISE NOTICE 'legal_documents table not present; skipping case_id FK creation';
+		RETURN;
+	END IF;
+	IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'cases') THEN
+		RAISE NOTICE 'cases table not present; skipping case_id FK creation';
+		RETURN;
+	END IF;
+
+	SELECT format_type(a.atttypid, a.atttypmod) INTO t_ld_case
+	FROM pg_attribute a
+	WHERE a.attrelid = 'public.legal_documents'::regclass AND a.attname = 'case_id' LIMIT 1;
+
+	SELECT format_type(a.atttypid, a.atttypmod) INTO t_cases_id
+	FROM pg_attribute a
+	WHERE a.attrelid = 'public.cases'::regclass AND a.attname = 'id' LIMIT 1;
+
+	IF t_ld_case IS NULL OR t_cases_id IS NULL THEN
+		RAISE NOTICE 'Could not determine types for legal_documents.case_id or cases.id; skipping FK creation';
+		RETURN;
+	END IF;
+
+	IF (t_ld_case LIKE 'integer%%' AND t_cases_id LIKE 'integer%%') OR (t_ld_case LIKE 'uuid%%' AND t_cases_id LIKE 'uuid%%') THEN
+		BEGIN
+			ALTER TABLE "legal_documents" ADD CONSTRAINT "legal_documents_case_id_cases_id_fk" FOREIGN KEY ("case_id") REFERENCES "public"."cases"("id") ON DELETE cascade ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN null;
+		END;
+	ELSE
+		RAISE NOTICE 'Skipping FK creation due to incompatible column types: % vs %', t_ld_case, t_cases_id;
+	END IF;
+END$$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "legal_documents" ADD CONSTRAINT "legal_documents_evidence_id_evidence_id_fk" FOREIGN KEY ("evidence_id") REFERENCES "public"."evidence"("id") ON DELETE cascade ON UPDATE no action;

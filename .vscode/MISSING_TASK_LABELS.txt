@@ -1,0 +1,4 @@
+� Perf Monitor: Build Binary
+📊 Perf Monitor: Run (Dev)
+📊 Perf Monitor: Collector
+�🔍 Vector: Search

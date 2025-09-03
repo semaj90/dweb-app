@@ -1,5 +1,5 @@
-//go:build legacy
-// +build legacy
+//go:build experimental || legacy
+// +build experimental legacy
 
 package main
 
@@ -74,7 +74,7 @@ func main() {
 	// Proxy everything else to Vite
 	r.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
-		
+
 		// If it's an API route, let Gin handle it
 		if strings.HasPrefix(path, "/api/") || path == "/ws" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Endpoint not found"})
@@ -90,13 +90,13 @@ func main() {
 			req.URL.Host = viteURL.Host
 			req.Host = viteURL.Host
 		}
-		
+
 		proxy.Director = director
 		proxy.ServeHTTP(c.Writer, c.Request)
 	})
 
 	log.Printf("🚀 Go-Enhanced Vite Server starting on http://localhost%s", goServerPort)
-	log.Printf("📦 Proxying frontend to %s", viteDevServerURL) 
+	log.Printf("📦 Proxying frontend to %s", viteDevServerURL)
 	log.Printf("🤖 Go API endpoints: /api/*, /ws, /health")
 
 	if err := r.Run(goServerPort); err != nil {
@@ -112,7 +112,7 @@ func handleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	docId := c.Query("docId")
 	log.Printf("📡 WebSocket connected - docId: %s", docId)
 

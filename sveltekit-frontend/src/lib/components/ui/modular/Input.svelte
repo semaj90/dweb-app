@@ -47,7 +47,7 @@
     variant = 'default',
     size = 'default',
     state = 'default',
-    class: class,
+    class: className = '',
     label,
     helperText,
     errorMessage,

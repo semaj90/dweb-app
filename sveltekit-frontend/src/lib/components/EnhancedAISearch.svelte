@@ -172,7 +172,7 @@
   }
 </script>
 
-<div class="enhanced-ai-search {class}">
+<div class="enhanced-ai-search {className}">
   <!-- Search Header -->
   <div
     class="flex flex-col space-y-4 p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"

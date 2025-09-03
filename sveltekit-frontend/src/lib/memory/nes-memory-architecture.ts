@@ -717,3 +717,181 @@ export class NESMemoryArchitecture {
 export const nesMemory = new NESMemoryArchitecture();
 ;
 // Export types already declared above - no need to re-export
+
+/**
+ * ================= AlphaGo / MCTS Planner Memory Extension =================
+ * Lightweight, NES-themed memory manager for multi-step graph traversal planning.
+ * Inspired by AlphaGo / AlphaZero techniques (conceptual only; original implementation).
+ * Provides:
+ *  - Fixed-size ring buffer for MCTS node statistics (visits, value sum, prior)
+ *  - Child pointer table (stores offsets of first child & sibling linked list)
+ *  - UCB selection helper (no game-specific logic; pure math / memory access)
+ *  - Simple transposition cache (maps graph node id → best value / visits)
+ *  - Eviction + recycling when capacity exceeded (FIFO by insertion index)
+ *  - Integration points to NES memory banks (stores planner buffers in EXPANSION_ROM if free)
+ */
+
+interface PlannerNodeRecord {
+  handle: number;          // index in typed arrays
+  graphNodeId: string;     // external graph node id (Neo4j id)
+  parentHandle: number;    // -1 for root
+  depth: number;
+}
+
+class PlannerMemoryManager {
+  private capacity: number;
+  private visits: Uint32Array;      // visit counts
+  private valueSum: Float32Array;   // cumulative value
+  private prior: Float32Array;      // policy prior
+  private firstChild: Int32Array;   // handle of first child
+  private nextSibling: Int32Array;  // handle of next sibling
+  private parent: Int32Array;       // parent handle
+  private depth: Uint16Array;       // depth
+  private records: PlannerNodeRecord[] = [];
+  private handleByGraphId: Map<string, number> = new Map();
+  private insertionOrder: number[] = []; // for eviction
+  private freeList: number[] = [];
+  private transpositionCache: Map<string, { visits: number; value: number; updated: number }>;
+  private lastAllocation = 0;
+
+  constructor(capacity = 8192) {
+    this.capacity = capacity;
+    this.visits = new Uint32Array(capacity);
+    this.valueSum = new Float32Array(capacity);
+    this.prior = new Float32Array(capacity);
+    this.firstChild = new Int32Array(capacity).fill(-1);
+    this.nextSibling = new Int32Array(capacity).fill(-1);
+    this.parent = new Int32Array(capacity).fill(-1);
+    this.depth = new Uint16Array(capacity);
+    this.transpositionCache = new Map();
+  }
+
+  allocate(graphNodeId: string, parentHandle: number, prior: number, depth: number): number {
+    // Reuse existing if seen (transposition) — return existing handle.
+    const existing = this.handleByGraphId.get(graphNodeId);
+    if (existing !== undefined) return existing;
+
+    let handle: number;
+    if (this.freeList.length) {
+      handle = this.freeList.pop()!;
+    } else if (this.records.length < this.capacity) {
+      handle = this.records.length;
+      this.records.push({ handle, graphNodeId, parentHandle, depth });
+    } else {
+      // Evict oldest (excluding root if possible)
+      while (this.insertionOrder.length) {
+        const victim = this.insertionOrder.shift()!;
+        if (victim === 0) { // avoid evicting root
+          this.insertionOrder.push(victim);
+          continue;
+        }
+        this.free(victim);
+        handle = victim;
+        break;
+      }
+      if (handle === undefined!) {
+        // fallback: overwrite last
+        handle = (this.lastAllocation + 1) % this.capacity;
+        this.free(handle);
+      }
+      this.records[handle] = { handle, graphNodeId, parentHandle, depth };
+    }
+
+    this.handleByGraphId.set(graphNodeId, handle);
+    this.insertionOrder.push(handle);
+    this.lastAllocation = handle;
+    this.prior[handle] = prior;
+    this.visits[handle] = 0;
+    this.valueSum[handle] = 0;
+    this.firstChild[handle] = -1;
+    this.nextSibling[handle] = -1;
+    this.parent[handle] = parentHandle;
+    this.depth[handle] = depth;
+
+    // Link into siblings list
+    if (parentHandle >= 0) {
+      const oldFirst = this.firstChild[parentHandle];
+      this.firstChild[parentHandle] = handle;
+      if (oldFirst >= 0) this.nextSibling[handle] = oldFirst;
+    }
+    return handle;
+  }
+
+  private free(handle: number) {
+    const rec = this.records[handle];
+    if (!rec) return;
+    this.handleByGraphId.delete(rec.graphNodeId);
+    this.visits[handle] = 0;
+    this.valueSum[handle] = 0;
+    this.prior[handle] = 0;
+    this.firstChild[handle] = -1;
+    this.nextSibling[handle] = -1;
+    this.parent[handle] = -1;
+    this.depth[handle] = 0;
+    this.freeList.push(handle);
+  }
+
+  update(handle: number, value: number) {
+    this.visits[handle] += 1;
+    this.valueSum[handle] += value;
+  }
+
+  selectChildUCB(parentHandle: number, explorationC = 1.4): number | null {
+    const parentVisits = Math.max(1, this.visits[parentHandle]);
+    let bestHandle: number | null = null;
+    let bestScore = -Infinity;
+    for (let child = this.firstChild[parentHandle]; child >= 0; child = this.nextSibling[child]) {
+      const v = this.visits[child];
+      const q = v > 0 ? this.valueSum[child] / v : 0;
+      const p = this.prior[child];
+      const u = explorationC * p * Math.sqrt(parentVisits) / (1 + v);
+      const score = q + u;
+      if (score > bestScore) { bestScore = score; bestHandle = child; }
+    }
+    return bestHandle;
+  }
+
+  getStats(handle: number) {
+    return {
+      visits: this.visits[handle],
+      valueSum: this.valueSum[handle],
+      prior: this.prior[handle],
+      depth: this.depth[handle],
+      graphNodeId: this.records[handle]?.graphNodeId
+    };
+  }
+
+  cacheTransposition(graphNodeId: string, visits: number, value: number) {
+    this.transpositionCache.set(graphNodeId, { visits, value, updated: Date.now() });
+  }
+  getTransposition(graphNodeId: string) {
+    return this.transpositionCache.get(graphNodeId);
+  }
+
+  summarize() {
+    return {
+      capacity: this.capacity,
+      allocated: this.records.length - this.freeList.length,
+      free: this.freeList.length,
+      transpositions: this.transpositionCache.size
+    };
+  }
+}
+
+// Singleton planner memory (exposed for planner integration)
+export const plannerMemory = new PlannerMemoryManager(4096);
+
+// Convenience bridge API to integrate with Neo4jAlphaGoPlanner without import cycles.
+export const nesPlannerBridge = {
+  allocateNode(params: { graphNodeId: string; parentHandle: number; prior: number; depth: number }) {
+    return plannerMemory.allocate(params.graphNodeId, params.parentHandle, params.prior, params.depth);
+  },
+  visit(handle: number, value: number) {
+    plannerMemory.update(handle, value);
+  },
+  select(handle: number, explorationC?: number) {
+    return plannerMemory.selectChildUCB(handle, explorationC);
+  },
+  stats(handle: number) { return plannerMemory.getStats(handle); },
+  summary() { return plannerMemory.summarize(); }
+};

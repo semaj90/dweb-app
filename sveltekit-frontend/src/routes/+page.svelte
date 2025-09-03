@@ -30,6 +30,13 @@
   let isDocumentationOpen = $state(false);
   let notification = $state({ show: false, message: '' });
 
+  // AI Typewriter Display State
+  let aiTypewriterVisible = $state(false);
+  let aiTypewriterText = $state('');
+  let aiTypewriterTheme = $state('yorha'); // yorha | quantum | matrix | god | ai-whisperer
+  let typewriterAnimating = $state(false);
+  let typewriterInterval = $state<NodeJS.Timeout | null>(null);
+
   // Cognitive System States
   let cognitiveMode = $state('detective'); // detective, ai-whisperer, quantum, god, matrix
   let secretFeatures = $state({
@@ -293,9 +300,11 @@ let lastClickTime = $state(0);
     secretFeatures.konamiActive = true;
     visualEffects.quantumShimmer = true;
     cognitiveMode = 'quantum';
+    aiTypewriterTheme = 'quantum';
 
     showNotification('🎮 KONAMI CODE ACTIVATED - Quantum Detective Mode Enabled');
     unlockAchievement('konami_master');
+    showAITypewriter('QUANTUM DETECTIVE MODE ACTIVATED');
 
     setTimeout(() => {
       visualEffects.quantumShimmer = false;
@@ -306,9 +315,11 @@ let lastClickTime = $state(0);
     secretFeatures.godModeEnabled = true;
     visualEffects.consciousnessAura = true;
     cognitiveMode = 'god';
+    aiTypewriterTheme = 'god';
 
     showNotification('👑 GOD MODE ACTIVATED - Unlimited AI Power');
     unlockAchievement('digital_transcendence');
+    showAITypewriter('UNLIMITED AI POWER ENGAGED');
   }
 
   function activateQuantumMode() {
@@ -322,18 +333,22 @@ let lastClickTime = $state(0);
   function activateAIWhispererMode() {
     secretFeatures.aiWhispererMode = true;
     cognitiveMode = 'ai-whisperer';
+    aiTypewriterTheme = 'ai-whisperer';
 
     showNotification('🤖 AI WHISPERER MODE - The machines listen to you now');
     unlockAchievement('ai_whisperer');
+    showAITypewriter('THE MACHINES LISTEN TO YOU NOW');
   }
 
   function activateMatrixMode() {
     secretFeatures.matrixMode = true;
     visualEffects.matrixRain = true;
     cognitiveMode = 'matrix';
+    aiTypewriterTheme = 'matrix';
 
     showNotification('🕶️ WELCOME TO THE MATRIX - There is no spoon');
     unlockAchievement('matrix_walker');
+    showAITypewriter('WELCOME TO THE MATRIX');
 
     setTimeout(() => {
       visualEffects.matrixRain = false;
@@ -423,6 +438,60 @@ let lastClickTime = $state(0);
     }, 3000);
   }
 
+  // AI Typewriter Functions
+  function showAITypewriter(message: string, duration: number = 5000) {
+    if (typewriterInterval) {
+      clearTimeout(typewriterInterval);
+    }
+
+    aiTypewriterText = message;
+    aiTypewriterVisible = true;
+    typewriterAnimating = true;
+
+    // Hide after animation completes + duration
+    typewriterInterval = setTimeout(() => {
+      aiTypewriterVisible = false;
+      typewriterAnimating = false;
+      aiTypewriterText = '';
+    }, 2500 + duration); // 2500ms for typing animation + display duration
+  }
+
+  function triggerWelcomeMessage() {
+    // Prevent spam by only showing if not already visible
+    if (aiTypewriterVisible) return;
+    
+    const welcomeMessages = [
+      'WELCOME PLEASE COME IN',
+      'LEGAL AI SYSTEM READY',
+      'YORHA DETECTIVE ONLINE', 
+      'NEURAL NETWORK ACTIVE',
+      'QUANTUM ANALYSIS READY',
+      'COGNITIVE SYSTEMS ONLINE'
+    ];
+
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    showAITypewriter(randomMessage);
+  }
+
+  // Auto-repeat welcome message on interval when hovering
+  let hoverInterval = $state<NodeJS.Timeout | null>(null);
+  
+  function startRepeatingWelcome() {
+    if (hoverInterval) return; // Already running
+    
+    triggerWelcomeMessage(); // Show immediately
+    hoverInterval = setInterval(() => {
+      triggerWelcomeMessage();
+    }, 7000); // Repeat every 7 seconds
+  }
+  
+  function stopRepeatingWelcome() {
+    if (hoverInterval) {
+      clearInterval(hoverInterval);
+      hoverInterval = null;
+    }
+  }
+
   function closeModal() {
     isNewCaseModalOpen = false;
   }
@@ -445,6 +514,9 @@ let lastClickTime = $state(0);
       case 'terminal':
         goto('/terminal');
         break;
+      case 'performance':
+        goto('/perf');
+        break;
       default:
         // Stay on command center
         break;
@@ -458,6 +530,9 @@ let lastClickTime = $state(0);
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Import typewriter CSS for AI display -->
+  <link rel="stylesheet" href="/src/lib/styles/typewriter.css">
   <style>
     /* Quantum Shimmer Effect */
     @keyframes quantum-shimmer {
@@ -566,10 +641,24 @@ let lastClickTime = $state(0);
   </style>
 </svelte:head>
 
+<!-- AI Typewriter Display -->
+{#if aiTypewriterVisible}
+  <div class="ai-typewriter {aiTypewriterTheme} {aiTypewriterVisible ? 'visible' : ''} {typewriterAnimating ? 'typing' : ''}">
+    <span class="text {typewriterAnimating ? 'animating' : ''}">{aiTypewriterText}</span>
+  </div>
+{/if}
+
 <!-- YoRHa Detective Interface -->
-<div class="min-h-screen bg-[#EAE8E1] font-mono text-[#3D3D3D] {cognitiveMode === 'quantum' ? 'mode-quantum' : ''} {cognitiveMode === 'god' ? 'mode-god' : ''} {cognitiveMode === 'ai-whisperer' ? 'mode-ai-whisperer' : ''} {cognitiveMode === 'matrix' ? 'mode-matrix' : ''} {visualEffects.consciousnessAura ? 'consciousness-aura' : ''} {visualEffects.glitchEffect ? 'glitch-effect' : ''} relative">
+<div 
+  class="min-h-screen bg-[#EAE8E1] font-mono text-[#3D3D3D] {cognitiveMode === 'quantum' ? 'mode-quantum' : ''} {cognitiveMode === 'god' ? 'mode-god' : ''} {cognitiveMode === 'ai-whisperer' ? 'mode-ai-whisperer' : ''} {cognitiveMode === 'matrix' ? 'mode-matrix' : ''} {visualEffects.consciousnessAura ? 'consciousness-aura' : ''} {visualEffects.glitchEffect ? 'glitch-effect' : ''} relative"
+  onmouseenter={startRepeatingWelcome}
+  onmouseleave={stopRepeatingWelcome}
+>
   <!-- Header -->
-  <header class="flex justify-between items-center mb-6 p-4 lg:p-6">
+  <header 
+    class="flex justify-between items-center mb-6 p-4 lg:p-6"
+    onmouseenter={triggerWelcomeMessage}
+  >
     <div>
       <h1 class="text-2xl font-bold tracking-wider">COMMAND CENTER</h1>
       <p class="text-sm opacity-75">YoRHa Detective Interface - {currentTime}</p>
@@ -611,7 +700,10 @@ let lastClickTime = $state(0);
   <!-- Main Content -->
   <main class="grid grid-cols-1 lg:grid-cols-4 gap-6 px-4 lg:px-6">
     <!-- Sidebar -->
-    <aside class="lg:col-span-1 bg-[#F7F6F2] border border-[#D1CFC7] p-4">
+    <aside 
+      class="lg:col-span-1 bg-[#F7F6F2] border border-[#D1CFC7] p-4"
+      onmouseenter={triggerWelcomeMessage}
+    >
       <h2 class="font-bold mb-4 text-center">YORHA DETECTIVE</h2>
       <nav class="space-y-2">
         <button
@@ -649,6 +741,12 @@ let lastClickTime = $state(0);
           onclick={() => handleNavigation('terminal')}
         >
           TERMINAL
+        </button>
+        <button
+          class="w-full px-4 py-2 text-left font-bold transition-colors border {activeSection === 'performance' ? 'bg-[#3D3D3D] text-[#F7F6F2] border-[#3D3D3D]' : 'border-transparent hover:border-[#3D3D3D] hover:bg-white'}"
+          onclick={() => handleNavigation('performance')}
+        >
+          🚀 PERFORMANCE
         </button>
       </nav>
     </aside>

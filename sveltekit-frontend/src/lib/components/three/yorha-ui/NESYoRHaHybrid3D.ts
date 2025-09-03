@@ -613,7 +613,6 @@ export class NESYoRHaHybrid3D extends YoRHa3DComponent {
 // =============================================================================
 
 export function createNESButton(options: {
-;
   text: string;
   variant?: 'is-primary' | 'is-success' | 'is-warning' | 'is-error';
   size?: 'small' | 'normal' | 'large';
@@ -633,7 +632,6 @@ export function createNESButton(options: {
 }
 
 export function createNESContainer(options: {
-;
   title?: string;
   rounded?: boolean;
   dark?: boolean;
@@ -657,7 +655,6 @@ export function createNESContainer(options: {
 }
 
 export function createNESProgressBar(options: {
-;
   value: number;
   max?: number;
   variant?: 'is-primary' | 'is-success' | 'is-warning' | 'is-error' | 'is-pattern';

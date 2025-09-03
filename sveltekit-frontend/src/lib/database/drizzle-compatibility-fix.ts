@@ -9,13 +9,13 @@ import { barrelStore } from '../stores/barrel-functions';
 export interface DrizzleCompatibilityLayer {
   // Enhanced query result handling
   handleQueryResult: <T>(result: any) => T[];
-  
+
   // Enhanced connection management
   ensureConnection: (client: any) => Promise<any>;
-  
+
   // Type-safe property access
   safePropertyAccess: <T>(obj: any, property: string, defaultValue: T) => T;
-  
+
   // Vector operations compatibility
   vectorOperations: {
     similarity: (vector1: number[], vector2: number[]) => number;
@@ -25,10 +25,10 @@ export interface DrizzleCompatibilityLayer {
 }
 
 // ===== ENHANCED QUERY RESULT HANDLER =====
-export const handleQueryResult = <T>(result: any): T[] => {;
+export const handleQueryResult = <T>(result: any): T[] => {
   // Handle different result formats from Drizzle queries
   if (!result) return [];
-  
+
   // Array result (most common)
   if (Array.isArray(result)) {
     return result.map(row => {
@@ -48,7 +48,7 @@ export const handleQueryResult = <T>(result: any): T[] => {;
       return enhancedRow;
     });
   }
-  
+
   // Single row result
   if (typeof result === 'object') {
     const enhancedResult = barrelStore.database.ensureProperties(result, {
@@ -65,22 +65,22 @@ export const handleQueryResult = <T>(result: any): T[] => {;
     });
     return [enhancedResult];
   }
-  
+
   // Fallback for unexpected formats
   console.warn('Unexpected query result format:', typeof result, result);
   return [];
 };
 
 // ===== SAFE PROPERTY ACCESS =====
-export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: T): T => {;
+export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: T): T => {
   if (!obj || typeof obj !== 'object') {
     return defaultValue;
   }
-  
+
   // Handle nested property access (e.g., 'metadata.sources')
   const keys = property.split('.');
   let current = obj;
-  
+
   for (const key of keys) {
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
@@ -88,70 +88,70 @@ export const safePropertyAccess = <T>(obj: any, property: string, defaultValue: 
       return defaultValue;
     }
   }
-  
+
   return current !== null && current !== undefined ? current : defaultValue;
 };
 
 // ===== VECTOR OPERATIONS COMPATIBILITY =====
-export const vectorOperations = {;
+export const vectorOperations = {
   similarity: (vector1: number[], vector2: number[]): number => {
     if (!vector1 || !vector2 || vector1.length !== vector2.length) {
       return 0;
     }
-    
+
     let dotProduct = 0;
     let magnitude1 = 0;
     let magnitude2 = 0;
-    
+
     for (let i = 0; i < vector1.length; i++) {
       dotProduct += vector1[i] * vector2[i];
       magnitude1 += vector1[i] * vector1[i];
       magnitude2 += vector2[i] * vector2[i];
     }
-    
+
     const magnitude = Math.sqrt(magnitude1) * Math.sqrt(magnitude2);
     return magnitude === 0 ? 0 : dotProduct / magnitude;
   },
-  
+
   distance: (vector1: number[], vector2: number[]): number => {
     if (!vector1 || !vector2 || vector1.length !== vector2.length) {
       return Infinity;
     }
-    
+
     let sum = 0;
     for (let i = 0; i < vector1.length; i++) {
       const diff = vector1[i] - vector2[i];
       sum += diff * diff;
     }
-    
+
     return Math.sqrt(sum);
   },
-  
+
   normalize: (vector: number[]): number[] => {
     if (!vector || vector.length === 0) {
       return [];
     }
-    
+
     let magnitude = 0;
     for (const component of vector) {
       magnitude += component * component;
     }
-    
+
     magnitude = Math.sqrt(magnitude);
     if (magnitude === 0) {
       return new Array(vector.length).fill(0);
     }
-    
+
     return vector.map(component => component / magnitude);
   }
 };
 
 // ===== CONNECTION MANAGEMENT =====
-export const ensureConnection = async (client: any): Promise<any> => {;
+export const ensureConnection = async (client: any): Promise<any> => {
   if (!client) {
     throw new Error('Database client is null or undefined');
   }
-  
+
   // Check if client has expected methods
   const requiredMethods = ['query', 'execute'];
   for (const method of requiredMethods) {
@@ -164,7 +164,7 @@ export const ensureConnection = async (client: any): Promise<any> => {;
       };
     }
   }
-  
+
   // Test connection if possible
   try {
     if (typeof client.query === 'function') {
@@ -173,12 +173,12 @@ export const ensureConnection = async (client: any): Promise<any> => {;
   } catch (error: any) {
     console.warn('Database connection test failed:', error);
   }
-  
+
   return client;
 };
 
 // ===== ENHANCED DRIZZLE COMPATIBILITY LAYER =====
-export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {;
+export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {
   handleQueryResult,
   ensureConnection,
   safePropertyAccess,
@@ -186,7 +186,7 @@ export const drizzleCompatibilityLayer: DrizzleCompatibilityLayer = {;
 };
 
 // ===== TYPE-SAFE RESULT ENHANCER =====
-export const enhanceResultWithTypes = <T extends Record<string, any>>(;;
+export const enhanceResultWithTypes = <T extends Record<string, any>>(
   result: any,
   typeMap: Record<keyof T, any>
 ): T => {
@@ -198,21 +198,21 @@ export const enhanceResultWithTypes = <T extends Record<string, any>>(;;
     }
     return defaultObject;
   }
-  
+
   const enhancedResult = { ...result } as T;
-  
+
   // Ensure all properties from typeMap exist
   for (const [key, defaultValue] of Object.entries(typeMap)) {
     if (!(key in enhancedResult) || enhancedResult[key as keyof T] === undefined) {
       (enhancedResult as any)[key] = defaultValue;
     }
   }
-  
+
   return enhancedResult;
 };
 
 // ===== COMMON DATABASE ENTITY ENHANCERS =====
-export const entityEnhancers = {;
+export const entityEnhancers = {
   // Legal document entity enhancer
   legalDocument: (doc: any) => enhanceResultWithTypes(doc, {
     id: null,
@@ -228,7 +228,7 @@ export const entityEnhancers = {;
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   }),
-  
+
   // Chat message entity enhancer
   chatMessage: (message: any) => enhanceResultWithTypes(message, {
     id: null,
@@ -241,7 +241,7 @@ export const entityEnhancers = {;
     metadata: {},
     created_at: new Date().toISOString()
   }),
-  
+
   // Cache entry entity enhancer
   cacheEntry: (entry: any) => enhanceResultWithTypes(entry, {
     key: '',
@@ -253,7 +253,7 @@ export const entityEnhancers = {;
     size: 0,
     version: 1
   }),
-  
+
   // Vector operation entity enhancer
   vectorOperation: (operation: any) => enhanceResultWithTypes(operation, {
     id: null,
@@ -270,10 +270,10 @@ export const entityEnhancers = {;
 };
 
 // ===== QUERY INTERCEPTOR FOR TYPE SAFETY =====
-export const createTypeSafeQuery = (baseQuery: any) => {;
+export const createTypeSafeQuery = (baseQuery: any) => {
   return {
     ...baseQuery,
-    
+
     // Enhanced execute method with type safety
     execute: async (...args: any[]) => {
       try {
@@ -284,7 +284,7 @@ export const createTypeSafeQuery = (baseQuery: any) => {;
         return [];
       }
     },
-    
+
     // Enhanced all() method with type safety
     all: async (...args: any[]) => {
       try {
@@ -295,7 +295,7 @@ export const createTypeSafeQuery = (baseQuery: any) => {;
         return [];
       }
     },
-    
+
     // Enhanced get() method with type safety
     get: async (...args: any[]) => {
       try {

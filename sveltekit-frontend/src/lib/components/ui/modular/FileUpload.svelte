@@ -44,7 +44,7 @@
     accept = '*/*',
     maxFiles = 10,
     maxSize = 10 * 1024 * 1024, // 10MB
-    class: class,
+    class: className = '',
     disabled = false,
     files = $bindable([]),
     onfileschange,

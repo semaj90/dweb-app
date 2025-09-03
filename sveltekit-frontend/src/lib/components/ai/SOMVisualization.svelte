@@ -369,7 +369,7 @@
   }
 </script>
 
-<div class="som-visualization {class}">
+<div class="som-visualization {className}">
   <!-- Header -->
   <div class="header yorha-panel p-4 mb-4">
     <h2 class="text-xl font-bold text-yellow-400 mb-2">
