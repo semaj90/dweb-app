@@ -1,25 +1,40 @@
 ########################################
-# Large/local binaries (100MB+ files)
+# Native Windows Services (Downloaded, not committed)
 ########################################
+# These files are downloaded by SETUP-NATIVE-SERVICES.bat
+# and should never be committed to git
+
+# Service directories and binaries
+services/
+services/minio/
+services/neo4j/
+services/qdrant/
+services/redis/
+services/postgresql/
+
+# Legacy large binaries (cleaned from history)
 Ollama/ollama.exe
 Ollama/ollama app.exe
 Ollama/unins000.exe
 Ollama/lib/ollama/cuda_v12/ggml-cuda.dll
 Ollama/lib/ollama/cuda_v12/cublasLt64_12.dll
 Ollama/lib/ollama/cuda_v12/cublas64_12.dll
-
-# Large service binaries (>50MB blocked by GitHub)
 minio.exe
 qdrant-extracted/
-qdrant-extracted/qdrant.exe
+qdrant-windows/
 neo4j-community-*.zip
-neo4j-community-5.21.2-windows.zip
-neo4j-community-5.23.0-windows.zip
+neo4j-community-*/
 
-# Specific large files blocking GitHub push
-qdrant-windows/qdrant.exe
-neo4j-community-5.23.0-windows.zip
-neo4j-community-5.21.2-windows.zip
+# All executable and archive files (use download scripts instead)
+*.exe
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# Exception: Keep small build artifacts
+!go-microservice/bin/*.exe
+!sveltekit-frontend/bin/*.exe
 
 ########################################
 # Node and package caches
