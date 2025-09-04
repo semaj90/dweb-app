@@ -31,3 +31,10 @@ export interface SemanticEntity {
   end?: number;
   metadata?: Record<string, unknown>;
 }
+
+export interface ChatMessage {
+  id?: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  metadata?: Record<string, any>;
+}

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button as MeltButton } from '@melt-ui/svelte';
+	import { Button as BitsButton } from 'bits-ui';
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils/cn';
-	
+
 	const buttonVariants = cva(
 		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
 		{
@@ -32,8 +32,8 @@
 			}
 		}
 	);
-	
-	type $$Props = VariantProps<typeof buttonVariants> & {
+
+	type Props = VariantProps<typeof buttonVariants> & {
 		class?: string;
 		disabled?: boolean;
 		type?: 'button' | 'submit' | 'reset';
@@ -42,23 +42,28 @@
 		loading?: boolean;
 		loadingText?: string;
 		onclick?: (e: MouseEvent) => void;
+		children?: any;
 		'data-testid'?: string;
 	};
-	
-	export let variant: $$Props['variant'] = 'default';
-	export let size: $$Props['size'] = 'default';
-	export let disabled = false;
-	export let type: $$Props['type'] = 'button';
-	export let href: $$Props['href'] = undefined;
-	export let target: $$Props['target'] = undefined;
-	export let loading = false;
-	export let loadingText = 'Loading...';
-	
-	let className: $$Props['class'] = '';
-	export { className as class };
-	
-	$: isDisabled = disabled || loading;
-	$: buttonClass = cn(buttonVariants({ variant, size }), className);
+
+	let { 
+		class: className = '',
+		variant = 'default', 
+		size = 'default',
+		disabled = false,
+		type = 'button',
+		href = undefined,
+		target = undefined,
+		loading = false,
+		loadingText = 'Loading...',
+		onclick,
+		children,
+		'data-testid': testId,
+		...rest 
+	}: Props = $props();
+
+	let isDisabled = $derived(disabled || loading);
+	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
 </script>
 
 {#if href}
@@ -69,14 +74,15 @@
 		role="button"
 		tabindex="0"
 		aria-disabled={isDisabled}
-		data-testid={$$props['data-testid']}
-		on:click
-		on:keydown={(e) => {
+		data-testid={testId}
+		{onclick}
+		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
-				e.currentTarget.click();
+				onclick?.(e as any);
 			}
 		}}
+		{...rest}
 	>
 		{#if loading}
 			<svg 
@@ -101,17 +107,20 @@
 				/>
 			</svg>
 			{loadingText}
+		{:else if children}
+			{@render children()}
 		{:else}
 			<slot />
 		{/if}
 	</a>
 {:else}
-	<MeltButton
+	<BitsButton.Root
 		{type}
 		disabled={isDisabled}
 		class={buttonClass}
-		data-testid={$$props['data-testid']}
-		on:click
+		data-testid={testId}
+		{onclick}
+		{...rest}
 	>
 		{#if loading}
 			<svg 
@@ -136,8 +145,10 @@
 				/>
 			</svg>
 			{loadingText}
+		{:else if children}
+			{@render children()}
 		{:else}
 			<slot />
 		{/if}
-	</MeltButton>
+	</BitsButton.Root>
 {/if}
