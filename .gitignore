@@ -8,13 +8,18 @@ Ollama/lib/ollama/cuda_v12/ggml-cuda.dll
 Ollama/lib/ollama/cuda_v12/cublasLt64_12.dll
 Ollama/lib/ollama/cuda_v12/cublas64_12.dll
 
-# Large service binaries
+# Large service binaries (>50MB blocked by GitHub)
 minio.exe
 qdrant-extracted/
 qdrant-extracted/qdrant.exe
 neo4j-community-*.zip
 neo4j-community-5.21.2-windows.zip
 neo4j-community-5.23.0-windows.zip
+
+# Specific large files blocking GitHub push
+qdrant-windows/qdrant.exe
+neo4j-community-5.23.0-windows.zip
+neo4j-community-5.21.2-windows.zip
 
 ########################################
 # Node and package caches
