@@ -7,8 +7,8 @@
 <script lang="ts">
   import { getContext, onMount } from 'svelte';
 
-  // UI components
-  import { Button } from '$lib/components/ui/button';
+  // UI components (Svelte 5 + melt v0.39.0 compatible)
+  import Button from '$lib/components/ui/button/Button.svelte';
   import { Card } from '$lib/components/ui/card';
   import { aiGlobalStore, aiGlobalActions } from '$lib/stores/ai';
 
@@ -57,15 +57,34 @@
     aiGlobalActions.summarize(caseId, contextItems, user?.id || '');
   }
 
-    // Save summary to DB
+    // Save summary to DB using the comprehensive summaries API
     async function saveSummary() {
-      if (!(($aiGlobalStore as AIStore).context.summary) || !caseId) return;
-      await fetch('/api/summary/save', {
-        method: 'POST',
-        body: JSON.stringify({ caseId, summary: ($aiGlobalStore as AIStore).context.summary }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      // Optionally show a notification here
+      if (!(($aiGlobalStore as AIStore).context.summary) || !caseId || !user?.id) return;
+      try {
+        const response = await fetch('/api/summaries', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            type: 'case',
+            targetId: caseId,
+            depth: 'comprehensive',
+            includeRAG: true,
+            includeUserActivity: false,
+            enableStreaming: false,
+            userId: user.id
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Optionally show a success notification here
+          console.log('Summary saved successfully');
+        } else {
+          console.error('Failed to save summary:', result.error);
+        }
+      } catch (error) {
+        console.error('Error saving summary:', error);
+      }
     }
   </script>
 

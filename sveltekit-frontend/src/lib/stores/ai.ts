@@ -78,7 +78,7 @@ export const aiGlobalMachine = setup({
       }
 
       // Call AI summary API
-      const res = await fetch("/api/ai-summary", {
+      const res = await fetch("/api/ai/summarize", {
         method: "POST",
         body: JSON.stringify({
           caseId: input.caseId,
