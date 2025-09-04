@@ -1,0 +1,6 @@
+{
+  "name": "Deeds YoRHa Frontend",
+  "short_name": "Deeds",
+  "start_url": "/",
+  "display": "standalone"
+}
