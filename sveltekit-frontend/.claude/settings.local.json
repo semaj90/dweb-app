@@ -22,7 +22,9 @@
       "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
       "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\static/**)",
       "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)",
-      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)"
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
