@@ -130,6 +130,14 @@ src/lib/wasm/dist/
 *.wat
 
 ########################################
+# Large files (50MB+) and metric data
+########################################
+.rag-metrics/
+.rag-metrics/chunks/
+.rag-metrics/embeddings/
+*.jsonl
+
+########################################
 # Dev wrappers/generated content
 ########################################
 sveltekit-frontend/todos/
