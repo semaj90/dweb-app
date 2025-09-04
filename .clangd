@@ -1,0 +1,34 @@
+CompileFlags:
+  Add:
+    - -std=c++14
+    - -I"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include"
+    - -I"C:/Program Files/LLVM/include"
+    - -D__CUDACC__
+    - -D__NVCC__
+    - -DCUDA_VERSION=12080
+    - --expt-relaxed-constexpr
+  Remove:
+    - -W*
+    - -fms-extensions
+  Compiler: clang++
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: None
+  ClangTidy:
+    Add:
+      - modernize-*
+      - performance-*
+      - readability-*
+    Remove:
+      - modernize-use-trailing-return-type
+      - readability-identifier-length
+
+Index:
+  Background: Build
+  StandardLibrary: Yes
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes

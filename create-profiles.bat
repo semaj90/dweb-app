@@ -1,0 +1,4 @@
+@echo off
+set PGPASSWORD=123456
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U legal_admin -d legal_ai_db -h localhost -c "CREATE TABLE IF NOT EXISTS user_profiles (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL UNIQUE, bio text, phone varchar(20), address text, preferences jsonb DEFAULT '{}' NOT NULL, permissions jsonb DEFAULT '[]' NOT NULL, specializations jsonb DEFAULT '[]' NOT NULL, certifications jsonb DEFAULT '[]' NOT NULL, experience_level varchar(20) DEFAULT 'junior', work_patterns jsonb DEFAULT '{}' NOT NULL, metadata jsonb DEFAULT '{}' NOT NULL, created_at timestamp DEFAULT now() NOT NULL, updated_at timestamp DEFAULT now() NOT NULL, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);"
+echo "User profiles table creation completed."

@@ -121,7 +121,6 @@
     "@langchain/ollama": "^0.2.3",
     "@langchain/openai": "^0.6.3",
     "@lucia-auth/adapter-drizzle": "^1.1.0",
-    "@melt-ui/svelte": "^0.86.6",
     "@modelcontextprotocol/sdk": "*",
     "@node-rs/argon2": "^2.0.2",
     "@paralleldrive/cuid2": "^2.2.2",

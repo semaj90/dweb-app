@@ -1,0 +1,247 @@
+2025/09/03-13:07:53.846143 dea8 RocksDB version: 9.9.3
+2025/09/03-13:07:53.847013 dea8 Compile date 2024-12-05 01:25:31
+2025/09/03-13:07:53.847238 dea8 DB SUMMARY
+2025/09/03-13:07:53.847282 dea8 Host name (Env):  DESKTOP-Q18MPHM
+2025/09/03-13:07:53.847301 dea8 DB Session ID:  KZYNAPPV74UX3RKZG061
+2025/09/03-13:07:53.848711 dea8 CURRENT file:  CURRENT
+2025/09/03-13:07:53.848780 dea8 IDENTITY file:  IDENTITY
+2025/09/03-13:07:53.848994 dea8 MANIFEST file:  MANIFEST-000077 size: 165 Bytes
+2025/09/03-13:07:53.849033 dea8 SST files in ./storage\collections\legal_documents\0\segments\0b4c6b45-7c46-48fa-ac91-f7a82fb594cb\payload_index dir, Total Num: 0, files: 
+2025/09/03-13:07:53.849068 dea8 Write Ahead Log file in ./storage\collections\legal_documents\0\segments\0b4c6b45-7c46-48fa-ac91-f7a82fb594cb\payload_index: 000076.log size: 0 ; 
+2025/09/03-13:07:53.849339 dea8                         Options.error_if_exists: 0
+2025/09/03-13:07:53.849359 dea8                       Options.create_if_missing: 1
+2025/09/03-13:07:53.849366 dea8                         Options.paranoid_checks: 1
+2025/09/03-13:07:53.849379 dea8             Options.flush_verify_memtable_count: 1
+2025/09/03-13:07:53.849387 dea8          Options.compaction_verify_record_count: 1
+2025/09/03-13:07:53.849394 dea8                               Options.track_and_verify_wals_in_manifest: 0
+2025/09/03-13:07:53.849408 dea8        Options.verify_sst_unique_id_in_manifest: 1
+2025/09/03-13:07:53.849415 dea8                                     Options.env: 000002A717D4AFD0
+2025/09/03-13:07:53.849429 dea8                                      Options.fs: WinFS
+2025/09/03-13:07:53.849436 dea8                                Options.info_log: 000002A717D8D9C0
+2025/09/03-13:07:53.849449 dea8                Options.max_file_opening_threads: 16
+2025/09/03-13:07:53.849456 dea8                              Options.statistics: 0000000000000000
+2025/09/03-13:07:53.849463 dea8                               Options.use_fsync: 0
+2025/09/03-13:07:53.849470 dea8                       Options.max_log_file_size: 1048576
+2025/09/03-13:07:53.849477 dea8                  Options.max_manifest_file_size: 1073741824
+2025/09/03-13:07:53.849484 dea8                   Options.log_file_time_to_roll: 0
+2025/09/03-13:07:53.849491 dea8                       Options.keep_log_file_num: 1
+2025/09/03-13:07:53.849497 dea8                    Options.recycle_log_file_num: 0
+2025/09/03-13:07:53.849504 dea8                         Options.allow_fallocate: 1
+2025/09/03-13:07:53.849511 dea8                        Options.allow_mmap_reads: 0
+2025/09/03-13:07:53.849518 dea8                       Options.allow_mmap_writes: 0
+2025/09/03-13:07:53.849524 dea8                        Options.use_direct_reads: 0
+2025/09/03-13:07:53.849531 dea8                        Options.use_direct_io_for_flush_and_compaction: 0
+2025/09/03-13:07:53.849543 dea8          Options.create_missing_column_families: 1
+2025/09/03-13:07:53.849552 dea8                              Options.db_log_dir: 
+2025/09/03-13:07:53.849558 dea8                                 Options.wal_dir: 
+2025/09/03-13:07:53.849567 dea8                Options.table_cache_numshardbits: 6
+2025/09/03-13:07:53.849578 dea8                         Options.WAL_ttl_seconds: 0
+2025/09/03-13:07:53.849584 dea8                       Options.WAL_size_limit_MB: 0
+2025/09/03-13:07:53.849600 dea8                        Options.max_write_batch_group_size_bytes: 1048576
+2025/09/03-13:07:53.849614 dea8             Options.manifest_preallocation_size: 4194304
+2025/09/03-13:07:53.849630 dea8                     Options.is_fd_close_on_exec: 1
+2025/09/03-13:07:53.849647 dea8                   Options.advise_random_on_open: 1
+2025/09/03-13:07:53.849663 dea8                    Options.db_write_buffer_size: 0
+2025/09/03-13:07:53.849676 dea8                    Options.write_buffer_manager: 000002A717D4B0C0
+2025/09/03-13:07:53.849690 dea8           Options.random_access_max_buffer_size: 1048576
+2025/09/03-13:07:53.849710 dea8                      Options.use_adaptive_mutex: 0
+2025/09/03-13:07:53.849727 dea8                            Options.rate_limiter: 0000000000000000
+2025/09/03-13:07:53.849823 dea8     Options.sst_file_manager.rate_bytes_per_sec: 0
+2025/09/03-13:07:53.849840 dea8                       Options.wal_recovery_mode: 0
+2025/09/03-13:07:53.849850 dea8                  Options.enable_thread_tracking: 0
+2025/09/03-13:07:53.849857 dea8                  Options.enable_pipelined_write: 0
+2025/09/03-13:07:53.849864 dea8                  Options.unordered_write: 0
+2025/09/03-13:07:53.849873 dea8         Options.allow_concurrent_memtable_write: 1
+2025/09/03-13:07:53.849880 dea8      Options.enable_write_thread_adaptive_yield: 1
+2025/09/03-13:07:53.849887 dea8             Options.write_thread_max_yield_usec: 100
+2025/09/03-13:07:53.849895 dea8            Options.write_thread_slow_yield_usec: 3
+2025/09/03-13:07:53.849902 dea8                               Options.row_cache: None
+2025/09/03-13:07:53.849910 dea8                              Options.wal_filter: None
+2025/09/03-13:07:53.849918 dea8             Options.avoid_flush_during_recovery: 0
+2025/09/03-13:07:53.849924 dea8             Options.allow_ingest_behind: 0
+2025/09/03-13:07:53.849931 dea8             Options.two_write_queues: 0
+2025/09/03-13:07:53.849938 dea8             Options.manual_wal_flush: 0
+2025/09/03-13:07:53.849944 dea8             Options.wal_compression: 0
+2025/09/03-13:07:53.849950 dea8             Options.background_close_inactive_wals: 0
+2025/09/03-13:07:53.849958 dea8             Options.atomic_flush: 0
+2025/09/03-13:07:53.849964 dea8             Options.avoid_unnecessary_blocking_io: 0
+2025/09/03-13:07:53.849976 dea8             Options.prefix_seek_opt_in_only: 0
+2025/09/03-13:07:53.849984 dea8                 Options.persist_stats_to_disk: 0
+2025/09/03-13:07:53.849990 dea8                 Options.write_dbid_to_manifest: 1
+2025/09/03-13:07:53.849997 dea8                 Options.write_identity_file: 1
+2025/09/03-13:07:53.850004 dea8                 Options.log_readahead_size: 0
+2025/09/03-13:07:53.850012 dea8                 Options.file_checksum_gen_factory: Unknown
+2025/09/03-13:07:53.850019 dea8                 Options.best_efforts_recovery: 0
+2025/09/03-13:07:53.850027 dea8                Options.max_bgerror_resume_count: 2147483647
+2025/09/03-13:07:53.850034 dea8            Options.bgerror_resume_retry_interval: 1000000
+2025/09/03-13:07:53.850041 dea8             Options.allow_data_in_errors: 0
+2025/09/03-13:07:53.850048 dea8             Options.db_host_id: __hostname__
+2025/09/03-13:07:53.850054 dea8             Options.enforce_single_del_contracts: true
+2025/09/03-13:07:53.851060 dea8             Options.metadata_write_temperature: kUnknown
+2025/09/03-13:07:53.851085 dea8             Options.wal_write_temperature: kUnknown
+2025/09/03-13:07:53.851093 dea8             Options.max_background_jobs: 2
+2025/09/03-13:07:53.851106 dea8             Options.max_background_compactions: -1
+2025/09/03-13:07:53.851114 dea8             Options.max_subcompactions: 1
+2025/09/03-13:07:53.851121 dea8             Options.avoid_flush_during_shutdown: 0
+2025/09/03-13:07:53.851128 dea8           Options.writable_file_max_buffer_size: 1048576
+2025/09/03-13:07:53.851136 dea8             Options.delayed_write_rate : 16777216
+2025/09/03-13:07:53.851142 dea8             Options.max_total_wal_size: 0
+2025/09/03-13:07:53.851150 dea8             Options.delete_obsolete_files_period_micros: 180000000
+2025/09/03-13:07:53.851156 dea8                   Options.stats_dump_period_sec: 600
+2025/09/03-13:07:53.851163 dea8                 Options.stats_persist_period_sec: 600
+2025/09/03-13:07:53.851170 dea8                 Options.stats_history_buffer_size: 1048576
+2025/09/03-13:07:53.851178 dea8                          Options.max_open_files: 256
+2025/09/03-13:07:53.851185 dea8                          Options.bytes_per_sync: 0
+2025/09/03-13:07:53.851191 dea8                      Options.wal_bytes_per_sync: 0
+2025/09/03-13:07:53.851198 dea8                   Options.strict_bytes_per_sync: 0
+2025/09/03-13:07:53.851205 dea8       Options.compaction_readahead_size: 2097152
+2025/09/03-13:07:53.851279 dea8                  Options.max_background_flushes: -1
+2025/09/03-13:07:53.851289 dea8 Options.daily_offpeak_time_utc: 
+2025/09/03-13:07:53.851302 dea8 Compression algorithms supported:
+2025/09/03-13:07:53.851309 dea8 	kZSTD supported: 0
+2025/09/03-13:07:53.851316 dea8 	kSnappyCompression supported: 1
+2025/09/03-13:07:53.851323 dea8 	kBZip2Compression supported: 0
+2025/09/03-13:07:53.851329 dea8 	kZlibCompression supported: 0
+2025/09/03-13:07:53.851336 dea8 	kLZ4Compression supported: 1
+2025/09/03-13:07:53.851344 dea8 	kXpressCompression supported: 0
+2025/09/03-13:07:53.851351 dea8 	kLZ4HCCompression supported: 1
+2025/09/03-13:07:53.851360 dea8 	kZSTDNotFinalCompression supported: 0
+2025/09/03-13:07:53.851367 dea8 Fast CRC32 supported: Not supported on x86
+2025/09/03-13:07:53.851374 dea8 DMutex implementation: std::mutex
+2025/09/03-13:07:53.851381 dea8 Jemalloc supported: 0
+2025/09/03-13:07:53.854981 dea8               Options.comparator: leveldb.BytewiseComparator
+2025/09/03-13:07:53.855003 dea8           Options.merge_operator: None
+2025/09/03-13:07:53.855010 dea8        Options.compaction_filter: None
+2025/09/03-13:07:53.855021 dea8        Options.compaction_filter_factory: None
+2025/09/03-13:07:53.855028 dea8  Options.sst_partitioner_factory: None
+2025/09/03-13:07:53.855035 dea8         Options.memtable_factory: SkipListFactory
+2025/09/03-13:07:53.855041 dea8            Options.table_factory: BlockBasedTable
+2025/09/03-13:07:53.855105 dea8            table_factory options:   flush_block_policy_factory: FlushBlockBySizePolicyFactory (000002A716341790)
+  cache_index_and_filter_blocks: 0
+  cache_index_and_filter_blocks_with_high_priority: 1
+  pin_l0_filter_and_index_blocks_in_cache: 0
+  pin_top_level_index_and_filter: 1
+  index_type: 0
+  data_block_index_type: 0
+  index_shortening: 1
+  data_block_hash_table_util_ratio: 0.750000
+  checksum: 4
+  no_block_cache: 0
+  block_cache: 000002A7163407D0
+  block_cache_name: LRUCache
+  block_cache_options:
+    capacity : 33554432
+    num_shard_bits : 6
+    strict_capacity_limit : 0
+    memory_allocator : None
+    high_pri_pool_ratio: 0.500
+    low_pri_pool_ratio: 0.000
+  persistent_cache: 0000000000000000
+  block_size: 4096
+  block_size_deviation: 10
+  block_restart_interval: 16
+  index_block_restart_interval: 1
+  metadata_block_size: 4096
+  partition_filters: 0
+  use_delta_encoding: 1
+  filter_policy: nullptr
+  whole_key_filtering: 1
+  verify_compression: 0
+  read_amp_bytes_per_bit: 0
+  format_version: 6
+  enable_index_compression: 1
+  block_align: 0
+  max_auto_readahead_size: 262144
+  prepopulate_block_cache: 0
+  initial_auto_readahead_size: 8192
+  num_file_reads_for_auto_readahead: 2
+2025/09/03-13:07:53.855115 dea8        Options.write_buffer_size: 10485760
+2025/09/03-13:07:53.855121 dea8  Options.max_write_buffer_number: 2
+2025/09/03-13:07:53.855127 dea8          Options.compression: LZ4
+2025/09/03-13:07:53.855134 dea8                  Options.bottommost_compression: Disabled
+2025/09/03-13:07:53.855140 dea8       Options.prefix_extractor: nullptr
+2025/09/03-13:07:53.855147 dea8   Options.memtable_insert_with_hint_prefix_extractor: nullptr
+2025/09/03-13:07:53.855153 dea8             Options.num_levels: 7
+2025/09/03-13:07:53.855322 dea8        Options.min_write_buffer_number_to_merge: 1
+2025/09/03-13:07:53.855337 dea8     Options.max_write_buffer_number_to_maintain: 0
+2025/09/03-13:07:53.855345 dea8     Options.max_write_buffer_size_to_maintain: 0
+2025/09/03-13:07:53.855353 dea8            Options.bottommost_compression_opts.window_bits: -14
+2025/09/03-13:07:53.855360 dea8                  Options.bottommost_compression_opts.level: 32767
+2025/09/03-13:07:53.855367 dea8               Options.bottommost_compression_opts.strategy: 0
+2025/09/03-13:07:53.855375 dea8         Options.bottommost_compression_opts.max_dict_bytes: 0
+2025/09/03-13:07:53.855382 dea8         Options.bottommost_compression_opts.zstd_max_train_bytes: 0
+2025/09/03-13:07:53.855388 dea8         Options.bottommost_compression_opts.parallel_threads: 1
+2025/09/03-13:07:53.855395 dea8                  Options.bottommost_compression_opts.enabled: false
+2025/09/03-13:07:53.855407 dea8         Options.bottommost_compression_opts.max_dict_buffer_bytes: 0
+2025/09/03-13:07:53.855416 dea8         Options.bottommost_compression_opts.use_zstd_dict_trainer: true
+2025/09/03-13:07:53.855423 dea8            Options.compression_opts.window_bits: -14
+2025/09/03-13:07:53.855430 dea8                  Options.compression_opts.level: 32767
+2025/09/03-13:07:53.855442 dea8               Options.compression_opts.strategy: 0
+2025/09/03-13:07:53.855449 dea8         Options.compression_opts.max_dict_bytes: 0
+2025/09/03-13:07:53.855456 dea8         Options.compression_opts.zstd_max_train_bytes: 0
+2025/09/03-13:07:53.855462 dea8         Options.compression_opts.use_zstd_dict_trainer: true
+2025/09/03-13:07:53.855470 dea8         Options.compression_opts.parallel_threads: 1
+2025/09/03-13:07:53.855476 dea8                  Options.compression_opts.enabled: false
+2025/09/03-13:07:53.855486 dea8         Options.compression_opts.max_dict_buffer_bytes: 0
+2025/09/03-13:07:53.855493 dea8      Options.level0_file_num_compaction_trigger: 4
+2025/09/03-13:07:53.855500 dea8          Options.level0_slowdown_writes_trigger: 20
+2025/09/03-13:07:53.855506 dea8              Options.level0_stop_writes_trigger: 36
+2025/09/03-13:07:53.855513 dea8                   Options.target_file_size_base: 67108864
+2025/09/03-13:07:53.855519 dea8             Options.target_file_size_multiplier: 1
+2025/09/03-13:07:53.855526 dea8                Options.max_bytes_for_level_base: 268435456
+2025/09/03-13:07:53.855532 dea8 Options.level_compaction_dynamic_level_bytes: 1
+2025/09/03-13:07:53.855541 dea8          Options.max_bytes_for_level_multiplier: 10.000000
+2025/09/03-13:07:53.855549 dea8 Options.max_bytes_for_level_multiplier_addtl[0]: 1
+2025/09/03-13:07:53.855556 dea8 Options.max_bytes_for_level_multiplier_addtl[1]: 1
+2025/09/03-13:07:53.855564 dea8 Options.max_bytes_for_level_multiplier_addtl[2]: 1
+2025/09/03-13:07:53.855571 dea8 Options.max_bytes_for_level_multiplier_addtl[3]: 1
+2025/09/03-13:07:53.855578 dea8 Options.max_bytes_for_level_multiplier_addtl[4]: 1
+2025/09/03-13:07:53.855585 dea8 Options.max_bytes_for_level_multiplier_addtl[5]: 1
+2025/09/03-13:07:53.855593 dea8 Options.max_bytes_for_level_multiplier_addtl[6]: 1
+2025/09/03-13:07:53.855600 dea8       Options.max_sequential_skip_in_iterations: 8
+2025/09/03-13:07:53.855607 dea8                    Options.max_compaction_bytes: 1677721600
+2025/09/03-13:07:53.855614 dea8                        Options.arena_block_size: 1048576
+2025/09/03-13:07:53.855621 dea8   Options.soft_pending_compaction_bytes_limit: 68719476736
+2025/09/03-13:07:53.855628 dea8   Options.hard_pending_compaction_bytes_limit: 274877906944
+2025/09/03-13:07:53.855634 dea8                Options.disable_auto_compactions: 0
+2025/09/03-13:07:53.855643 dea8                        Options.compaction_style: kCompactionStyleLevel
+2025/09/03-13:07:53.855651 dea8                          Options.compaction_pri: kMinOverlappingRatio
+2025/09/03-13:07:53.855657 dea8 Options.compaction_options_universal.size_ratio: 1
+2025/09/03-13:07:53.855664 dea8 Options.compaction_options_universal.min_merge_width: 2
+2025/09/03-13:07:53.855672 dea8 Options.compaction_options_universal.max_merge_width: 4294967295
+2025/09/03-13:07:53.855679 dea8 Options.compaction_options_universal.max_size_amplification_percent: 200
+2025/09/03-13:07:53.855686 dea8 Options.compaction_options_universal.compression_size_percent: -1
+2025/09/03-13:07:53.855695 dea8 Options.compaction_options_universal.stop_style: kCompactionStopStyleTotalSize
+2025/09/03-13:07:53.855701 dea8 Options.compaction_options_universal.max_read_amp: -1
+2025/09/03-13:07:53.855710 dea8 Options.compaction_options_fifo.max_table_files_size: 1073741824
+2025/09/03-13:07:53.855717 dea8 Options.compaction_options_fifo.allow_compaction: 0
+2025/09/03-13:07:53.855728 dea8                   Options.table_properties_collectors: 
+2025/09/03-13:07:53.855736 dea8                   Options.inplace_update_support: 0
+2025/09/03-13:07:53.855742 dea8                 Options.inplace_update_num_locks: 10000
+2025/09/03-13:07:53.855816 dea8               Options.memtable_prefix_bloom_size_ratio: 0.000000
+2025/09/03-13:07:53.855827 dea8               Options.memtable_whole_key_filtering: 0
+2025/09/03-13:07:53.855834 dea8   Options.memtable_huge_page_size: 0
+2025/09/03-13:07:53.855842 dea8                           Options.bloom_locality: 0
+2025/09/03-13:07:53.855849 dea8                    Options.max_successive_merges: 0
+2025/09/03-13:07:53.855855 dea8             Options.strict_max_successive_merges: 0
+2025/09/03-13:07:53.855861 dea8                Options.optimize_filters_for_hits: 0
+2025/09/03-13:07:53.855868 dea8                Options.paranoid_file_checks: 0
+2025/09/03-13:07:53.855875 dea8                Options.force_consistency_checks: 1
+2025/09/03-13:07:53.855881 dea8                Options.report_bg_io_stats: 0
+2025/09/03-13:07:53.855888 dea8                               Options.ttl: 2592000
+2025/09/03-13:07:53.855895 dea8          Options.periodic_compaction_seconds: 0
+2025/09/03-13:07:53.855902 dea8                        Options.default_temperature: kUnknown
+2025/09/03-13:07:53.855909 dea8  Options.preclude_last_level_data_seconds: 0
+2025/09/03-13:07:53.855915 dea8    Options.preserve_internal_time_seconds: 0
+2025/09/03-13:07:53.855921 dea8                       Options.enable_blob_files: false
+2025/09/03-13:07:53.855928 dea8                           Options.min_blob_size: 0
+2025/09/03-13:07:53.855935 dea8                          Options.blob_file_size: 268435456
+2025/09/03-13:07:53.855942 dea8                   Options.blob_compression_type: NoCompression
+2025/09/03-13:07:53.855949 dea8          Options.enable_blob_garbage_collection: false
+2025/09/03-13:07:53.855957 dea8      Options.blob_garbage_collection_age_cutoff: 0.250000
+2025/09/03-13:07:53.855964 dea8 Options.blob_garbage_collection_force_threshold: 1.000000
+2025/09/03-13:07:53.855971 dea8          Options.blob_compaction_readahead_size: 0
+2025/09/03-13:07:53.855981 dea8                Options.blob_file_starting_level: 0
+2025/09/03-13:07:53.855988 dea8         Options.experimental_mempurge_threshold: 0.000000
+2025/09/03-13:07:53.855995 dea8            Options.memtable_max_range_deletions: 0
+2025/09/03-13:07:54.305503 dea8 DB pointer 000002A717DA0800

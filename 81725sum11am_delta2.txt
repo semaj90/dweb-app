@@ -1,0 +1,1 @@
+Delta2: Applied incremental TS fixes (rag-pipeline schema import fallback, cross-encoder SearchResult reconstruction, MMR summary metadata normalization, ai-synthesizer metrics typing). Next run tsc to measure error reduction.

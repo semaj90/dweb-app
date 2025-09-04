@@ -1,0 +1,37 @@
+LEGAL DOCUMENT TEST
+
+Case Title: Sample Legal Document for RAG Testing
+Date: January 17, 2025
+
+SUMMARY:
+This is a sample legal document created specifically for testing the RAG (Retrieval-Augmented Generation) pipeline implementation. The document contains various legal terms and concepts to verify the embedding generation and vector search functionality.
+
+BACKGROUND:
+The plaintiff filed a motion for summary judgment based on contractual obligations outlined in Section 4.2 of the Service Agreement dated March 15, 2024. The defendant argues that force majeure clauses apply due to extraordinary circumstances beyond their reasonable control.
+
+KEY LEGAL ISSUES:
+1. Breach of Contract - Material failure to deliver services as specified
+2. Force Majeure Application - Whether pandemic-related delays constitute force majeure
+3. Damages Calculation - Liquidated damages versus actual harm assessment
+4. Jurisdiction - Proper venue for dispute resolution
+
+RELEVANT STATUTES:
+- Uniform Commercial Code Section 2-615 (Commercial Impracticability)
+- Restatement (Second) of Contracts Section 261 (Supervening Impracticability)
+- Civil Code Section 1511 (Impossibility of Performance)
+
+PRECEDENT CASES:
+- Smith v. Johnson (2022) - Established standards for force majeure interpretation
+- Corporate Solutions Inc. v. TechCorp (2021) - Clarified material breach thresholds
+- Williams Manufacturing v. Global Supply (2020) - Addressed pandemic-related contract issues
+
+CONCLUSION:
+Based on the evidence presented and applicable legal standards, the court should consider both the contractual terms and extraordinary circumstances in determining liability and appropriate remedies.
+
+ATTACHMENTS:
+- Service Agreement (March 15, 2024)
+- Performance Reports (Q1-Q3 2024)
+- Force Majeure Notice (April 3, 2024)
+- Damage Assessment Report (November 2024)
+
+This document serves as a comprehensive test case for the legal AI system's ability to process, understand, and retrieve relevant legal information through semantic search and vector embeddings.

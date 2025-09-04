@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 Launch Legal AI Platform",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/sveltekit-frontend/node_modules/.bin/vite",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}/sveltekit-frontend",
+      "env": {
+        "NODE_ENV": "development",
+        "DATABASE_URL": "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+        "OLLAMA_URL": "http://localhost:11434"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "presentation": {
+        "hidden": false,
+        "group": "Legal AI",
+        "order": 1
+      }
+    },
+    {
+      "name": "🔨 Build Go Services",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-go-services.ps1",
+      "windows": {
+        "program": "powershell.exe",
+        "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/build-go-services.ps1"]
+      },
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "presentation": {
+        "hidden": false,
+        "group": "Legal AI",
+        "order": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+Error Reduction Plan (Post initial fixes)
+
+Current high-priority categories from tsc output:
+1. XState actor typing (converted several to fromPromise; re-run check required)
+2. Drizzle schema mismatches (embedding fields expecting string vs number[])
+3. Missing modules / path errors (schema-postgres, enhanced-sentence-splitter)
+4. Property mismatches (adding unsupported props like sources, type)
+5. Buffer typing (sharp returning Buffer<ArrayBufferLike>)
+6. QUIC tensor operation typing (shape property absent on union)
+
+Next incremental fix order:
+- Re-run quick check after actor import; verify reduction.
+- For Drizzle inserts: serialize numeric arrays to string representation or cast to SQL raw using placeholder.
+- Add safe optional chaining / narrowing for properties absent in types (e.g., result.metadata.sentenceCount).
+- Provide stub modules for missing internal files or adjust import paths.
+- Patch search-service (done) and similar apiFetch misuse instances.
+- Refactor cross-encoder-reranker to include 'document' field when constructing SearchResult.
+- Remove unsupported object literal props (sources, type) or extend interfaces.
+
+Created by agent at 11:05Z.

@@ -1,0 +1,32 @@
+{
+  "errors": [
+    {
+      "file": "src/lib/components/AIChat.svelte",
+      "line": 45,
+      "column": 12,
+      "message": "Property 'handleSubmit' does not exist on type 'EventTarget'",
+      "code": "const handleSubmit = (event: Event) => { event.target.handleSubmit(); }",
+      "context": "Event handler in Svelte 5 component"
+    },
+    {
+      "file": "src/lib/stores/auth-store.svelte",
+      "line": 23,
+      "column": 8,
+      "message": "Cannot find name 'writable'",
+      "code": "const user = writable(null);",
+      "context": "Svelte 5 runes migration needed"
+    },
+    {
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 67,
+      "column": 15,
+      "message": "Argument of type 'unknown' is not assignable to parameter of type 'string'",
+      "code": "const response = await fetch(url, body);",
+      "context": "TypeScript type assertion needed"
+    }
+  ],
+  "strategy": "parse_errors_first",
+  "max_fixes": 10,
+  "use_thinking": true,
+  "temperature": 0.2
+}

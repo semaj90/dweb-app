@@ -1,0 +1,27 @@
+emented (pending if you choose): B. gRPC + proto definition for MetricsBatch. C. QUIC gateway passthrough. Memory management microservice (Go) to watch GPU load & trigger cache/UI effect downgrades. Rollup job to populate gpu_metrics_rollup from batches. Ingestion service writing to DB (currently in‑memory).
+
+Next options (reply with numbers/letters):
+
+Generate SQL migration from new tables + sample insert/rollup SQL.
+Extend Go gpu-metrics service to write batches into Postgres (using pgx).
+Add rollup goroutine (every 5m) computing stddev/p95 & primaryEffects.
+Add gRPC proto + server streaming ingestion, update frontend optionally.
+QUIC gateway route forwarding /gpu-metrics to service.
+GPU memory watcher (Go) stub integrating NVML or fall back heuristics.
+Svelte endpoint /api/metrics/gpu/summary reading rollups.
+
+make ure this works
+*********************************************************************
+5:59pm
+******************************************************************
+did we finish workingg on this?
+OllamaChatInterface.svelte: UI shell for chat (logic stubs still elided).
+webasm-llamacpp.ts: Browser WASM/WebGPU LLM wrapper (no backend provider interface).
+LANGCHAIN_INTEGRATION_GUIDE.md: High‑level LangChain + ingestion doc.
+embeddings.ts + nomic-embedding-service.ts: Two parallel TS embedding layers (one simple, one richer singleton).
+gpu-multidimensional-caching-plan.md: Design doc only.
+gollma_tensormat_tilestreamchunkexport81225.txt: Transport/architecture notes.
+NEO4J_AGENTIC_IMPLEMENTATION_COMPLETE.md: Empty placeholder.
+embed.pb.go: Empty (no generated code yet) → generation not run.
+Go side: multiple direct Ollama calls (batch_embed.go, ai-summarization-simple.go) but NO unified inference/embedding provider interface yet.
+Conclusion: You do NOT already have a consolidated Go “provider” abstraction; just ad‑hoc Ollama calls. If desired next step: create internal/inference/provider.go with interface + ollama_provider.go implementation, then refactor callers.

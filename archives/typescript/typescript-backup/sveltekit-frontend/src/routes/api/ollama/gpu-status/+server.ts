@@ -1,0 +1,35 @@
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { ollamaService } from '$lib/server/services/OllamaService';
+
+const GO_BASE = import.meta.env.GO_SERVICE_URL || "http://localhost:8084";
+
+async function fetchWithTimeout(path: string, timeoutMs = 2500): Promise<any> {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${GO_BASE}${path}`, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+export const GET: RequestHandler = async () => {
+  const healthy = await ollamaService.isHealthy();
+  if (!healthy) {
+    return json({
+      ok: false,
+      source: "shim",
+      message: "Ollama offline",
+      gpu: { enabled: false },
+    });
+  }
+
+  try {
+    const data = await fetchWithTimeout("/api/gpu-status");
+    return json({ ok: true, source: "go", gpu: data });
+  } catch (err: any) {
+    return json({ ok: true, source: "shim", gpu: { enabled: true } });
+  }
+};

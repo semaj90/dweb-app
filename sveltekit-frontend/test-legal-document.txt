@@ -1,0 +1,31 @@
+This is a test document for the RAG file upload pipeline.
+
+It contains legal information about contract terms and conditions.
+The document includes important clauses about liability, indemnification, and dispute resolution.
+
+This content will be processed through the following steps:
+1. File upload to the system
+2. OCR processing (if enabled)
+3. Text chunking and preprocessing
+4. Embedding generation using Ollama
+5. Vector storage in PostgreSQL
+6. Integration with the RAG search system
+
+The system should handle this document and make it searchable through semantic similarity queries.
+
+LEGAL CONTRACT TERMS:
+
+LIABILITY CLAUSE:
+The Provider shall be liable for any direct damages resulting from gross negligence or willful misconduct in the performance of services under this Agreement.
+
+INDEMNIFICATION CLAUSE:
+Each party shall indemnify and hold harmless the other party from and against any claims, damages, losses, and expenses arising out of or resulting from the indemnifying party's breach of this Agreement.
+
+DISPUTE RESOLUTION:
+Any disputes arising under this Agreement shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.
+
+FORCE MAJEURE:
+Neither party shall be liable for any failure or delay in performance under this Agreement due to circumstances beyond their reasonable control.
+
+CONFIDENTIALITY:
+Both parties agree to maintain the confidentiality of all proprietary information disclosed during the term of this Agreement.

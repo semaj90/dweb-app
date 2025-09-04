@@ -1,0 +1,146 @@
+src/lib/ai/types.ts(446,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'copilotOrchestrator'.
+src/lib/ai/types.ts(447,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'semanticSearch'.
+src/lib/ai/types.ts(448,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'mcpMemoryReadGraph'.
+src/lib/ai/types.ts(449,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'mcpCodebaseAnalyze'.
+src/lib/ai/types.ts(450,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'generateMCPPrompt'.
+src/lib/ai/types.ts(451,3): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'commonMCPQueries'.
+src/lib/ai/types.ts(452,8): error TS2724: '"./utils/mcp-helpers"' has no exported member named 'MCPToolRequest'. Did you mean 'MCPRequest'?
+src/lib/ai/types.ts(453,8): error TS2305: Module '"./utils/mcp-helpers"' has no exported member 'OrchestrationOptions'.
+src/lib/api/services/ollama-service.ts(4,54): error TS2345: Argument of type '{ method: string; headers: { "Content-Type": string; }; body: string; }' is not assignable to parameter of type 'HttpMethod'.
+src/lib/api/services/ollama-service.ts(12,58): error TS2345: Argument of type '{ method: string; headers: { "Content-Type": string; }; body: string; }' is not assignable to parameter of type 'HttpMethod'.
+src/lib/api/services/search-service.ts(8,75): error TS2554: Expected 1-2 arguments, but got 3.
+src/lib/server/ai/config.ts(6,15): error TS2305: Module '"./types"' has no exported member 'RAGConfiguration'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(436,9): error TS2322: Type '({ context }: { context: any; }) => Promise<{ cached: boolean; data: any; }>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(441,9): error TS2322: Type '({ context }: { context: any; }) => Promise<{ embeddings: number[]; }>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(445,9): error TS2322: Type '({ context }: { context: any; }) => Promise<LegalAnalysisResult>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(449,9): error TS2322: Type '({ context }: { context: any; }) => Promise<{ entities: any[]; concepts: any[]; complexity: { legalComplexity: number; }; jurisdiction: string; }>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(457,9): error TS2322: Type '({ context }: { context: any; }) => Promise<Document<Record<string, any>>[]>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(467,9): error TS2322: Type '({ context }: { context: any; }) => Promise<DocumentInterface<Record<string, any>>[]>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(477,9): error TS2322: Type '({ context }: { context: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(499,9): error TS2322: Type '({ context }: { context: any; }) => Promise<MessageContent>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(510,9): error TS2322: Type '({ context }: { context: any; }) => Promise<SynthesizedOutput>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(517,15): error TS2353: Object literal may only specify known properties, and 'legalBertAnalysis' does not exist in type '{ caseId?: string; userId: string; conversationHistory?: { role: "user" | "assistant"; content: string; timestamp: Date; }[]; documents?: { id: string; title: string; content: string; type: string; }[]; preferences?: { ...; }; }'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(543,9): error TS2322: Type '({ context }: { context: any; }) => Promise<void>' is not assignable to type 'UnknownActorLogic'.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(580,19): error TS2551: Property 'rankedResults' does not exist on type '{ query: string; embeddings: number[]; neo4jResults: Document<Record<string, any>>[]; pgVectorResults: Document<Record<string, any>>[]; ragResults: any[]; legalBertAnalysis: any; ollamaResponse: string; finalSynthesis: AutoSolveResult; error: Error; }'. Did you mean 'ragResults'?
+src/lib/server/ai/ollama-service.ts(244,16): error TS2339: Property 'fallback_used' does not exist on type 'OllamaResponse'.
+src/lib/server/ai/ollama-service.ts(245,16): error TS2339: Property 'models_tried' does not exist on type 'OllamaResponse'.
+src/lib/server/ai/ollama-service.ts(455,7): error TS2353: Object literal may only specify known properties, and 'metadata' does not exist in type 'AnalysisResult'.
+src/lib/server/ai/rag-pipeline.ts(14,25): error TS2307: Cannot find module '../../../db/schema-postgres' or its corresponding type declarations.
+src/lib/server/ragStreamRegistry.ts(28,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+src/lib/server/ragStreamRegistry.ts(28,25): error TS2307: Cannot find module 'ioredis' or its corresponding type declarations.
+src/lib/services/advanced-patch-streaming.ts(419,32): error TS2339: Property 'value' does not exist on type 'Operation'.
+  Property 'value' does not exist on type 'RemoveOperation'.
+src/lib/services/ai-assistant-input-synthesizer.ts(7,64): error TS2307: Cannot find module './server/ai/legalbert-middleware' or its corresponding type declarations.
+src/lib/services/comprehensive-database-orchestrator.ts(237,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+src/lib/services/comprehensive-database-orchestrator.ts(237,45): error TS2307: Cannot find module './enhanced-sentence-splitter' or its corresponding type declarations.
+src/lib/services/comprehensive-database-orchestrator.ts(405,23): error TS2323: Cannot redeclare exported variable 'rerankSearchResults'.
+src/lib/services/comprehensive-database-orchestrator.ts(405,23): error TS2393: Duplicate function implementation.
+src/lib/services/comprehensive-database-orchestrator.ts(412,39): error TS2339: Property 'rerank' does not exist on type 'CrossEncoderReranker'.
+src/lib/services/comprehensive-database-orchestrator.ts(462,51): error TS2554: Expected 1 arguments, but got 2.
+src/lib/services/comprehensive-database-orchestrator.ts(613,23): error TS2323: Cannot redeclare exported variable 'rerankSearchResults'.
+src/lib/services/comprehensive-database-orchestrator.ts(613,23): error TS2393: Duplicate function implementation.
+src/lib/services/cross-encoder-reranker.ts(90,11): error TS2352: Conversion of type '{ score: number; metadata: { originalScore: number; rerankScore: number; reranking: { modelUsed: string; processingTime: number; confidence: number; }; processingTime: number; }; id: string; title: string; content?: string; summary?: string; excerpt?: string; }' to type 'SearchResult' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'document' is missing in type '{ score: number; metadata: { originalScore: number; rerankScore: number; reranking: { modelUsed: string; processingTime: number; confidence: number; }; processingTime: number; }; id: string; title: string; content?: string; summary?: string; excerpt?: string; }' but required in type 'SearchResult'.
+src/lib/services/cross-encoder-reranker.ts(384,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'SearchResult'.
+src/lib/services/cross-encoder-reranker.ts(391,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'SearchResult'.
+src/lib/services/cross-encoder-reranker.ts(398,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'SearchResult'.
+src/lib/services/mmr-summary-generator.ts(90,9): error TS2353: Object literal may only specify known properties, and 'sources' does not exist in type 'SummaryResult'.
+src/lib/services/mmr-summary-generator.ts(381,5): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'SummaryRequest'.
+src/lib/services/mmr-summary-generator.ts(399,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'LegalDocument'.
+src/lib/services/mmr-summary-generator.ts(408,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'LegalDocument'.
+src/lib/services/mmr-summary-generator.ts(422,23): error TS2339: Property 'sentenceCount' does not exist on type '{ documentsProcessed: number; processingTime: number; lambda: number; }'.
+src/lib/services/mmr-summary-generator.ts(428,34): error TS2339: Property 'sentenceCount' does not exist on type '{ documentsProcessed: number; processingTime: number; lambda: number; }'.
+src/lib/services/quic-client.ts(205,24): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable: ArrayLike<number> | Iterable<number>): number[]', gave the following error.
+    Argument of type 'ArrayBuffer | Float32Array<ArrayBufferLike>' is not assignable to parameter of type 'ArrayLike<number> | Iterable<number>'.
+      Type 'ArrayBuffer' is not assignable to type 'ArrayLike<number> | Iterable<number>'.
+  Overload 2 of 4, '(arrayLike: ArrayLike<number>): number[]', gave the following error.
+    Argument of type 'ArrayBuffer | Float32Array<ArrayBufferLike>' is not assignable to parameter of type 'ArrayLike<number>'.
+      Property 'length' is missing in type 'ArrayBuffer' but required in type 'ArrayLike<number>'.
+src/lib/services/quic-client.ts(206,23): error TS2339: Property 'shape' does not exist on type 'TensorOperation'.
+src/lib/services/rag-pipeline-integrator.ts(102,13): error TS2322: Type '{ score: number; rank: number; id: string; title: string; content?: string; summary?: string; excerpt?: string; metadata?: Record<string, any>; }[]' is not assignable to type 'SearchResult[]'.
+  Property 'document' is missing in type '{ score: number; rank: number; id: string; title: string; content?: string; summary?: string; excerpt?: string; metadata?: Record<string, any>; }' but required in type 'SearchResult'.
+src/lib/services/rag-pipeline-integrator.ts(264,17): error TS2322: Type '{ score: any; rank: number; id: string; title: string; content?: string; summary?: string; excerpt?: string; metadata?: Record<string, any>; }[]' is not assignable to type 'SearchResult[]'.
+  Property 'document' is missing in type '{ score: any; rank: number; id: string; title: string; content?: string; summary?: string; excerpt?: string; metadata?: Record<string, any>; }' but required in type 'SearchResult'.
+src/lib/services/rag-pipeline-integrator.ts(487,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'LegalDocument'.
+src/lib/services/rag-pipeline-integrator.ts(496,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'LegalDocument'.
+src/lib/tests/enhanced-sentence-splitter.test.ts(11,8): error TS2307: Cannot find module './services/enhanced-sentence-splitter' or its corresponding type declarations.
+src/routes/api/ai-synthesizer/+server.ts(105,14): error TS2451: Cannot redeclare block-scoped variable 'GET'.
+src/routes/api/ai-synthesizer/+server.ts(142,32): error TS2339: Property 'api_requests_total' does not exist on type 'MetricData[]'.
+src/routes/api/ai-synthesizer/+server.ts(143,30): error TS2339: Property 'api_errors_total' does not exist on type 'MetricData[]'.
+src/routes/api/ai-synthesizer/+server.ts(144,34): error TS2339: Property 'api_request_duration_avg' does not exist on type 'MetricData[]'.
+src/routes/api/ai-synthesizer/+server.ts(189,14): error TS2451: Cannot redeclare block-scoped variable 'GET'.
+src/routes/api/ai-synthesizer/+server.ts(226,43): error TS2339: Property 'sourcesUsed' does not exist on type '{ processingTime: number; model: string; tokensUsed: number; cacheHit: boolean; }'.
+src/routes/api/ai-synthesizer/+server.ts(265,21): error TS2552: Cannot find name 'request'. Did you mean 'Request'?
+src/routes/api/ai/analyze/+server.ts(55,23): error TS2339: Property 'tags' does not exist on type '{ id: string; title: string; documentType: string; jurisdiction: string; court: string; citation: string; fullCitation: string; docketNumber: string; dateDecided: Date; datePublished: Date; ... 24 more ...; updatedAt: Date; }'.
+src/routes/api/ai/analyze/+server.ts(96,13): error TS2353: Object literal may only specify known properties, and 'metadata' does not exist in type '{ title?: string | SQL<unknown> | PgColumn<ColumnBaseConfig<ColumnDataType, string>, {}, {}>; documentType?: string | SQL<unknown> | PgColumn<...>; ... 32 more ...; autoSaveData?: unknown; }'.
+src/routes/api/ai/analyze/+server.ts(105,44): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: { contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }): PgInsertBase<...>', gave the following error.
+    Type 'number[]' is not assignable to type 'string | SQL<unknown> | Placeholder<string, any>'.
+  Overload 2 of 2, '(values: { contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'documentId' does not exist in type '{ contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }[]'.
+src/routes/api/ai/analyze/+server.ts(162,26): error TS2339: Property 'metadata' does not exist on type '{ id: string; title: string; documentType: string; jurisdiction: string; court: string; citation: string; fullCitation: string; docketNumber: string; dateDecided: Date; datePublished: Date; ... 24 more ...; updatedAt: Date; }'.
+src/routes/api/ai/embeddings/+server.ts(35,60): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: { contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }): PgInsertBase<...>', gave the following error.
+    Type 'number[]' is not assignable to type 'string | SQL<unknown> | Placeholder<string, any>'.
+  Overload 2 of 2, '(values: { contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'content' does not exist in type '{ contentId: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; textContent: string | SQL<...> | Placeholder<...>; ... 4 more ...; embedding?: string | ... 1 more ... | Placeholder<...>; }[]'.
+src/routes/api/ai/enhanced-chat/+server.ts(122,81): error TS2339: Property 'maxDocuments' does not exist on type '{ enhancementLevel: "standard" | "basic" | "advanced" | "comprehensive"; includeConfidenceScores?: boolean; enableStreamingResponse?: boolean; model: string; temperature: number; maxTokens: number; enableLegalBERT: boolean; enableRAG: boolean; enableSynthesis: boolean; }'.
+src/routes/api/ai/enhanced-chat/+server.ts(126,36): error TS2339: Property 'maxDocuments' does not exist on type '{ enhancementLevel: "standard" | "basic" | "advanced" | "comprehensive"; includeConfidenceScores?: boolean; enableStreamingResponse?: boolean; model: string; temperature: number; maxTokens: number; enableLegalBERT: boolean; enableRAG: boolean; enableSynthesis: boolean; }'.
+src/routes/api/documents/search/+server.ts(9,19): error TS2769: No overload matches this call.
+  Overload 1 of 8, '(options: RedisOptions): Redis', gave the following error.
+    Object literal may only specify known properties, and 'retryDelayOnFailover' does not exist in type 'RedisOptions'.
+  Overload 2 of 8, '(port: number): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'number'.
+  Overload 3 of 8, '(path: string): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'string'.
+src/routes/api/documents/search/+server.ts(20,14): error TS2451: Cannot redeclare block-scoped variable 'POST'.
+src/routes/api/documents/search/+server.ts(124,39): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: { query: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; createdAt?: Date | SQL<unknown> | Placeholder<...>; queryEmbedding?: number[] | ... 1 more ... | Placeholder<...>; results?: unknown; searchType?: string | ... 1 more ... | Placeholder<...>; resultCount?: number | ... 1 more ... | Placeholder<...>; }): PgInsertBase<...>', gave the following error.
+    Type 'string' is not assignable to type 'number[] | SQL<unknown> | Placeholder<string, any>'.
+  Overload 2 of 2, '(values: { query: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; createdAt?: Date | SQL<unknown> | Placeholder<...>; queryEmbedding?: number[] | ... 1 more ... | Placeholder<...>; results?: unknown; searchType?: string | ... 1 more ... | Placeholder<...>; resultCount?: number | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'query' does not exist in type '{ query: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; createdAt?: Date | SQL<unknown> | Placeholder<...>; queryEmbedding?: number[] | ... 1 more ... | Placeholder<...>; results?: unknown; searchType?: string | ... 1 more ... | Placeholder<...>; resultCount?...'.
+src/routes/api/documents/search/+server.ts(213,20): error TS2339: Property 'rows' does not exist on type 'RowList<Record<string, unknown>[]>'.
+src/routes/api/documents/search/+server.ts(272,20): error TS2339: Property 'rows' does not exist on type 'RowList<Record<string, unknown>[]>'.
+src/routes/api/documents/search/+server.ts(438,14): error TS2451: Cannot redeclare block-scoped variable 'POST'.
+src/routes/api/documents/search/+server.ts(471,37): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: { content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: number[] | ... 1 more ... | Placeholder<...>; }): PgInsertBase<...>', gave the following error.
+    Type 'string' is not assignable to type 'number[] | SQL<unknown> | Placeholder<string, any>'.
+  Overload 2 of 2, '(values: { content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: number[] | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'documentId' does not exist in type '{ content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: ...'.
+src/routes/api/documents/search/+server.ts(532,42): error TS2339: Property 'rows' does not exist on type 'RowList<Record<string, unknown>[]>'.
+src/routes/api/documents/search/+server.ts(535,43): error TS2339: Property 'rows' does not exist on type 'RowList<Record<string, unknown>[]>'.
+src/routes/api/documents/store/+server.ts(44,35): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: { content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: number[] | ... 1 more ... | Placeholder<...>; }): PgInsertBase<...>', gave the following error.
+    Type 'string' is not assignable to type 'number[] | SQL<unknown> | Placeholder<string, any>'.
+  Overload 2 of 2, '(values: { content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: number[] | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'documentId' does not exist in type '{ content: string | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<string, any>; model?: string | SQL<unknown> | Placeholder<string, any>; metadata?: unknown; createdAt?: Date | ... 1 more ... | Placeholder<...>; documentId?: string | ... 1 more ... | Placeholder<...>; embedding?: ...'.
+src/routes/api/embeddings/generate/+server.ts(8,19): error TS2769: No overload matches this call.
+  Overload 1 of 8, '(options: RedisOptions): Redis', gave the following error.
+    Object literal may only specify known properties, and 'retryDelayOnFailover' does not exist in type 'RedisOptions'.
+  Overload 2 of 8, '(port: number): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'number'.
+  Overload 3 of 8, '(path: string): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'string'.
+src/routes/api/embeddings/generate/+server.ts(21,5): error TS2353: Object literal may only specify known properties, and 'timeout' does not exist in type 'OllamaCamelCaseOptions & Partial<Options>'.
+src/routes/api/embeddings/generate/+server.ts(305,9): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 2 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+src/routes/api/ocr/langextract/+server.ts(10,19): error TS2769: No overload matches this call.
+  Overload 1 of 8, '(options: RedisOptions): Redis', gave the following error.
+    Object literal may only specify known properties, and 'retryDelayOnFailover' does not exist in type 'RedisOptions'.
+  Overload 2 of 8, '(port: number): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'number'.
+  Overload 3 of 8, '(path: string): Redis', gave the following error.
+    Argument of type '{ host: string; port: number; retryDelayOnFailover: number; enableReadyCheck: boolean; maxRetriesPerRequest: null; }' is not assignable to parameter of type 'string'.
+src/routes/api/ocr/langextract/+server.ts(86,11): error TS2322: Type 'Buffer<ArrayBufferLike>' is not assignable to type 'Buffer<ArrayBuffer>'.
+  Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+    Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/routes/api/ocr/langextract/+server.ts(98,11): error TS2353: Object literal may only specify known properties, and 'logger' does not exist in type 'string[] | Lang[]'.
+src/routes/api/ocr/langextract/+server.ts(102,24): error TS2339: Property 'loadLanguage' does not exist on type 'Worker'.
+src/routes/api/ocr/langextract/+server.ts(103,24): error TS2551: Property 'initialize' does not exist on type 'Worker'. Did you mean 'reinitialize'?
+src/routes/api/ocr/langextract/+server.ts(107,13): error TS2322: Type '"1"' is not assignable to type 'PSM'.

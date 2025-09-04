@@ -1,0 +1,39 @@
+{
+  "Integration": {
+    "Status": false,
+    "Details": {}
+  },
+  "PostgreSQL": {
+    "Details": {
+      "pgvector": true
+    },
+    "Status": true
+  },
+  "WebGPU": {
+    "Status": false,
+    "Details": {}
+  },
+  "Drizzle": {
+    "Status": false,
+    "Details": {
+      "config": true,
+      "migrations": 11
+    }
+  },
+  "RabbitMQ": {
+    "Status": false,
+    "Details": {}
+  },
+  "MinIO": {
+    "Details": {},
+    "Status": true
+  },
+  "GoServices": {
+    "Status": false,
+    "Details": {}
+  },
+  "Neo4j": {
+    "Status": false,
+    "Details": {}
+  }
+}

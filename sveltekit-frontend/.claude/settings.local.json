@@ -1,7 +1,28 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run check:*)"
+      "Bash(npm run check:*)",
+      "mcp__filesystem__list_directory",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\services/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\engines/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\neural-sprite-engine/**)",
+      "Bash(git log:*)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\static/**)",
+      "WebFetch(domain:github.com)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "WebFetch(domain:neo4j.com)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "Bash(curl:*)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\static/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\cyber-elephant/**)"
     ],
     "deny": []
   }
