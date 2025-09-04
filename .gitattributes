@@ -1,2 +1,4 @@
 # Enforce LF line endings for Node scripts used cross-platform
 scripts/tag-legacy-go-files.mjs eol=lf
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
