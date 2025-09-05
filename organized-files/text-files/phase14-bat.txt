@@ -1,0 +1,272 @@
+================================================================================
+PHASE 14 - LOCAL GGUF MODEL SETUP
+================================================================================
+NO DOWNLOADS - NO OLLAMA - PURE LOCAL EXECUTION
+
+REQUIREMENTS:
+- gemma3-legal.gguf in models/ folder
+- llama.cpp compiled (main.exe)
+- Docker Desktop running
+- 16GB RAM, GPU with 8GB+ VRAM recommended
+
+================================================================================
+QUICK START - SAVE AS: phase14.bat
+================================================================================
+
+@echo off
+setlocal enabledelayedexpansion
+cd /d C:\Users\james\Desktop\deeds-web\deeds-web-app
+
+echo ========================================
+echo PHASE 14 - LOCAL GGUF ONLY
+echo ========================================
+
+:: 1. VERIFY LOCAL MODEL
+if not exist "models\gemma3-legal.gguf" (
+    echo [ERROR] models\gemma3-legal.gguf NOT FOUND
+    echo.
+    echo SOLUTION:
+    echo 1. Create models folder: mkdir models
+    echo 2. Place gemma3-legal.gguf in models\
+    echo 3. Run this script again
+    pause
+    exit /b 1
+)
+for %%A in ("models\gemma3-legal.gguf") do set MODEL_SIZE=%%~zA
+set /a MODEL_GB=!MODEL_SIZE!/1073741824
+echo [OK] Found model: gemma3-legal.gguf (!MODEL_GB! GB)
+
+:: 2. CHECK LLAMA.CPP
+if not exist "llama.cpp\main.exe" (
+    echo [ERROR] llama.cpp\main.exe NOT FOUND
+    echo.
+    echo SOLUTION:
+    echo 1. Download: https://github.com/ggerganov/llama.cpp/releases
+    echo 2. Extract to llama.cpp\ folder
+    echo 3. Or compile: cd llama.cpp && cmake . && cmake --build .
+    pause
+    exit /b 1
+)
+echo [OK] Found llama.cpp
+
+:: 3. START MINIMAL DOCKER SERVICES
+echo.
+echo Starting core services...
+docker-compose -f docker-compose.local.yml up -d postgres redis qdrant 2>nul
+if %errorlevel% neq 0 (
+    echo [WARN] Docker services failed - continuing anyway
+) else (
+    echo [OK] Docker services started
+)
+
+:: 4. INIT DATABASE (SILENT)
+timeout /t 3 /nobreak >nul
+node scripts\init-db.js >nul 2>&1
+
+:: 5. KILL ANY EXISTING MODEL SERVER
+taskkill /F /IM main.exe >nul 2>&1
+
+:: 6. START LOCAL GGUF MODEL SERVER
+echo.
+echo Starting GGUF model server...
+echo GPU Layers: 35, Context: 4096, Port: 8080
+start /min cmd /c "llama.cpp\main.exe -m models\gemma3-legal.gguf --server --host 127.0.0.1 --port 8080 -ngl 35 -c 4096 -t 8 --mlock --no-mmap"
+
+:: 7. WAIT FOR MODEL
+echo Waiting for model...
+:waitmodel
+timeout /t 1 /nobreak >nul
+curl -s http://localhost:8080/health >nul 2>&1
+if %errorlevel% neq 0 goto waitmodel
+echo [OK] Model server ready
+
+:: 8. CREATE ENV FILE
+echo Creating .env.local...
+(
+echo NODE_ENV=development
+echo PORT=5173
+echo HOST=localhost
+echo.
+echo # LOCAL MODEL ONLY - NO OLLAMA
+echo USE_LOCAL_MODEL=true
+echo MODEL_SERVER_URL=http://localhost:8080
+echo MODEL_PATH=models\gemma3-legal.gguf
+echo.
+echo # SERVICES ON LOCALHOST
+echo DB_HOST=localhost
+echo DB_PORT=5432
+echo REDIS_URL=redis://localhost:6379
+echo QDRANT_URL=http://localhost:6333
+) > .env.local
+
+:: 9. INSTALL IF NEEDED
+if not exist "node_modules" (
+    echo Installing dependencies...
+    npm install --silent
+)
+
+:: 10. START APPLICATION
+echo.
+echo ========================================
+echo STARTING APPLICATION
+echo ========================================
+echo.
+echo URLs:
+echo   App:   http://localhost:5173
+echo   Model: http://localhost:8080
+echo   DB:    localhost:5432
+echo   Redis: localhost:6379
+echo.
+echo Press Ctrl+C to stop
+echo ========================================
+npm run dev
+
+================================================================================
+SAVE AS: src/lib/ai/local-only.js
+================================================================================
+
+// LOCAL GGUF MODEL SERVICE - NO OLLAMA
+export class LocalGGUFOnly {
+  constructor() {
+    this.baseUrl = 'http://localhost:8080';
+  }
+
+  async generate(prompt, options = {}) {
+    const response = await fetch(`${this.baseUrl}/completion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt,
+        n_predict: options.maxTokens || 2048,
+        temperature: options.temperature || 0.7,
+        top_k: 40,
+        top_p: 0.9,
+        stop: ["</s>", "\n\n"],
+        stream: false
+      })
+    });
+    
+    if (!response.ok) throw new Error('Model error');
+    const data = await response.json();
+    return { response: data.content };
+  }
+
+  async *stream(prompt) {
+    const response = await fetch(`${this.baseUrl}/completion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt,
+        stream: true
+      })
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            yield data.content;
+          } catch {}
+        }
+      }
+    }
+  }
+}
+
+export const localModel = new LocalGGUFOnly();
+
+================================================================================
+SAVE AS: docker-compose.local.yml
+================================================================================
+
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: legal_ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - ./data/redis:/data
+
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+
+================================================================================
+SAVE AS: test-model.bat
+================================================================================
+
+@echo off
+:: Test local GGUF model
+curl -X POST http://localhost:8080/completion ^
+  -H "Content-Type: application/json" ^
+  -d "{\"prompt\":\"Hello\",\"n_predict\":50}"
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+ERROR: Model not found
+- Ensure gemma3-legal.gguf is in models/ folder
+- Check file isn't corrupted (should be 4-8GB)
+
+ERROR: llama.cpp not found
+- Download from: https://github.com/ggerganov/llama.cpp/releases
+- Or compile: git clone https://github.com/ggerganov/llama.cpp
+             cd llama.cpp && make
+
+ERROR: Out of memory
+- Reduce GPU layers: -ngl 20 (instead of 35)
+- Reduce context: -c 2048 (instead of 4096)
+- Close other applications
+
+ERROR: Port 8080 in use
+- Kill process: taskkill /F /IM main.exe
+- Or change port: --port 8081
+
+ERROR: Slow inference
+- Ensure using GPU: -ngl 35
+- Check CUDA installed: nvidia-smi
+- Use smaller model or quantization
+
+================================================================================
+OPTIMIZATIONS
+================================================================================
+
+FOR 8GB VRAM:
+llama.cpp\main.exe -m models\gemma3-legal.gguf --server -ngl 20 -c 2048
+
+FOR 16GB VRAM:
+llama.cpp\main.exe -m models\gemma3-legal.gguf --server -ngl 35 -c 4096
+
+FOR CPU ONLY:
+llama.cpp\main.exe -m models\gemma3-legal.gguf --server -ngl 0 -c 1024 -t 8
+
+================================================================================
+NO EXTERNAL DOWNLOADS - PURE LOCAL EXECUTION - PHASE 14 COMPLETE
+================================================================================ 

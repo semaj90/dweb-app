@@ -1,0 +1,69 @@
+﻿{
+    "mcpServers":  {
+                       "agent-orchestrator":  {
+                                                  "args":  [
+                                                               "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\agent-orchestrator\\index.js"
+                                                           ],
+                                                  "env":  {
+                                                              "CREWAI_ENDPOINT":  "http://localhost:8001",
+                                                              "CLAUDE_API_KEY":  "$ANTHROPIC_API_KEY",
+                                                              "GEMMA3_MODEL_PATH":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\gemma3Q4_K_M\\mohf16-Q4_K_M.gguf",
+                                                              "OLLAMA_ENDPOINT":  "http://localhost:11434",
+                                                              "PROJECT_ROOT":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+                                                          },
+                                                  "command":  "node"
+                                              },
+                       "context7-legal":  {
+                                              "args":  [
+                                                           "-y",
+                                                           "@context7/mcp-server",
+                                                           "--project-path",
+                                                           "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+                                                           "--config-path",
+                                                           "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\context7-docs"
+                                                       ],
+                                              "env":  {
+                                                          "ENHANCED_RAG_ENABLED":  "true",
+                                                          "CONTEXT7_PROJECT_TYPE":  "legal-ai",
+                                                          "OLLAMA_ENDPOINT":  "http://localhost:11434",
+                                                          "CREWAI_ENABLED":  "true",
+                                                          "VLLM_ENDPOINT":  "http://localhost:8000",
+                                                          "MCP_SERVER_PORT":  "40000",
+                                                          "GPU_ACCELERATION":  "true",
+                                                          "CONTEXT7_FEATURES":  "legal-analysis,precedent-search,document-processing,vector-search,multi-agent-workflows,gpu-acceleration,enhanced-rag",
+                                                          "GEMMA3_MODEL_PATH":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\gemma3Q4_K_M\\mohf16-Q4_K_M.gguf",
+                                                          "CONTEXT7_TECH_STACK":  "sveltekit5,postgresql,drizzle,gemma3,autogen,crewai,vllm,ollama",
+                                                          "AUTOGEN_ENABLED":  "true",
+                                                          "DATABASE_URL":  "postgresql://postgres:password@localhost:5432/legal_ai_db",
+                                                          "LOG_LEVEL":  "debug"
+                                                      },
+                                              "command":  "npx"
+                                          },
+                       "vscode-extension":  {
+                                                "args":  [
+                                                             "--install-extension",
+                                                             "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\.vscode\\extensions\\mcp-context7-assistant"
+                                                         ],
+                                                "env":  {
+                                                            "PROJECT_ROOT":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+                                                            "CONTEXT7_LOG_LEVEL":  "debug",
+                                                            "CONTEXT7_SERVER_PORT":  "40000"
+                                                        },
+                                                "command":  "code"
+                                            },
+                       "enhanced-rag":  {
+                                            "args":  [
+                                                         "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\rag-backend\\src\\server.js"
+                                                     ],
+                                            "env":  {
+                                                        "PORT":  "8001",
+                                                        "DATABASE_URL":  "postgresql://postgres:password@localhost:5432/legal_ai_db",
+                                                        "NODE_ENV":  "development",
+                                                        "OLLAMA_ENDPOINT":  "http://localhost:11434",
+                                                        "REDIS_URL":  "redis://localhost:6379",
+                                                        "PROJECT_ROOT":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+                                                    },
+                                            "command":  "node"
+                                        }
+                   }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "error": "TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type",
+    "file": "src/lib/clustering/worker-thread.js",
+    "line": 25
+  },
+  {
+    "error": "TS2571: Object is of type 'unknown'",
+    "file": "src/lib/clustering/worker-thread.js", 
+    "line": 51
+  },
+  {
+    "error": "TS7006: Parameter 'payload' implicitly has an 'any' type",
+    "file": "src/lib/clustering/worker-thread.js",
+    "line": 63
+  },
+  {
+    "error": "TS7006: Parameter 'text' implicitly has an 'any' type",
+    "file": "src/lib/clustering/worker-thread.js",
+    "line": 163
+  },
+  {
+    "error": "TS2322: Type 'any[]' is not assignable to type 'never[]'",
+    "file": "src/lib/clustering/worker-thread.js",
+    "line": 176
+  },
+  {
+    "error": "TS7006: Parameter 'match' implicitly has an 'any' type",
+    "file": "src/lib/clustering/worker-thread.js",
+    "line": 176
+  },
+  {
+    "error": "TS2344: Type 'unknown' does not satisfy the constraint 'string | number | bigint'",
+    "file": "src/lib/components/Chat.svelte",
+    "line": 45
+  },
+  {
+    "error": "TS1479: The current file is a CommonJS module whose imports will produce 'require' calls",
+    "file": "src/lib/services/agentic-workflow-orchestrator.ts",
+    "line": 12
+  },
+  {
+    "error": "TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean'",
+    "file": "tests/sveltekit-endpoints.spec.ts",
+    "line": 231
+  },
+  {
+    "error": "TS1479: 'Page' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled",
+    "file": "tests/token-usage.spec.ts",
+    "line": 1
+  }
+]

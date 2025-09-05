@@ -1,0 +1,4 @@
+CONTEXT7 Setup TODO List - Generated Mon 07/21/2025 23:28:56.67 
+Project: deeds-web-app 
+Frontend: sveltekit-frontend 
+============================================== 

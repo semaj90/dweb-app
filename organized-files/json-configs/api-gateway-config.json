@@ -1,0 +1,51 @@
+{
+  "routes": {
+    "/api/legal/gpu": {
+      "target": "http://localhost:8080",
+      "methods": ["POST", "GET"],
+      "timeout": 30000,
+      "retries": 2
+    },
+    "/api/legal/indexer": {
+      "target": "http://localhost:8081",
+      "methods": ["POST", "GET"]
+    },
+    "/api/jobs": {
+      "target": "http://localhost:3001",
+      "methods": ["POST", "GET", "DELETE"]
+    },
+    "/api/metrics": {
+      "target": "http://localhost:8080/metrics",
+      "methods": ["GET"],
+      "cache": 10
+    },
+    "/api/legacy": {
+      "target": "http://localhost:5000",
+      "methods": ["POST", "GET"],
+      "fallback": true
+    }
+  },
+  "middleware": [
+    "cors",
+    "compression",
+    "rate-limit",
+    "request-logging"
+  ],
+  "rate_limits": {
+    "/api/legal/gpu": "100/minute",
+    "/api/jobs": "200/minute",
+    "default": "1000/minute"
+  },
+  "cors": {
+    "origins": ["http://localhost:5173", "http://localhost:4173"],
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "headers": ["Content-Type", "Authorization"]
+  },
+  "health_checks": {
+    "gpu_service": "http://localhost:8080/health",
+    "indexer_service": "http://localhost:8081/health",
+    "queue_service": "http://localhost:3001/health",
+    "redis": "redis://localhost:6379",
+    "postgres": "postgres://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"
+  }
+}

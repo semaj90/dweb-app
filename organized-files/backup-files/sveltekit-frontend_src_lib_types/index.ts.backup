@@ -1,0 +1,107 @@
+// Comprehensive type definitions
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  role: string;
+  avatarUrl?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Case {
+  id: string;
+  caseNumber: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Evidence {
+  id: string;
+  caseId?: string;
+  title: string;
+  description?: string;
+  evidenceType: string; // 'document' | 'image' | 'video' | 'audio' | 'digital'
+  fileName?: string;
+  fileUrl?: string;
+  fileSize?: number;
+  tags: string[];
+  uploadedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  status?: string; // 'new' | 'reviewing' | 'approved'
+  hash?: string;
+  thumbnailUrl?: string;
+  aiSummary?: string;
+}
+
+export interface Report {
+  id: string;
+  caseId?: string;
+  title: string;
+  content?: string;
+  summary?: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  reportType?: string;
+  wordCount?: number;
+  estimatedReadTime?: number;
+  tags?: string[];
+}
+
+export interface POI {
+  id: string;
+  caseId: string;
+  name: string;
+  aliases: string[];
+  relationship?: string;
+  threatLevel: string;
+  status: string;
+  profileData: any;
+  tags: string[];
+  position: any;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AIResponse {
+  content: string;
+  confidence?: number;
+  sources?: any[];
+  metadata?: any;
+}
+
+export interface ConversationHistory {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
+
+export interface Gemma3Config {
+  temperature: number;
+  maxTokens: number;
+  topP: number;
+}
+
+// Enhanced feature types
+export interface EmbeddingOptions {
+  model?: string;
+  caseId?: string;
+  userId?: string;
+  evidenceId?: string;
+  conversationId?: string;
+}
+
+export interface EmbeddingProvider {
+  name: string;
+  available: boolean;
+}

@@ -1,0 +1,16 @@
+QUICK TEST LEGAL DOCUMENT
+
+This is a simple test document for validating the complete AI processing pipeline.
+
+CASE: TEST-INTEGRATION-001
+TYPE: Contract Analysis
+PRIORITY: Testing
+
+CONTENT:
+This document contains legal text that will be processed through:
+1. Text extraction
+2. AI summarization 
+3. Vector embedding generation
+4. PostgreSQL storage
+
+The system should generate a comprehensive summary and 768-dimensional embeddings.

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-09-04T21:20:55.201Z",
+  "operation": "safe-removal",
+  "candidates": [
+    "src/lib/components/ui/bits-ui-demo/BitsUnoDemo.svelte.backup.1754931625258",
+    "src/lib/components/ui/drawer/DialogRoot.svelte.backup.1754931625294",
+    "src/lib/components/ui/bits-ui-demo/HeadlessDemo.svelte.backup.1754931625147",
+    "src/lib/components/canvas/LegalDocumentEditor.svelte.backup.1754931625079",
+    "src/lib/components/login/LoginModal.svelte.backup.1754931625011",
+    "src/lib/components/ui/NoteViewerModal.svelte.backup.1754931625336",
+    "src/lib/components/canvas/WysiwygEditor.svelte.backup.1754931625091",
+    "src/routes/cases/+page.svelte.backup",
+    "src/routes/search/+page.server.ts.backup"
+  ],
+  "results": {
+    "total": 9,
+    "removed": 0,
+    "archived": 0,
+    "failed": 0,
+    "errors": []
+  },
+  "note": "All files were identified as placeholder/stub content without important TODOs"
+}

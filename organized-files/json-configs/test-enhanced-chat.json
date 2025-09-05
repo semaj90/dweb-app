@@ -1,0 +1,6 @@
+{
+  "message": "Analyze contract liability terms and indemnification clauses",
+  "userRole": "attorney",
+  "includeAnalysis": true,
+  "context": "commercial contract review"
+}

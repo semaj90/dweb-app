@@ -1,0 +1,680 @@
+<script lang="ts">
+  interface Props {
+    showPanel?: any;
+  }
+  let {
+    showPanel = false
+  } = $props();
+
+
+
+  import { browser } from "$app/environment";
+  import { Button } from "$lib/components/ui/button";
+  import { notifications } from "$lib/stores/notification";
+  import {
+    AlertTriangle,
+    CheckCircle,
+    Download,
+    Info,
+    RefreshCw,
+    XCircle,
+  } from "lucide-svelte";
+  import { onMount } from "svelte";
+
+  
+  interface AccessibilityIssue {
+    id: string
+    severity: "error" | "warning" | "info";
+    category: "structure" | "color" | "keyboard" | "aria" | "images";
+    element: string
+    description: string
+    suggestion: string
+    wcagGuideline?: string;
+}
+  let auditResults: AccessibilityIssue[] = [];
+  let isAuditing = false;
+  let auditProgress = 0;
+  let totalIssues = 0;
+  let errorCount = 0;
+  let warningCount = 0;
+  let infoCount = 0;
+
+  // Accessibility settings
+  let highContrast = false;
+  let reducedMotion = false;
+  let largeText = false;
+  let keyboardNavigation = false;
+  let screenReaderMode = false;
+
+  onMount(() => {
+    // Load saved accessibility preferences
+    if (browser) {
+      loadAccessibilitySettings();
+      // Check for system preferences
+      checkSystemPreferences();
+}
+  });
+
+  function loadAccessibilitySettings() {
+    try {
+      const saved = localStorage.getItem("accessibility-settings");
+      if (saved) {
+        const settings = JSON.parse(saved);
+        highContrast = settings.highContrast || false;
+        reducedMotion = settings.reducedMotion || false;
+        largeText = settings.largeText || false;
+        keyboardNavigation = settings.keyboardNavigation || false;
+        screenReaderMode = settings.screenReaderMode || false;
+        applyAccessibilitySettings();
+}
+    } catch (error) {
+      console.warn("Failed to load accessibility settings:", error);
+}
+}
+  function saveAccessibilitySettings() {
+    try {
+      const settings = {
+        highContrast,
+        reducedMotion,
+        largeText,
+        keyboardNavigation,
+        screenReaderMode,
+      };
+      localStorage.setItem("accessibility-settings", JSON.stringify(settings));
+    } catch (error) {
+      console.warn("Failed to save accessibility settings:", error);
+}
+}
+  function checkSystemPreferences() {
+    if (!browser) return;
+
+    // Check for prefers-reduced-motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      reducedMotion = true;
+}
+    // Check for prefers-contrast
+    if (window.matchMedia("(prefers-contrast: high)").matches) {
+      highContrast = true;
+}
+    applyAccessibilitySettings();
+}
+  function applyAccessibilitySettings() {
+    if (!browser) return;
+
+    const root = document.documentElement;
+
+    // High contrast
+    if (highContrast) {
+      root.classList.add("high-contrast");
+    } else {
+      root.classList.remove("high-contrast");
+}
+    // Reduced motion
+    if (reducedMotion) {
+      root.classList.add("reduced-motion");
+    } else {
+      root.classList.remove("reduced-motion");
+}
+    // Large text
+    if (largeText) {
+      root.classList.add("large-text");
+    } else {
+      root.classList.remove("large-text");
+}
+    // Keyboard navigation
+    if (keyboardNavigation) {
+      root.classList.add("keyboard-navigation");
+    } else {
+      root.classList.remove("keyboard-navigation");
+}
+    // Screen reader mode
+    if (screenReaderMode) {
+      root.classList.add("screen-reader-mode");
+    } else {
+      root.classList.remove("screen-reader-mode");
+}
+    saveAccessibilitySettings();
+}
+  async function runAccessibilityAudit() {
+    if (!browser) return;
+
+    isAuditing = true;
+    auditProgress = 0;
+    auditResults = [];
+
+    try {
+      // Simulate audit progress
+      const checks = [
+        checkHeadingStructure,
+        checkImageAltText,
+        checkFormLabels,
+        checkColorContrast,
+        checkKeyboardAccessibility,
+        checkAriaLabels,
+        checkFocusManagement,
+        checkSemanticHTML,
+      ];
+
+      for (let i = 0; i < checks.length; i++) {
+        await checks[i]();
+        auditProgress = ((i + 1) / checks.length) * 100;
+        // Small delay to show progress
+        await new Promise((resolve) => setTimeout(resolve, 200));
+}
+      // Calculate stats
+      totalIssues = auditResults.length;
+      errorCount = auditResults.filter(
+        (issue) => issue.severity === "error"
+      ).length;
+      warningCount = auditResults.filter(
+        (issue) => issue.severity === "warning"
+      ).length;
+      infoCount = auditResults.filter(
+        (issue) => issue.severity === "info"
+      ).length;
+
+      notifications.add({
+        type: errorCount > 0 ? "warning" : "success",
+        title: "Accessibility Audit Complete",
+        message: `Found ${totalIssues} issues: ${errorCount} errors, ${warningCount} warnings`,
+      });
+    } catch (error) {
+      console.error("Accessibility audit failed:", error);
+      notifications.add({
+        type: "error",
+        title: "Audit Failed",
+        message: "Failed to complete accessibility audit",
+      });
+    } finally {
+      isAuditing = false;
+}
+}
+  async function checkHeadingStructure() {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    const headingLevels: number[] = [];
+
+    headings.forEach((heading) => {
+      const level = parseInt(heading.tagName.substring(1));
+      headingLevels.push(level);
+    });
+
+    // Check for missing h1
+    if (!headingLevels.includes(1)) {
+      auditResults.push({
+        id: "missing-h1",
+        severity: "error",
+        category: "structure",
+        element: "document",
+        description: "Page is missing an h1 heading",
+        suggestion: "Add a main h1 heading to the page",
+        wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
+      });
+}
+    // Check for skipped heading levels
+    for (let i = 1; i < headingLevels.length; i++) {
+      if (headingLevels[i] - headingLevels[i - 1] > 1) {
+        auditResults.push({
+          id: "skipped-heading-level",
+          severity: "warning",
+          category: "structure",
+          element: `h${headingLevels[i]}`,
+          description: "Heading level skipped in hierarchy",
+          suggestion: "Use headings in sequential order (h1, h2, h3, etc.)",
+          wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
+        });
+}
+}
+}
+  async function checkImageAltText() {
+    const images = document.querySelectorAll("img");
+
+    images.forEach((img, index) => {
+      if (!img.hasAttribute("alt")) {
+        auditResults.push({
+          id: `missing-alt-${index}`,
+          severity: "error",
+          category: "images",
+          element: `img[src="${img.src?.substring(0, 30)}..."]`,
+          description: "Image missing alt attribute",
+          suggestion:
+            'Add descriptive alt text for images, or alt="" for decorative images',
+          wcagGuideline: "WCAG 2.1 - 1.1.1 Non-text Content",
+        });
+      } else if (
+        img.alt.trim() === "" &&
+        img.getAttribute("role") !== "presentation"
+      ) {
+        auditResults.push({
+          id: `empty-alt-${index}`,
+          severity: "info",
+          category: "images",
+          element: `img[src="${img.src?.substring(0, 30)}..."]`,
+          description: "Image has empty alt text",
+          suggestion:
+            "Verify this is a decorative image, or add descriptive alt text",
+          wcagGuideline: "WCAG 2.1 - 1.1.1 Non-text Content",
+        });
+}
+    });
+}
+  async function checkFormLabels() {
+    const inputs = document.querySelectorAll("input, select, textarea");
+
+    inputs.forEach((input, index) => {
+      const id = input.id;
+      const type = (input as HTMLInputElement).type;
+
+      // Skip hidden inputs
+      if (type === "hidden") return;
+
+      // Check for associated label
+      const label = id ? document.querySelector(`label[for="${id}"]`) : null;
+      const ariaLabel = input.getAttribute("aria-label");
+      const ariaLabelledby = input.getAttribute("aria-labelledby");
+
+      if (!label && !ariaLabel && !ariaLabelledby) {
+        auditResults.push({
+          id: `unlabeled-input-${index}`,
+          severity: "error",
+          category: "aria",
+          element: `${input.tagName.toLowerCase()}[type="${type}"]`,
+          description: "Form control missing accessible label",
+          suggestion:
+            "Add a label element, aria-label, or aria-labelledby attribute",
+          wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
+        });
+}
+    });
+}
+  async function checkColorContrast() {
+    // Simplified contrast check - in real implementation, you'd check computed colors
+    const textElements = document.querySelectorAll(
+      "p, span, a, button, h1, h2, h3, h4, h5, h6"
+    );
+
+    // This is a placeholder - real contrast checking requires computed style analysis
+    auditResults.push({
+      id: "contrast-check-needed",
+      severity: "info",
+      category: "color",
+      element: "various text elements",
+      description: "Color contrast should be manually verified",
+      suggestion:
+        "Ensure text has at least 4.5:1 contrast ratio (3:1 for large text)",
+      wcagGuideline: "WCAG 2.1 - 1.4.3 Contrast (Minimum)",
+    });
+}
+  async function checkKeyboardAccessibility() {
+    const interactiveElements = document.querySelectorAll(
+      "button, a, input, select, textarea, [tabindex]"
+    );
+
+    interactiveElements.forEach((element, index) => {
+      const tabIndex = element.getAttribute("tabindex");
+
+      // Check for positive tabindex values (anti-pattern)
+      if (tabIndex && parseInt(tabIndex) > 0) {
+        auditResults.push({
+          id: `positive-tabindex-${index}`,
+          severity: "warning",
+          category: "keyboard",
+          element: element.tagName.toLowerCase(),
+          description: "Positive tabindex values can cause navigation issues",
+          suggestion:
+            'Use tabindex={${1" or remove tabindex to follow natural tab order',
+          wcagGuideline: "WCAG 2.1 - 2.4.3 Focus Order",
+        });
+}
+      // Check for missing href on links
+      if (element.tagName === "A" && !element.getAttribute("href")) {
+        auditResults.push({
+          id: `missing-href-${index}`,
+          severity: "warning",
+          category: "keyboard",
+          element: "a",
+          description: "Link element missing href attribute",
+          suggestion:
+            "Add href attribute or use button element for interactions",
+          wcagGuideline: "WCAG 2.1 - 2.1.1 Keyboard",
+        });
+}
+    });
+}
+  async function checkAriaLabels() {
+    const elementsWithAriaHidden = document.querySelectorAll(
+      '[aria-hidden="true"]'
+    );
+    const elementsWithAriaLabel = document.querySelectorAll("[aria-label]");
+
+    // Check for empty aria-labels
+    elementsWithAriaLabel.forEach((element, index) => {
+      const ariaLabel = element.getAttribute("aria-label");
+      if (!ariaLabel || ariaLabel.trim() === "") {
+        auditResults.push({
+          id: `empty-aria-label-${index}`,
+          severity: "warning",
+          category: "aria",
+          element: element.tagName.toLowerCase(),
+          description: "Element has empty aria-label",
+          suggestion:
+            "Provide descriptive aria-label text or remove the attribute",
+          wcagGuideline: "WCAG 2.1 - 4.1.2 Name, Role, Value",
+        });
+}
+    });
+}
+  async function checkFocusManagement() {
+    // Check if focus indicators are visible
+    auditResults.push({
+      id: "focus-indicators",
+      severity: "info",
+      category: "keyboard",
+      element: "interactive elements",
+      description: "Verify focus indicators are visible",
+      suggestion:
+        "Ensure all interactive elements have visible focus indicators",
+      wcagGuideline: "WCAG 2.1 - 2.4.7 Focus Visible",
+    });
+}
+  async function checkSemanticHTML() {
+    const hasMain = document.querySelector("main");
+    const hasNav = document.querySelector("nav");
+
+    if (!hasMain) {
+      auditResults.push({
+        id: "missing-main",
+        severity: "warning",
+        category: "structure",
+        element: "document",
+        description: "Page missing main landmark",
+        suggestion: "Use <main> element to identify primary content",
+        wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
+      });
+}
+    if (!hasNav) {
+      auditResults.push({
+        id: "missing-nav",
+        severity: "info",
+        category: "structure",
+        element: "document",
+        description: "Page missing navigation landmark",
+        suggestion: "Use <nav> element for navigation sections",
+        wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
+      });
+}
+}
+  function exportAuditResults() {
+    const report = {
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      summary: {
+        total: totalIssues,
+        errors: errorCount,
+        warnings: warningCount,
+        info: infoCount,
+      },
+      issues: auditResults,
+    };
+
+    const dataStr = JSON.stringify(report, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+    if (browser) {
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `accessibility-audit-${new Date().toISOString().split("T")[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+}
+}
+  function getSeverityIcon(severity: string) {
+    switch (severity) {
+      case "error":
+        return XCircle;
+      case "warning":
+        return AlertTriangle;
+      case "info":
+        return Info;
+      default:
+        return CheckCircle;
+}
+}
+  function getSeverityColor(severity: string) {
+    switch (severity) {
+      case "error":
+        return "text-error";
+      case "warning":
+        return "text-warning";
+      case "info":
+        return "text-info";
+      default:
+        return "text-success";
+}
+}
+</script>
+
+{#if showPanel}
+  <div
+    class="space-y-4"
+    onclick={() => (showPanel = false)}
+    onkeydown={(e) => e.key === 'Escape' && (showPanel = false)}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="accessibility-panel-title"
+  >
+    <div
+      class="space-y-4"
+      on:click|stopPropagation
+      role="document"
+    >
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h2 id="accessibility-panel-title" class="space-y-4">Accessibility Panel</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={() => (showPanel = false)}
+            aria-label="Close accessibility panel"
+          >
+            ✕
+          </Button>
+        </div>
+
+        <!-- Accessibility Settings -->
+        <div class="space-y-4">
+          <h3 class="space-y-4">Accessibility Settings</h3>
+
+          <div class="space-y-4">
+            <label class="space-y-4">
+              <input
+                type="checkbox"
+                class="space-y-4"
+                bind:checked={highContrast}
+                onchange={applyAccessibilitySettings}
+              />
+              <span>High Contrast</span>
+            </label>
+
+            <label class="space-y-4">
+              <input
+                type="checkbox"
+                class="space-y-4"
+                bind:checked={reducedMotion}
+                onchange={applyAccessibilitySettings}
+              />
+              <span>Reduced Motion</span>
+            </label>
+
+            <label class="space-y-4">
+              <input
+                type="checkbox"
+                class="space-y-4"
+                bind:checked={largeText}
+                onchange={applyAccessibilitySettings}
+              />
+              <span>Large Text</span>
+            </label>
+
+            <label class="space-y-4">
+              <input
+                type="checkbox"
+                class="space-y-4"
+                bind:checked={keyboardNavigation}
+                onchange={applyAccessibilitySettings}
+              />
+              <span>Enhanced Keyboard Navigation</span>
+            </label>
+
+            <label class="space-y-4">
+              <input
+                type="checkbox"
+                class="space-y-4"
+                bind:checked={screenReaderMode}
+                onchange={applyAccessibilitySettings}
+              />
+              <span>Screen Reader Optimizations</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Audit Section -->
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">Accessibility Audit</h3>
+            <Button
+              size="sm"
+              onclick={() => runAccessibilityAudit()}
+              disabled={isAuditing}
+              class="space-y-4"
+            >
+              {#if isAuditing}
+                <div class="space-y-4"></div>
+                Auditing...
+              {:else}
+                <RefreshCw class="space-y-4" />
+                Run Audit
+              {/if}
+            </Button>
+          </div>
+
+          {#if isAuditing}
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span>Scanning page...</span>
+                <span>{Math.round(auditProgress)}%</span>
+              </div>
+              <progress
+                class="space-y-4"
+                value={auditProgress}
+                max="100"
+              ></progress>
+            </div>
+          {/if}
+
+          {#if auditResults.length > 0}
+            <!-- Audit Summary -->
+            <div class="space-y-4">
+              <h4 class="space-y-4">Audit Summary</h4>
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <XCircle class="space-y-4" />
+                  <span>{errorCount} Errors</span>
+                </div>
+                <div class="space-y-4">
+                  <AlertTriangle class="space-y-4" />
+                  <span>{warningCount} Warnings</span>
+                </div>
+                <div class="space-y-4">
+                  <Info class="space-y-4" />
+                  <span>{infoCount} Info</span>
+                </div>
+                <div class="space-y-4">
+                  <CheckCircle class="space-y-4" />
+                  <span>{totalIssues} Total</span>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                class="space-y-4"
+                onclick={() => exportAuditResults()}
+              >
+                <Download class="space-y-4" />
+                Export Report
+              </Button>
+            </div>
+
+            <!-- Audit Results -->
+            <div class="space-y-4">
+              {#each auditResults as issue}
+                {@const IconComponent = getSeverityIcon(issue.severity)}
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <IconComponent
+                      class="space-y-4"
+                    />
+                    <div class="space-y-4">
+                      <div class="space-y-4">{issue.description}</div>
+                      <div class="space-y-4">
+                        Element: {issue.element}
+                      </div>
+                      <div class="space-y-4">
+                        {issue.suggestion}
+                      </div>
+                      {#if issue.wcagGuideline}
+                        <div class="space-y-4">
+                          {issue.wcagGuideline}
+                        </div>
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Global accessibility styles -->
+<style>
+  /* @unocss-include */
+  :global(.high-contrast) {
+    --primary: #000000;
+    --primary-content: #ffffff;
+    --secondary: #ffffff;
+    --secondary-content: #000000;
+    --accent: #ffff00;
+    --accent-content: #000000;
+    --base-100: #ffffff;
+    --base-200: #f0f0f0;
+    --base-300: #e0e0e0;
+    --base-content: #000000;
+}
+  :global(.reduced-motion) * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+  :global(.large-text) {
+    font-size: 1.2em;
+}
+  :global(.keyboard-navigation) *:focus {
+    outline: 2px solid #0066cc !important;
+    outline-offset: 2px !important;
+}
+  :global(.screen-reader-mode) .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+</style>

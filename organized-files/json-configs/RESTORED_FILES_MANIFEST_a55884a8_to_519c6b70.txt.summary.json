@@ -1,0 +1,19 @@
+{
+  "manifest": "RESTORED_FILES_MANIFEST_a55884a8_to_519c6b70.txt",
+  "totalEntries": 11996,
+  "statusCounts": {
+    "NA": 11996
+  },
+  "categories": {
+    "yorha_components": 33,
+    "svelte_components": 501,
+    "routes": 238,
+    "typescript_sources": 7481,
+    "scripts": 348,
+    "infrastructure": 158,
+    "wasm_gpu": 562,
+    "documentation": 390
+  },
+  "generatedAt": "2025-09-04T17:11:15.575Z",
+  "mode": "name-only"
+}

@@ -1,0 +1,62 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "SvelteKit Dev with Memory Optimization",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@sveltejs/kit/src/cli.js",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096 --enable-source-maps",
+        "NODE_ENV": "development",
+        "OLLAMA_BASE_URL": "http://localhost:11434"
+      },
+      "console": "integratedTerminal",
+      "restart": true,
+      "protocol": "inspector",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "SvelteKit Build with High Memory",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@sveltejs/kit/src/cli.js",
+      "args": ["build"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=8192 --enable-source-maps",
+        "NODE_ENV": "production"
+      },
+      "console": "integratedTerminal",
+      "restart": false,
+      "protocol": "inspector"
+    },
+    {
+      "name": "TypeScript Check with Memory Limit",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/typescript/bin/tsc",
+      "args": ["--noEmit", "--skipLibCheck"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=6144"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Test Ollama LLM Integration",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/test-ollama-integration.mjs",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "OLLAMA_BASE_URL": "http://localhost:11434",
+        "DEBUG": "ollama:*"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/demo/vector-pipeline/+page.svelte";

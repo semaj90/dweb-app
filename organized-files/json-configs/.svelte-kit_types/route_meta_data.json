@@ -1,0 +1,118 @@
+{
+	"/": [],
+	"/ai-test": [],
+	"/ai-workspace": [],
+	"/api/agentic-workflow": [
+		"src/routes/api/agentic-workflow/+server.ts"
+	],
+	"/api/ai/chat": [
+		"src/routes/api/ai/chat/+server.ts"
+	],
+	"/api/ai/gemma3-local": [
+		"src/routes/api/ai/gemma3-local/+server.ts"
+	],
+	"/api/ai/stream": [
+		"src/routes/api/ai/stream/+server.ts"
+	],
+	"/api/ai/summarize": [
+		"src/routes/api/ai/summarize/+server.ts"
+	],
+	"/api/automation/triggers": [
+		"src/routes/api/automation/triggers/+server.ts"
+	],
+	"/api/caching/advanced": [
+		"src/routes/api/caching/advanced/+server.ts"
+	],
+	"/api/chat": [
+		"src/routes/api/chat/+server.ts"
+	],
+	"/api/documents": [
+		"src/routes/api/documents/+server.ts"
+	],
+	"/api/documents/analyze": [
+		"src/routes/api/documents/analyze/+server.ts"
+	],
+	"/api/documents/search": [
+		"src/routes/api/documents/search/+server.ts"
+	],
+	"/api/documents/store": [
+		"src/routes/api/documents/store/+server.ts"
+	],
+	"/api/documents/upload": [
+		"src/routes/api/documents/upload/+server.ts"
+	],
+	"/api/enhanced-rag": [
+		"src/routes/api/enhanced-rag/+server.ts"
+	],
+	"/api/gemma3": [
+		"src/routes/api/gemma3/+server.ts"
+	],
+	"/api/generate-best-practices": [
+		"src/routes/api/generate-best-practices/+server.ts"
+	],
+	"/api/gpu-processing/process": [
+		"src/routes/api/gpu-processing/process/+server.ts"
+	],
+	"/api/gpu/acceleration": [
+		"src/routes/api/gpu/acceleration/+server.ts"
+	],
+	"/api/health": [
+		"src/routes/api/health/+server.ts"
+	],
+	"/api/legal-ai/accept-patch": [
+		"src/routes/api/legal-ai/accept-patch/+server.ts"
+	],
+	"/api/legal-ai/rate-suggestion": [
+		"src/routes/api/legal-ai/rate-suggestion/+server.ts"
+	],
+	"/api/legal-ai/semantic-search": [
+		"src/routes/api/legal-ai/semantic-search/+server.ts"
+	],
+	"/api/legal": [
+		"src/routes/api/legal/+server.ts"
+	],
+	"/api/legal/gpu": [
+		"src/routes/api/legal/gpu/+server.ts"
+	],
+	"/api/monitoring/logs": [
+		"src/routes/api/monitoring/logs/+server.ts"
+	],
+	"/api/neo4j/case-graph": [
+		"src/routes/api/neo4j/case-graph/+server.ts"
+	],
+	"/api/neo4j/semantic-search": [
+		"src/routes/api/neo4j/semantic-search/+server.ts"
+	],
+	"/api/ocr/langextract": [
+		"src/routes/api/ocr/langextract/+server.ts"
+	],
+	"/api/optimization/performance": [
+		"src/routes/api/optimization/performance/+server.ts"
+	],
+	"/api/phase4": [
+		"src/routes/api/phase4/+server.js"
+	],
+	"/api/routing/ml": [
+		"src/routes/api/routing/ml/+server.ts"
+	],
+	"/api/scaling/horizontal": [
+		"src/routes/api/scaling/horizontal/+server.ts"
+	],
+	"/api/search/semantic": [
+		"src/routes/api/search/semantic/+server.ts"
+	],
+	"/api/semantic-analysis": [
+		"src/routes/api/semantic-analysis/+server.ts"
+	],
+	"/api/user/profile": [
+		"src/routes/api/user/profile/+server.ts"
+	],
+	"/api/workflow": [
+		"src/routes/api/workflow/+server.ts"
+	],
+	"/best-practices": [],
+	"/gpu-orchestrator": [],
+	"/semantic-3d": [],
+	"/studio": [],
+	"/test-gemma3": []
+}

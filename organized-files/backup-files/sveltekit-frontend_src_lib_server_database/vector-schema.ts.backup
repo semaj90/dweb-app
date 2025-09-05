@@ -1,0 +1,112 @@
+// Enhanced Drizzle schema with pgvector support
+import { sql } from "drizzle-orm";
+import {
+  index,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
+
+// Custom pgvector column type for Drizzle
+const vectorColumn = (name: string, dimensions: number = 1536) =>
+  sql`${sql.raw(name)} vector(${sql.raw(dimensions.toString())})`.mapWith({
+    mapFromDriverValue: (value: string) => JSON.parse(value),
+    mapToDriverValue: (value: number[]) => JSON.stringify(value),
+  });
+
+// User embeddings table
+export const userEmbeddings = pgTable(
+  "user_embeddings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    contentType: varchar("content_type", { length: 50 }).notNull(),
+    content: text("content").notNull(),
+    embedding: vectorColumn("embedding", 1536),
+    metadata: jsonb("metadata").default(sql`'{}'`),
+    caseId: uuid("case_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("user_embeddings_user_id_idx").on(table.userId),
+    caseIdIdx: index("user_embeddings_case_id_idx").on(table.caseId),
+    contentTypeIdx: index("user_embeddings_content_type_idx").on(table.contentType),
+  })
+);
+
+// Case embeddings table  
+export const caseEmbeddings = pgTable(
+  "case_embeddings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    caseId: uuid("case_id").notNull(),
+    contentType: varchar("content_type", { length: 50 }).notNull(),
+    content: text("content").notNull(),
+    embedding: vectorColumn("embedding", 1536),
+    metadata: jsonb("metadata").default(sql`'{}'`),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    caseIdIdx: index("case_embeddings_case_id_idx").on(table.caseId),
+    contentTypeIdx: index("case_embeddings_content_type_idx").on(table.contentType),
+  })
+);
+
+// Evidence embeddings table
+export const evidenceEmbeddings = pgTable(
+  "evidence_embeddings", 
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    evidenceId: uuid("evidence_id").notNull(),
+    contentType: varchar("content_type", { length: 50 }).notNull(),
+    content: text("content").notNull(),
+    embedding: vectorColumn("embedding", 1536),
+    metadata: jsonb("metadata").default(sql`'{}'`),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    evidenceIdIdx: index("evidence_embeddings_evidence_id_idx").on(table.evidenceId),
+    contentTypeIdx: index("evidence_embeddings_content_type_idx").on(table.contentType),
+  })
+);
+
+// Document embeddings table
+export const documentEmbeddings = pgTable(
+  "document_embeddings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id").notNull(),
+    contentType: varchar("content_type", { length: 50 }).notNull(),
+    content: text("content").notNull(),
+    embedding: vectorColumn("embedding", 1536),
+    metadata: jsonb("metadata").default(sql`'{}'`),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    documentIdIdx: index("document_embeddings_document_id_idx").on(table.documentId),
+    contentTypeIdx: index("document_embeddings_content_type_idx").on(table.contentType),
+  })
+);
+
+// Search embeddings table
+export const searchEmbeddings = pgTable(
+  "search_embeddings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    query: text("query").notNull(),
+    embedding: vectorColumn("embedding", 1536),
+    metadata: jsonb("metadata").default(sql`'{}'`),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("search_embeddings_user_id_idx").on(table.userId),
+  })
+);

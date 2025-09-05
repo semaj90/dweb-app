@@ -1,0 +1,1167 @@
+
+> deeds-web-app@0.0.1 dev
+> cd sveltekit-frontend && npm run dev
+
+
+> yorha-legal-ai-frontend@1.0.0 dev
+> vite dev
+
+[31mWebSocket server error: Port 5174 is already in use[39m
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+Port 5176 is in use, trying another one...
+
+  [32m[1mVITE[22m v6.3.5[39m  [2mready in [0m[1m1895[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5177[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.0.0.243:[1m5177[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.27.32.1:[1m5177[22m/[39m
+  [32m➜[39m  [1mUnoCSS Inspector[22m: [36mhttp://localhost:[1m5177[22m/__unocss/[39m
+5:53:56 PM [vite-plugin-svelte] src/lib/components/ui/Badge.svelte:36:2 Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated
+Server error: {
+  errorId: '8aed1a78-89c3-46da-8d75-45d84ced8b15',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+[2m5:54:02 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:54:17 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/Button.svelte[22m
+Server error: {
+  errorId: 'd62e0552-c835-4032-b0a5-b593930b3f19',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+[2m5:54:46 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/Button.svelte[22m
+5:54:50 PM [vite-plugin-svelte] src/routes/evidence-editor/+page.svelte:89:2 Unused CSS selector ".evidence-editor-page"
+https://svelte.dev/e/css_unused_selector
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/VisualEvidenceEditor.svelte:78:2 Unused CSS selector ".visual-evidence-editor"
+https://svelte.dev/e/css_unused_selector
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/VisualEvidenceEditor.svelte:83:4 Unused CSS selector ".visual-evidence-editor :global(.grid)"
+https://svelte.dev/e/css_unused_selector
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:561:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:571:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:583:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:596:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:611:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:624:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:646:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:657:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:699:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:742:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:785:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:828:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:871:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:905:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:945:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:956:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:967:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:978:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:54:51 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:1023:2 Unused CSS selector ".enhanced-inspector-panel"
+https://svelte.dev/e/css_unused_selector
+5:54:51 PM [vite-plugin-svelte] C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/enhanced-bits/Dialog.svelte:111:18 `context="module"` is deprecated, use the `module` attribute instead
+https://svelte.dev/e/script_context_deprecated
+5:54:51 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Dialog.svelte:217:1 No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.
+5:54:51 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:147:8 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+5:54:51 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:173:8 Using `on:click` to listen to the click event is deprecated. Use the event attribute `onclick` instead
+https://svelte.dev/e/event_directive_deprecated
+5:54:51 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:187:8 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/scrollarea/ScrollArea.svelte:18:2 Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:34:2 Using `on:mouseenter` to listen to the mouseenter event is deprecated. Use the event attribute `onmouseenter` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:35:2 Using `on:mouseleave` to listen to the mouseleave event is deprecated. Use the event attribute `onmouseleave` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:16:6 `showTooltip` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:47:2 Unused CSS selector ".tooltip-wrapper"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:51:2 Unused CSS selector ".tooltip"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:66:2 Unused CSS selector ".tooltip-top"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:72:2 Unused CSS selector ".tooltip-bottom"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:78:2 Unused CSS selector ".tooltip-left"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:84:2 Unused CSS selector ".tooltip-right"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:276:2 Unused CSS selector ".command-menu"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:290:2 Unused CSS selector ".command-header"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:298:2 Unused CSS selector ".command-input"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:306:2 Unused CSS selector ".command-input::-moz-placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:309:2 Unused CSS selector ".command-input::placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:312:2 Unused CSS selector ".command-results"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:317:2 Unused CSS selector ".command-category"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:320:2 Unused CSS selector ".command-category:last-child"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:323:2 Unused CSS selector ".category-header"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:332:2 Unused CSS selector ".command-item"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:345:2 Unused CSS selector ".command-item:hover"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:346:2 Unused CSS selector ".command-item.selected"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:350:2 Unused CSS selector ".command-label"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:354:2 Unused CSS selector ".command-footer"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:359:2 Unused CSS selector ".command-shortcuts"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:366:2 Unused CSS selector ".command-shortcuts kbd"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:375:2 Unused CSS selector ".no-results"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:384:2 Unused CSS selector ".no-results p"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:389:2 Unused CSS selector ".command-results::-webkit-scrollbar"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:392:2 Unused CSS selector ".command-results::-webkit-scrollbar-track"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:395:2 Unused CSS selector ".command-results::-webkit-scrollbar-thumb"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:399:2 Unused CSS selector ".command-results::-webkit-scrollbar-thumb:hover"
+https://svelte.dev/e/css_unused_selector
+5:55:01 PM [vite-plugin-svelte] src/lib/components/ui/MarkdownRenderer.svelte:21:6 `renderedHtml` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:138:4 Using `on:input` to listen to the input event is deprecated. Use the event attribute `oninput` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:139:4 Using `on:keydown` to listen to the keydown event is deprecated. Use the event attribute `onkeydown` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:140:4 Using `on:blur` to listen to the blur event is deprecated. Use the event attribute `onblur` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:141:4 Using `on:focus` to listen to the focus event is deprecated. Use the event attribute `onfocus` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:142:4 Using `on:change` to listen to the change event is deprecated. Use the event attribute `onchange` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:143:4 Using `on:select` to listen to the select event is deprecated. Use the event attribute `onselect` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:144:4 Using `on:paste` to listen to the paste event is deprecated. Use the event attribute `onpaste` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:36:6 `textarea` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:37:6 `commandMenu` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:38:6 `showCommandMenu` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:39:6 `commandMenuPosition` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:164:2 Unused CSS selector ".smart-textarea-container"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:167:2 Unused CSS selector ".smart-textarea"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:185:2 Unused CSS selector ".smart-textarea:focus"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:191:2 Unused CSS selector ".smart-textarea:disabled"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:197:2 Unused CSS selector ".smart-textarea:-moz-read-only"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:201:2 Unused CSS selector ".smart-textarea:read-only"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:205:2 Unused CSS selector ".smart-textarea::-moz-placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:209:2 Unused CSS selector ".smart-textarea::placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:213:2 Unused CSS selector ".command-menu-overlay"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:217:2 Unused CSS selector ".smart-textarea-container::after"
+https://svelte.dev/e/css_unused_selector
+5:55:02 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:228:2 Unused CSS selector ".smart-textarea-container:hover::after"
+https://svelte.dev/e/css_unused_selector
+Server error: {
+  errorId: 'eebb8b81-6eb3-45fb-b6a8-bf253aab157b',
+  error: 'Not found: /favicon.png',
+  stack: 'Error: Not found: /favicon.png\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/favicon.png',
+  method: 'GET'
+}
+Server error: {
+  errorId: 'c158c0ed-e639-4849-9140-56da5dd989de',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '19b634ac-ba61-4c73-8e41-5b424b8ae931',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '0bc65a2f-77eb-4945-a859-9091462bcd57',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+
+- C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib
+- C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes
+- C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit
+- C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src
+- C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules
+
+Refer to docs https://vite.dev/config/server-options.html#server-fs-allow for configurations and more details.
+
+5:55:06 PM [vite-plugin-svelte] src/routes/evidence-editor/+page.svelte:89:2 Unused CSS selector ".evidence-editor-page"
+https://svelte.dev/e/css_unused_selector
+5:55:06 PM [vite-plugin-svelte] src/lib/components/ui/Badge.svelte:36:2 Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/VisualEvidenceEditor.svelte:78:2 Unused CSS selector ".visual-evidence-editor"
+https://svelte.dev/e/css_unused_selector
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/VisualEvidenceEditor.svelte:83:4 Unused CSS selector ".visual-evidence-editor :global(.grid)"
+https://svelte.dev/e/css_unused_selector
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:561:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:571:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:583:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:596:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:611:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:624:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:646:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:657:16 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:699:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:742:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:785:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:828:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:871:18 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:905:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:945:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:956:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:967:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:978:20 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+5:55:06 PM [vite-plugin-svelte] src/lib/components/evidence-editor/InspectorPanel.svelte:1023:2 Unused CSS selector ".enhanced-inspector-panel"
+https://svelte.dev/e/css_unused_selector
+5:55:06 PM [vite-plugin-svelte] C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/enhanced-bits/Dialog.svelte:111:18 `context="module"` is deprecated, use the `module` attribute instead
+https://svelte.dev/e/script_context_deprecated
+5:55:06 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Dialog.svelte:217:1 No scopable elements found in template. If you're using global styles in the style tag, you should move it into an external stylesheet file and import it in JS. See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#where-should-i-put-my-global-styles.
+5:55:06 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:147:8 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+5:55:06 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:173:8 Using `on:click` to listen to the click event is deprecated. Use the event attribute `onclick` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:06 PM [vite-plugin-svelte] src/lib/components/ui/enhanced-bits/Input.svelte:187:8 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:34:2 Using `on:mouseenter` to listen to the mouseenter event is deprecated. Use the event attribute `onmouseenter` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:35:2 Using `on:mouseleave` to listen to the mouseleave event is deprecated. Use the event attribute `onmouseleave` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:16:6 `showTooltip` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:47:2 Unused CSS selector ".tooltip-wrapper"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:51:2 Unused CSS selector ".tooltip"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:66:2 Unused CSS selector ".tooltip-top"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:72:2 Unused CSS selector ".tooltip-bottom"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:78:2 Unused CSS selector ".tooltip-left"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:84:2 Unused CSS selector ".tooltip-right"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:276:2 Unused CSS selector ".command-menu"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:290:2 Unused CSS selector ".command-header"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:298:2 Unused CSS selector ".command-input"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:306:2 Unused CSS selector ".command-input::-moz-placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:309:2 Unused CSS selector ".command-input::placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:312:2 Unused CSS selector ".command-results"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:317:2 Unused CSS selector ".command-category"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:320:2 Unused CSS selector ".command-category:last-child"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:323:2 Unused CSS selector ".category-header"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:332:2 Unused CSS selector ".command-item"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:345:2 Unused CSS selector ".command-item:hover"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:346:2 Unused CSS selector ".command-item.selected"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:350:2 Unused CSS selector ".command-label"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:354:2 Unused CSS selector ".command-footer"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:359:2 Unused CSS selector ".command-shortcuts"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:366:2 Unused CSS selector ".command-shortcuts kbd"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:375:2 Unused CSS selector ".no-results"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:384:2 Unused CSS selector ".no-results p"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:389:2 Unused CSS selector ".command-results::-webkit-scrollbar"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:392:2 Unused CSS selector ".command-results::-webkit-scrollbar-track"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:395:2 Unused CSS selector ".command-results::-webkit-scrollbar-thumb"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/CommandMenu.svelte:399:2 Unused CSS selector ".command-results::-webkit-scrollbar-thumb:hover"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/MarkdownRenderer.svelte:21:6 `renderedHtml` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:138:4 Using `on:input` to listen to the input event is deprecated. Use the event attribute `oninput` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:139:4 Using `on:keydown` to listen to the keydown event is deprecated. Use the event attribute `onkeydown` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:140:4 Using `on:blur` to listen to the blur event is deprecated. Use the event attribute `onblur` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:141:4 Using `on:focus` to listen to the focus event is deprecated. Use the event attribute `onfocus` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:142:4 Using `on:change` to listen to the change event is deprecated. Use the event attribute `onchange` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:143:4 Using `on:select` to listen to the select event is deprecated. Use the event attribute `onselect` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:144:4 Using `on:paste` to listen to the paste event is deprecated. Use the event attribute `onpaste` instead
+https://svelte.dev/e/event_directive_deprecated
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:36:6 `textarea` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:37:6 `commandMenu` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:38:6 `showCommandMenu` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:39:6 `commandMenuPosition` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:164:2 Unused CSS selector ".smart-textarea-container"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:167:2 Unused CSS selector ".smart-textarea"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:185:2 Unused CSS selector ".smart-textarea:focus"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:191:2 Unused CSS selector ".smart-textarea:disabled"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:197:2 Unused CSS selector ".smart-textarea:-moz-read-only"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:201:2 Unused CSS selector ".smart-textarea:read-only"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:205:2 Unused CSS selector ".smart-textarea::-moz-placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:209:2 Unused CSS selector ".smart-textarea::placeholder"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:213:2 Unused CSS selector ".command-menu-overlay"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:217:2 Unused CSS selector ".smart-textarea-container::after"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/SmartTextarea.svelte:228:2 Unused CSS selector ".smart-textarea-container:hover::after"
+https://svelte.dev/e/css_unused_selector
+5:55:07 PM [vite-plugin-svelte] src/lib/components/ui/scrollarea/ScrollArea.svelte:18:2 Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated
+[2m5:55:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:55:11 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:56:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:56:03 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:08 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:25 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:37 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:57:37 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+Server error: {
+  errorId: '1b83c2ee-c1a8-4fd1-b3aa-d0363d0498f8',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: 'a83d704a-9907-46e5-bfc7-41043a8bfcc7',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '86541d34-15b8-455b-a8eb-011a3c78cc14',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+[2m5:59:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:59:28 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:59:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m5:59:36 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m6:01:30 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m6:01:30 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/EnhancedLegalCaseManager.svelte[22m
+[2m6:02:21 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/0.js[22m
+[2m6:02:21 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/1.js[22m
+[2m6:02:21 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/app.js[22m
+[2m6:02:21 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/54.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/server/internal.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/app.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/matchers.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:02:22 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.svelte[22m
+[2m6:03:14 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/index.ts[22m
+[2m6:03:14 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/index.ts[22m
+Server error: {
+  errorId: '2f9922c4-93bf-4d91-a53f-1a1fc8294c88',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '465e22ee-4cf1-4fab-b1c5-f620b9fea2ad',
+  error: 'Not found: /favicon.png',
+  stack: 'Error: Not found: /favicon.png\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/favicon.png',
+  method: 'GET'
+}
+Server error: {
+  errorId: '88977bde-78cf-44f9-9db1-ffcd431bc1cc',
+  error: '(0 , __vite_ssr_import_4__.Button) is not a function',
+  stack: 'TypeError: (0 , __vite_ssr_import_4__.Button) is not a function\n' +
+    '    at _page (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte:253:34)\n' +
+    '    at eval (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:96:6)\n' +
+    '    at Module.slot (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:369:3)\n' +
+    '    at _layout (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+layout.svelte:56:24)\n' +
+    '    at Root (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/.svelte-kit/generated/root.svelte:62:3)\n' +
+    '    at render (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\internal\\server\\index.js:90:3)\n' +
+    '    at Function._render [as render] (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\svelte\\src\\legacy\\legacy-server.js:27:24)\n' +
+    '    at render_response (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\render.js:192:29)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async render_page (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\page\\index.js:305:10)\n' +
+    '    at async resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:501:18)\n' +
+    '    at async respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:20)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '540aebdb-ac33-437f-94fa-04e34beda510',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '24a0ba4c-f979-40cd-95bc-d2076513ec76',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/vector-search-worker.js[33m, use [36m/workers/vector-search-worker.js[33m.[39m
+Server error: {
+  errorId: '239fd81d-8bf1-43cb-aeab-ec5c236e94b7',
+  error: 'Not found: /static/workers/vector-search-worker.js',
+  stack: 'Error: Not found: /static/workers/vector-search-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/vector-search-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\vector-search-worker.js" is outside of Vite serving allow list.
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/0.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/1.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/app.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/server/internal.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/54.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/matchers.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:03:45 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.svelte[22m
+[2m6:04:04 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/lib/styles/theme.css, /src/app.css, /src/lib/components/ui/CaseForm.svelte, /src/lib/components/ui/Form.svelte[22m
+[2m6:04:04 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/index.js[22m
+[2m6:04:08 PM[22m [31m[1m[vite][22m[39m [31m[2m(ssr)[22m[39m [31mError when evaluating SSR module /src/routes/+page.svelte: Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?[39m
+      at loadAndTransform (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35725:17)
+      at async fetchModule (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46829:16)
+      at async handleInvoke (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:38973:22)
+      at async EventEmitter.listenerForInvokeHandler (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:39046:19)
+Server error: {
+  errorId: '95a23e82-7696-4605-99b6-3ef53639ae33',
+  error: 'Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?',
+  stack: 'Error: Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?\n' +
+    '    at loadAndTransform (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35725:17)\n' +
+    '    at async fetchModule (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46829:16)\n' +
+    '    at async handleInvoke (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:38973:22)\n' +
+    '    at async EventEmitter.listenerForInvokeHandler (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:39046:19)',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '0c1eb460-a0bd-45b5-836c-5955a6bfa284',
+  error: 'Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?',
+  stack: 'Error: Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?\n' +
+    '    at loadAndTransform (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35725:17)\n' +
+    '    at async fetchModule (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46829:16)\n' +
+    '    at async handleInvoke (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:38973:22)\n' +
+    '    at async EventEmitter.listenerForInvokeHandler (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:39046:19)',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: 'bada9c8f-bb58-4126-a9c2-3fd9901b9c60',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '6d577b4e-4a8c-4c01-9a33-d49e204863a3',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+[2m6:04:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/index.ts[22m
+[2m6:04:36 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/components/ui/button/index.ts[22m
+Server error: {
+  errorId: 'b08e956a-e82a-4042-87a0-2a718dc66f26',
+  error: 'Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?',
+  stack: 'Error: Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?\n' +
+    '    at loadAndTransform (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35725:17)\n' +
+    '    at async fetchModule (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46829:16)\n' +
+    '    at async handleInvoke (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:38973:22)\n' +
+    '    at async EventEmitter.listenerForInvokeHandler (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:39046:19)',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '722a1ce1-48fd-41a0-a319-2ae12138db6f',
+  error: 'Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?',
+  stack: 'Error: Failed to load url /src/lib/components/ui/button/index.js (resolved id: C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/components/ui/button/index.js) in C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/+page.svelte. Does the file exist?\n' +
+    '    at loadAndTransform (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35725:17)\n' +
+    '    at async fetchModule (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46829:16)\n' +
+    '    at async handleInvoke (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:38973:22)\n' +
+    '    at async EventEmitter.listenerForInvokeHandler (file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:39046:19)',
+  status: 500,
+  url: '/',
+  method: 'GET'
+}
+Server error: {
+  errorId: '7c32d0b6-882a-4737-8627-87c162deeb4e',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: 'bd3ed343-9202-42a2-bcbc-0012a8e2ca12',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+[2m6:05:17 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:17 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:28 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:35 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:54 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:05:59 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:06:04 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+[2m6:06:04 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/+page.svelte[22m
+Server error: {
+  errorId: 'd37a313e-4cf5-4416-8dc2-7fe01a3c04a0',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '5bcf929c-7c17-49bb-a5a7-bde3249b3da1',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+Vector store not available, using fallback mode
+Embedding generation failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.generateEmbedding (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:147:24)
+    at async EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:68:7)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+⚠️ RAG Service initialization failed: Error: Embedding service not available
+    at EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:70:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22
+AI connection error: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/api/ai/connect/+server.ts:8:28)
+    at async render_endpoint (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:48:20)
+    at async resolve (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:379:22)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:56:22)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+Vector store not available, using fallback mode
+Embedding generation failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.generateEmbedding (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:147:24)
+    at async EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:68:7)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+⚠️ RAG Service initialization failed: Error: Embedding service not available
+    at EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:70:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22
+Vector store not available, using fallback mode
+Embedding generation failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.generateEmbedding (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:147:24)
+    at async EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:68:7)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+⚠️ RAG Service initialization failed: Error: Embedding service not available
+    at EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:70:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22
+[ERROR] 2025-08-04T01:06:41.788Z - Ollama health check failed TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async OllamaService.isHealthy (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/server/services/OllamaService.ts:16:24)
+    at async GET (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/api/ai/health/+server.ts:10:27)
+    at async render_endpoint (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:48:20)
+    at async resolve (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:379:22)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:56:22)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+Server error: {
+  errorId: 'eb0ae2e6-9782-4cd0-be79-65d546b3ffd0',
+  error: 'Not found: /app.html',
+  stack: 'Error: Not found: /app.html\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/app.html',
+  method: 'GET'
+}
+[33mFiles in the public directory are served at the root path.
+Instead of [36m/static/workers/simd-json-worker.js[33m, use [36m/workers/simd-json-worker.js[33m.[39m
+Server error: {
+  errorId: '9f4f7ea7-44be-47b5-bf8c-0ef522475d9c',
+  error: 'Not found: /static/workers/simd-json-worker.js',
+  stack: 'Error: Not found: /static/workers/simd-json-worker.js\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:599:13)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:372:7\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at resolve (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:371:6)\n' +
+    '    at Object.handle (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\hooks.server.ts:80:10)\n' +
+    '    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:366:18\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at with_event (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\app\\server\\event.js:49:20)\n' +
+    '    at respond (C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\node_modules\\@sveltejs\\kit\\src\\runtime\\server\\respond.js:365:26)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22',
+  status: 404,
+  url: '/static/workers/simd-json-worker.js',
+  method: 'GET'
+}
+The request url "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\static\workers\simd-json-worker.js" is outside of Vite serving allow list.
+Vector store not available, using fallback mode
+Embedding generation failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.generateEmbedding (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:147:24)
+    at async EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:68:7)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+⚠️ RAG Service initialization failed: Error: Embedding service not available
+    at EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:70:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22
+AI connection error: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/api/ai/connect/+server.ts:8:28)
+    at async render_endpoint (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/endpoint.js:48:20)
+    at async resolve (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:379:22)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:56:22)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+Vector store not available, using fallback mode
+Embedding generation failed: TypeError: fetch failed
+    at node:internal/deps/undici/undici:13510:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.generateEmbedding (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:147:24)
+    at async EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:68:7)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22 {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1134:18)
+      at afterConnectMultiple (node:net:1715:7)
+      at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+⚠️ RAG Service initialization failed: Error: Embedding service not available
+    at EnhancedRAGService.testEmbeddingService (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:70:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async EnhancedRAGService.initialize (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/services/enhanced-rag-service.ts:24:7)
+    at async Object.handle (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/hooks.server.ts:10:7)
+    at async respond (C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/runtime/server/respond.js:264:22)
+    at async file:///C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/@sveltejs/kit/src/exports/vite/dev/index.js:544:22
+[2m6:07:05 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/0.js[22m
+[2m6:07:05 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/1.js[22m
+[2m6:07:05 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/5.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/app.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/54.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/85.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/server/internal.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/matchers.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:07:06 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.svelte[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/0.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/1.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/5.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/app.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/54.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/nodes/85.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/server/internal.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/client/matchers.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.js[22m
+[2m6:08:33 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2m.svelte-kit/generated/root.svelte[22m
+[2m6:11:55 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[31mWebSocket server error: Port 5174 is already in use[39m
+[2m6:11:56 PM[22m [36m[1m[vite][22m[39m server restarted.
+[2m6:24:45 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[31mWebSocket server error: Port 5174 is already in use[39m
+[2m6:24:45 PM[22m [36m[1m[vite][22m[39m server restarted.
+ENOENT: no such file or directory, stat 'C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\.svelte-kit\types\src\routes\proxy+layout.ts'
+[2m7:36:53 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[31mWebSocket server error: Port 5174 is already in use[39m
+[2m7:36:54 PM[22m [36m[1m[vite][22m[39m server restarted.
+ENOENT: no such file or directory, stat 'C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\.svelte-kit\types\src\routes\proxy+layout.ts'

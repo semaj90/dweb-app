@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-08-18T19:18:21.056Z",
+  "services": {
+    "PostgreSQL": {
+      "running": true,
+      "port": 5432,
+      "portOpen": true,
+      "serviceRunning": true,
+      "processRunning": true
+    },
+    "Redis": {
+      "running": true,
+      "port": 6379,
+      "portOpen": true,
+      "serviceRunning": false,
+      "processRunning": true
+    },
+    "Ollama": {
+      "running": true,
+      "port": 11434,
+      "portOpen": true,
+      "serviceRunning": false,
+      "processRunning": true
+    },
+    "Dev Server": {
+      "running": true,
+      "port": 5173,
+      "portOpen": true,
+      "serviceRunning": false,
+      "processRunning": false
+    }
+  },
+  "database": {
+    "accessible": true,
+    "connectable": true
+  },
+  "apis": {
+    "Dev Server Root": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    },
+    "OCR Service": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    },
+    "Embeddings Service": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    },
+    "Search Service": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    },
+    "Storage Service": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    },
+    "AI Upload Demo": {
+      "success": false,
+      "status": 404,
+      "data": "",
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 18 Aug 2025 19:18:24 GMT",
+        "keep-alive": "timeout=5",
+        "vary": "Origin"
+      }
+    }
+  },
+  "processing": {
+    "ollamaModels": [
+      "nomic-embed-text:latest",
+      "all-minilm:latest",
+      "gemma2:2b",
+      "gemma3-legal:latest",
+      "gemma3:latest"
+    ]
+  },
+  "recommendations": [
+    "Install model: ollama pull llama3.2"
+  ]
+}

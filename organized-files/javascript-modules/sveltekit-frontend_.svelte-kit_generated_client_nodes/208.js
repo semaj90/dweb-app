@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/test/n64-legal-progress/+page.svelte";

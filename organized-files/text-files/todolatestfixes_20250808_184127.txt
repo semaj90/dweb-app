@@ -1,0 +1,163 @@
+# TODO LIST - Latest Fixes
+# Generated: 2025-08-08 18:41:27
+# Project: Legal GPU Processor v2.0.0
+
+## CRITICAL ISSUES TO FIX
+
+### 1. Missing Module Dependencies
+- [ ] Install missing npm packages:
+  - @types/ws
+  - @types/lokijs
+  - zod
+  - @xstate/svelte
+  - sveltekit-superforms
+  - fabric.js
+  - pdf-lib
+  - socket.io-client
+
+### 2. TypeScript Configuration Issues
+
+#### A. Environment Variable Mismatch
+- [ ] Fix $env/static/private - OLLAMA_BASE_URL vs OLLAMA_API_URL mismatch in src/lib/server/embedding.ts
+
+#### B. Configuration Object Property Errors
+- [ ] Fix GEMMA3_CONFIG references in enhanced-ollama-service.ts:
+  - Change 'model' to 'models'
+  - Change 'parameters' property references
+
+### 3. Module Import Path Issues
+- [ ] Fix missing/incorrect module imports:
+  - $lib/cache/multi-layer-cache.js
+  - $lib/messaging/rabbitmq-service.js
+  - $lib/agents/orchestrator.js
+  - $lib/database/redis.js
+  - $lib/database/qdrant.js
+  - $lib/database/postgres.js
+  - $lib/database/schema/legal-documents.js
+  - $lib/ai/langchain.js
+  - $lib/ai/processing-pipeline.js
+  - $lib/ai/vector-db
+  - $lib/api/enhanced-rest-architecture
+  - $lib/machines/agentShellMachine
+  - $lib/components/ui
+
+### 4. Component Issues
+
+#### A. Svelte Component Errors
+- [ ] Fix AIChat.svelte - syntax error at line 329 (class attribute)
+- [ ] Fix EnhancedLegalAIChat.svelte - closing tag mismatch at line 316
+
+#### B. Bits-UI Component Issues
+- [ ] Update bits-ui imports - missing exports for:
+  - Card
+  - Badge
+  - Input
+  - Textarea
+  - Progress.Indicator
+
+### 5. TypeScript Type Errors
+
+#### A. Machine State Issues
+- [ ] Fix legalProcessingMachine.ts event type issues
+- [ ] Add proper typing for event parameters
+
+#### B. Service Class Issues
+- [ ] Fix library-sync-service.js config object properties
+- [ ] Fix kmeans-clustering.ts duplicate identifier 'silhouetteScore'
+- [ ] Fix som-clustering.ts neurons property initialization
+
+#### C. Worker Issues
+- [ ] Fix analysis-worker.ts private property access
+- [ ] Fix streaming-worker.ts private property access
+
+### 6. GPU/WebGPU Issues
+- [ ] Add GPUBufferUsage type definitions in gpu-json-parser.ts
+- [ ] Add GPUShaderStage type definitions
+- [ ] Add GPUMapMode type definitions
+
+### 7. Form Component Issues
+- [ ] Fix DocumentMetadataForm.svelte $state rune conflicts
+- [ ] Update event handlers to new Svelte 5 syntax (onclick vs on:click)
+- [ ] Fix form label associations
+
+### 8. API Route Issues
+- [ ] Fix error handling - proper typing for catch blocks
+- [ ] Fix RequestHandler type imports
+- [ ] Add proper error message extraction
+
+### 9. Disabled Files Cleanup
+- [ ] Review and remove/update .disabled files
+- [ ] Consolidate JS/TS duplicates
+
+### 10. Build Configuration
+- [ ] Update tsconfig.json for proper module resolution
+- [ ] Ensure vite.config.js has proper alias configuration
+- [ ] Check SvelteKit configuration
+
+## BACKUP STRATEGY
+1. Create backup folder: backup_20250808_184127/
+2. Copy critical configuration files
+3. Copy all source files with errors
+4. Create restoration script
+
+## FIX PRIORITY ORDER
+1. Install missing dependencies (High)
+2. Fix configuration files (High)
+3. Fix module import paths (High)
+4. Fix TypeScript type errors (Medium)
+5. Fix component syntax errors (Medium)
+6. Update deprecated Svelte syntax (Low)
+7. Clean up disabled files (Low)
+
+## AFFECTED FILES COUNT
+- Total files with errors: 48
+- Critical errors: 215
+- Warnings: 62
+- Component files affected: 12
+- API routes affected: 8
+- Service files affected: 15
+
+## TESTING CHECKLIST AFTER FIXES
+- [ ] Run `npm install` successfully
+- [ ] Run `npm run check` without errors
+- [ ] Run `npm run build` successfully
+- [ ] Start development server `npm run dev`
+- [ ] Test AI chat functionality
+- [ ] Test document upload
+- [ ] Test vector search
+- [ ] Test legal processing pipeline
+- [ ] Verify Redis connection
+- [ ] Verify PostgreSQL connection
+- [ ] Verify Ollama connection
+
+## NOTES
+- Many .disabled files suggest previous migration attempt
+- Mix of JavaScript and TypeScript files needs consolidation
+- GPU acceleration features need WebGPU type definitions
+- Consider upgrading to latest versions of dependencies
+- Some components using deprecated Svelte 4 syntax
+
+## COMMANDS TO RUN
+```bash
+# 1. Install missing dependencies
+npm install --save-dev @types/ws @types/lokijs
+npm install zod @xstate/svelte sveltekit-superforms fabric pdf-lib socket.io-client
+
+# 2. Check TypeScript
+npm run check
+
+# 3. Fix and rebuild
+npm run build
+
+# 4. Test
+npm run dev
+```
+
+## ESTIMATED TIME
+- Dependency installation: 5 minutes
+- File fixes: 2-3 hours
+- Testing: 30 minutes
+- Total: ~4 hours
+
+---
+END OF TODO LIST

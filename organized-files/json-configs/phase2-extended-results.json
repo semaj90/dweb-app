@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-09-04T18:49:21.570Z",
+  "phase": "2-extended",
+  "filesProcessed": 4,
+  "promoted": 0,
+  "preserveTodos": 0,
+  "archived": 4,
+  "needReview": 0,
+  "errors": 0,
+  "successRate": 100,
+  "avgScore": 8.3,
+  "highQualityFiles": [],
+  "results": [
+    {
+      "file": "AIChatMessage.svelte.backup",
+      "lines": 465,
+      "size": 12821,
+      "score": 18,
+      "recommendation": "archive",
+      "details": {
+        "hasInterfaces": 0,
+        "hasTypes": 0,
+        "hasTodos": 1,
+        "hasFixmes": 0,
+        "hasComplex": false,
+        "hasSvelte5Total": 0,
+        "hasStubs": false,
+        "hasNotImplemented": false,
+        "hasTypescriptIgnore": false,
+        "hasConsoleLog": 0,
+        "isEmpty": false,
+        "isMinimal": false,
+        "hasRichContent": true,
+        "hasImports": 0,
+        "hasExports": 0
+      }
+    },
+    {
+      "file": "AccessibilityPanel.svelte.backup",
+      "lines": 703,
+      "size": 22188,
+      "score": 15,
+      "recommendation": "archive",
+      "details": {
+        "hasInterfaces": 1,
+        "hasTypes": 0,
+        "hasTodos": 0,
+        "hasFixmes": 0,
+        "hasComplex": false,
+        "hasSvelte5Total": 0,
+        "hasStubs": true,
+        "hasNotImplemented": false,
+        "hasTypescriptIgnore": false,
+        "hasConsoleLog": 0,
+        "isEmpty": false,
+        "isMinimal": false,
+        "hasRichContent": true,
+        "hasImports": 0,
+        "hasExports": 0
+      }
+    },
+    {
+      "file": "AIButtonPortal.svelte.backup",
+      "lines": 41,
+      "size": 828,
+      "score": 0,
+      "recommendation": "archive",
+      "details": {
+        "hasInterfaces": 0,
+        "hasTypes": 0,
+        "hasTodos": 0,
+        "hasFixmes": 0,
+        "hasComplex": false,
+        "hasSvelte5Total": 0,
+        "hasStubs": false,
+        "hasNotImplemented": false,
+        "hasTypescriptIgnore": false,
+        "hasConsoleLog": 0,
+        "isEmpty": false,
+        "isMinimal": false,
+        "hasRichContent": false,
+        "hasImports": 0,
+        "hasExports": 0
+      }
+    },
+    {
+      "file": "AIChatInterface.svelte.backup",
+      "lines": 385,
+      "size": 10145,
+      "score": 0,
+      "recommendation": "archive",
+      "details": {
+        "hasInterfaces": 0,
+        "hasTypes": 0,
+        "hasTodos": 0,
+        "hasFixmes": 0,
+        "hasComplex": false,
+        "hasSvelte5Total": 0,
+        "hasStubs": true,
+        "hasNotImplemented": true,
+        "hasTypescriptIgnore": false,
+        "hasConsoleLog": 0,
+        "isEmpty": false,
+        "isMinimal": false,
+        "hasRichContent": true,
+        "hasImports": 0,
+        "hasExports": 0
+      }
+    }
+  ]
+}

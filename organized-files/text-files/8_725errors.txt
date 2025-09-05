@@ -1,0 +1,15 @@
+MCP Config Diagnostics
+
+ For help configuring MCP servers, see: https://docs.anthropic.com/en/docs/claude-code/mcp
+
+ [Contains warnings] Local config (private to you in this project)
+ Location: C:\Users\james\.claude.json [project: C:\Users\james\Desktop\deeds-web\deeds-web-app]
+  └ [Warning] [puppeteer] mcpServers.puppeteer: Windows requires 'cmd /c' wrapper to execute npx
+  └ [Warning] [postgres] mcpServers.postgres: Windows requires 'cmd /c' wrapper to execute npx
+  └ [Warning] [filesystem] mcpServers.filesystem: Windows requires 'cmd /c' wrapper to execute npx
+  └ [Warning] [context7] mcpServers.context7: Windows requires 'cmd /c' wrapper to execute npx
+
+
+ Memory Files · 5.5k tokens
+ └ Project (C:\Users\james\Desktop\deeds-web\deeds-web-app\CLAUDE.md): 5.5k tokens
+ └ Local (C:\Users\james\Desktop\deeds-web\deeds-web-app\CLAUDE.local.md): 0.1k tokens

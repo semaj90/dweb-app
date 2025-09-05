@@ -1,0 +1,94 @@
+{
+  // ESLint Configuration with Best Practices for Svelte/TypeScript
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:svelte/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": "./tsconfig.json",
+    "extraFileExtensions": [".svelte"]
+  },
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "plugins": ["@typescript-eslint", "svelte"],
+  "overrides": [
+    {
+      "files": ["*.svelte"],
+      "parser": "svelte-eslint-parser",
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser"
+      }
+    }
+  ],
+  "rules": {
+    // Best Practices
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-debugger": "error",
+    "no-alert": "warn",
+    "prefer-const": "error",
+    "no-var": "error",
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    
+    // TypeScript Specific
+    "@typescript-eslint/no-unused-vars": ["error", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    
+    // Svelte Specific (for Svelte 5)
+    "svelte/no-at-html-tags": "error",
+    "svelte/no-at-debug-tags": "error",
+    "svelte/no-unused-svelte-ignore": "error",
+    "svelte/valid-compile": "error",
+    "svelte/no-dom-manipulating": "warn",
+    
+    // Deprecated Event Handlers (Svelte 5)
+    "svelte/no-deprecated-events": "error",
+    
+    // Code Quality
+    "complexity": ["warn", 10],
+    "max-depth": ["warn", 4],
+    "max-lines": ["warn", 500],
+    "max-lines-per-function": ["warn", 100],
+    "max-params": ["warn", 4],
+    
+    // Import Organization
+    "import/order": ["error", {
+      "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+      "newlines-between": "always",
+      "alphabetize": { "order": "asc" }
+    }],
+    
+    // Accessibility (for Svelte components)
+    "svelte/no-target-blank": "error",
+    
+    // Performance
+    "svelte/no-reactive-reassign": "warn",
+    "svelte/require-optimized-style-attribute": "warn"
+  },
+  "settings": {
+    "svelte": {
+      "version": "5"
+    }
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "build",
+    "dist",
+    ".svelte-kit",
+    "*.config.js",
+    "*.config.ts"
+  ]
+}

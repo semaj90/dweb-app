@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/ai-test/+page.svelte";

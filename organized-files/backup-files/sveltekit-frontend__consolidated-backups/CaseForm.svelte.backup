@@ -1,0 +1,345 @@
+<script lang="ts">
+  import { caseFormSchema, type CaseForm } from "$lib/schemas/forms";
+  import { getAuthContext } from "$lib/stores/auth";
+  import { createEventDispatcher } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import { zodClient } from 'sveltekit-superforms/adapters';
+  
+  export let initialData: Partial<CaseForm> = {};
+  export let isEditing = false;
+  
+  const dispatch = createEventDispatcher();
+  const auth = getAuthContext();
+  
+  // Available users for assignment (would come from API)
+  let availableUsers = [
+    { id: '1', name: 'John Smith', role: 'prosecutor' },
+    { id: '2', name: 'Jane Doe', role: 'investigator' },
+    { id: '3', name: 'Mike Johnson', role: 'legal_assistant' }
+  ];
+  
+  // Initialize superForm
+  const { form, errors, constraints, enhance, submitting, delayed, message } = superForm(initialData, {
+    validators: zodClient(caseFormSchema),
+    resetForm: false,
+    invalidateAll: false,
+    onSubmit: ({ cancel }) => {
+      // You can add custom validation here
+      console.log('Form submitted with data:', $form);
+    },
+    onResult: ({ result }) => {
+      if (result.type === 'success') {
+        dispatch('success', result.data);
+      } else if (result.type === 'error') {
+        dispatch('error', result.error);
+      }
+    }
+  });
+  
+  // Tag management
+  let tagInput = '';
+  
+  function addTag() {
+    if (tagInput.trim() && (!$form.tags || !$form.tags.includes(tagInput.trim()))) {
+      $form.tags = [...($form.tags || []), tagInput.trim()];
+      tagInput = '';
+    }
+  }
+  
+  function removeTag(tag: string) {
+    $form.tags = $form.tags?.filter(t => t !== tag) || [];
+  }
+  
+  function handleTagKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addTag();
+    }
+  }
+  
+  // Auto-generate case number
+  function generateCaseNumber() {
+    const year = new Date().getFullYear();
+    const random = Math.floor(Math.random() * 900000) + 100000;
+    $form.caseNumber = `CAS-${year}-${random}`;
+  }
+</script>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <div class="mx-auto px-4 max-w-7xl">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div>
+        <h2 class="mx-auto px-4 max-w-7xl">
+          {isEditing ? 'Edit Case' : 'Create New Case'}
+        </h2>
+        <p class="mx-auto px-4 max-w-7xl">
+          {isEditing ? 'Update case information and settings' : 'Enter case details to begin investigation'}
+        </p>
+      </div>
+      
+      {#if !isEditing}
+        <button 
+          type="button"
+          on:click={() => generateCaseNumber()}
+          class="mx-auto px-4 max-w-7xl"
+        >
+          Generate Case #
+        </button>
+      {/if}
+    </div>
+    
+    <form method="POST" use:enhance>
+      <!-- Case Number and Title -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <div>
+          <label for="caseNumber" class="mx-auto px-4 max-w-7xl">
+            Case Number *
+          </label>
+          <input
+            type="text"
+            id="caseNumber"
+            name="caseNumber"
+            bind:value={$form.caseNumber}
+            class="mx-auto px-4 max-w-7xl"
+            placeholder="e.g., CAS-2024-123456"
+            {...$constraints.caseNumber}
+          />
+          {#if $errors.caseNumber}
+            <p class="mx-auto px-4 max-w-7xl">{$errors.caseNumber}</p>
+          {/if}
+        </div>
+        
+        <div>
+          <label for="priority" class="mx-auto px-4 max-w-7xl">
+            Priority *
+          </label>
+          <select
+            id="priority"
+            name="priority"
+            bind:value={$form.priority}
+            class="mx-auto px-4 max-w-7xl"
+            {...$constraints.priority}
+          >
+            <option value="">Select priority</option>
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          {#if $errors.priority}
+            <p class="mx-auto px-4 max-w-7xl">{$errors.priority}</p>
+          {/if}
+        </div>
+      </div>
+      
+      <!-- Title -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <label for="title" class="mx-auto px-4 max-w-7xl">
+          Case Title *
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          bind:value={$form.title}
+          class="mx-auto px-4 max-w-7xl"
+          placeholder="e.g., State vs. Johnson - Financial Fraud Investigation"
+          {...$constraints.title}
+        />
+        {#if $errors.title}
+          <p class="mx-auto px-4 max-w-7xl">{$errors.title}</p>
+        {/if}
+      </div>
+      
+      <!-- Description -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <label for="description" class="mx-auto px-4 max-w-7xl">
+          Case Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          bind:value={$form.description}
+          class="mx-auto px-4 max-w-7xl"
+          placeholder="Provide a detailed description of the case..."
+          {...$constraints.description}
+        ></textarea>
+        {#if $errors.description}
+          <p class="mx-auto px-4 max-w-7xl">{$errors.description}</p>
+        {/if}
+      </div>
+      
+      <!-- Status and Assignment -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <div>
+          <label for="status" class="mx-auto px-4 max-w-7xl">
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            bind:value={$form.status}
+            class="mx-auto px-4 max-w-7xl"
+            {...$constraints.status}
+          >
+            <option value="draft">Draft</option>
+            <option value="active">Active Investigation</option>
+            <option value="pending">Pending Review</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="assignedTo" class="mx-auto px-4 max-w-7xl">
+            Assigned To
+          </label>
+          <select
+            id="assignedTo"
+            name="assignedTo"
+            bind:value={$form.assignedTo}
+            class="mx-auto px-4 max-w-7xl"
+            {...$constraints.assignedTo}
+          >
+            <option value="">Unassigned</option>
+            {#each availableUsers as user}
+              <option value={user.id}>{user.name} ({user.role})</option>
+            {/each}
+          </select>
+        </div>
+      </div>
+      
+      <!-- Due Date -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <label for="dueDate" class="mx-auto px-4 max-w-7xl">
+          Due Date
+        </label>
+        <input
+          type="datetime-local"
+          id="dueDate"
+          name="dueDate"
+          bind:value={$form.dueDate}
+          class="mx-auto px-4 max-w-7xl"
+          {...$constraints.dueDate}
+        />
+        {#if $errors.dueDate}
+          <p class="mx-auto px-4 max-w-7xl">{$errors.dueDate}</p>
+        {/if}
+      </div>
+      
+      <!-- Tags -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <label for="tagInput" class="mx-auto px-4 max-w-7xl">
+          Tags
+        </label>
+        <div class="mx-auto px-4 max-w-7xl">
+          {#each $form.tags || [] as tag}
+            <span class="mx-auto px-4 max-w-7xl">
+              {tag}
+              <button
+                type="button"
+                on:click={() => removeTag(tag)}
+                class="mx-auto px-4 max-w-7xl"
+              >
+                ×
+              </button>
+            </span>
+          {/each}
+        </div>
+        <div class="mx-auto px-4 max-w-7xl">
+          <input
+            type="text"
+            id="tagInput"
+            bind:value={tagInput}
+            on:keydown={handleTagKeydown}
+            placeholder="Add a tag..."
+            class="mx-auto px-4 max-w-7xl"
+            aria-label="Add tag"
+          />
+          <button
+            type="button"
+            on:click={() => addTag()}
+            class="mx-auto px-4 max-w-7xl"
+          >
+            Add Tag
+          </button>
+        </div>
+        {#if $errors.tags}
+          <p class="mx-auto px-4 max-w-7xl">{$errors.tags}</p>
+        {/if}
+      </div>
+      
+      <!-- Checkboxes -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <label class="mx-auto px-4 max-w-7xl">
+          <input
+            type="checkbox"
+            bind:checked={$form.isConfidential}
+            class="mx-auto px-4 max-w-7xl"
+          />
+          <span class="mx-auto px-4 max-w-7xl">Mark as confidential</span>
+        </label>
+        
+        <label class="mx-auto px-4 max-w-7xl">
+          <input
+            type="checkbox"
+            bind:checked={$form.notifyAssignee}
+            class="mx-auto px-4 max-w-7xl"
+          />
+          <span class="mx-auto px-4 max-w-7xl">Notify assignee via email</span>
+        </label>
+      </div>
+      
+      <!-- Submit Buttons -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <button
+          type="button"
+          on:click={() => dispatch('cancel')}
+          class="mx-auto px-4 max-w-7xl"
+          disabled={$submitting}
+        >
+          Cancel
+        </button>
+        
+        <button
+          type="submit"
+          class="mx-auto px-4 max-w-7xl"
+          disabled={$submitting}
+        >
+          {#if $submitting}
+            <div class="mx-auto px-4 max-w-7xl">
+              <div class="mx-auto px-4 max-w-7xl"></div>
+              {isEditing ? 'Updating...' : 'Creating...'}
+            </div>
+          {:else}
+            {isEditing ? 'Update Case' : 'Create Case'}
+          {/if}
+        </button>
+      </div>
+      
+      <!-- Server Messages -->
+      {#if $message}
+        <div class="mx-auto px-4 max-w-7xl">
+          {$message.text}
+        </div>
+      {/if}
+      
+      <!-- Loading Indicator -->
+      {#if $delayed}
+        <div class="mx-auto px-4 max-w-7xl">
+          Processing your request...
+        </div>
+      {/if}
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Custom validation styles */
+  .legal-input:invalid {
+    border-color: #ef4444;
+  }
+  
+  .legal-input:valid {
+    border-color: #10b981;
+  }
+</style>

@@ -1,0 +1,58 @@
+// Add these scripts to your package.json "scripts" section:
+{
+  "scripts": {
+    // ... existing scripts ...
+    
+    // System Management
+    "setup:env": "node -r dotenv/config test-env-config.mjs",
+    "setup:vscode": "powershell -ExecutionPolicy Bypass -File Setup-VSCode-Environment.ps1",
+    "setup:system": "FIX-AND-START-SYSTEM.bat",
+    
+    // Database
+    "db:test": "node -r dotenv/config sveltekit-frontend/test-connection-simple.mjs",
+    "db:setup": "node -r dotenv/config sveltekit-frontend/setup-postgres-gpu.mjs --seed",
+    "db:migrate": "psql -U legal_admin -h localhost -d legal_ai_db -f database/gpu-schema-migration.sql",
+    
+    // Services
+    "services:check": "node -r dotenv/config check-system-integration.mjs",
+    "services:start": "FIX-AND-START-SYSTEM.bat",
+    "services:gpu": "cd go-microservice && go run legal_processor_gpu_simd.go",
+    "services:indexer": "cd go-microservice && go run auto-indexer-service.go",
+    "services:bullmq": "node -r dotenv/config backend/bullmq-producer.mjs",
+    
+    // Development
+    "dev": "concurrently \"npm:dev:*\"",
+    "dev:frontend": "cd sveltekit-frontend && npm run dev",
+    "dev:backend": "npm run services:start",
+    "dev:watch": "nodemon --watch go-microservice --exec \"npm run services:gpu\"",
+    
+    // Testing
+    "test": "npm run test:all",
+    "test:all": "npm run services:check",
+    "test:db": "npm run db:test",
+    "test:gpu": "curl http://localhost:8080/health",
+    
+    // Production
+    "build": "npm run build:all",
+    "build:all": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd sveltekit-frontend && npm run build",
+    "build:backend": "cd go-microservice && go build -tags=cgo -o ../bin/legal-processor.exe .",
+    
+    // Utilities
+    "logs": "tail -f logs/*.log",
+    "clean": "rimraf logs/* uploads/* generated_reports/*",
+    "reset": "npm run clean && npm run db:setup && npm run services:start"
+  }
+}
+
+// To install required dependencies for these scripts:
+// npm install --save-dev concurrently nodemon rimraf dotenv
+
+// Usage examples:
+// npm run setup:env        # Test environment configuration
+// npm run setup:vscode     # Configure VS Code environment
+// npm run setup:system     # Start entire system
+// npm run services:check   # Check system integration
+// npm run dev             # Start everything in development mode
+// npm run test            # Run all tests
+// npm run reset           # Clean and restart everything

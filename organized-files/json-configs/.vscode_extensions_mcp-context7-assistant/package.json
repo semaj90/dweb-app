@@ -1,0 +1,227 @@
+{
+  "name": "mcp-context7-assistant",
+  "displayName": "Context7 MCP Assistant",
+  "description": "Intelligent MCP integration with auto-context detection for legal AI development",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "keywords": [
+    "mcp",
+    "context7",
+    "ai",
+    "legal",
+    "sveltekit",
+    "typescript",
+    "assistant"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:**/package.json",
+    "workspaceContains:**/mcp*.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mcp.analyzeCurrentContext",
+        "title": "🔍 Analyze Current Context",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.suggestBestPractices",
+        "title": "✨ Suggest Best Practices",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.getContextAwareDocs",
+        "title": "📚 Get Context-Aware Documentation",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.analyzeErrors",
+        "title": "🐛 Analyze TypeScript Errors",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.startServer",
+        "title": "🚀 Start MCP Server",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.stopServer",
+        "title": "🛑 Stop MCP Server",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.analyzeFullStack",
+        "title": "🔍 Analyze Full Tech Stack",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.runAgentOrchestrator",
+        "title": "🤖 Run Agent Orchestrator",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.openRAGStudio",
+        "title": "🎛️ Open EnhancedRAG Studio",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.generateBestPractices",
+        "title": "📋 Generate Best Practices Report",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.uploadDocument",
+        "title": "📄 Upload Document to Knowledge Base",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.crawlWebsite",
+        "title": "🌐 Crawl Website for Knowledge Base",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.syncLibraries",
+        "title": "🔄 Sync Library Metadata",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewAgentLogs",
+        "title": "📝 View Agent Call Logs",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.searchLibraries",
+        "title": "🔍 Search Libraries",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.createWorkflow",
+        "title": "⚡ Create Multi-Agent Workflow",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewWorkflows",
+        "title": "📊 View Active Workflows",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.recordFeedback",
+        "title": "⭐ Record User Feedback",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewMetrics",
+        "title": "📈 View Performance Metrics",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.getBenchmarks",
+        "title": "🎯 Get Benchmark Results",
+        "category": "Context7 MCP"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceExtname == .ts || resourceExtname == .js || resourceExtname == .svelte",
+          "command": "mcp.analyzeCurrentContext",
+          "group": "mcp@1"
+        },
+        {
+          "when": "resourceExtname == .ts || resourceExtname == .js || resourceExtname == .svelte",
+          "command": "mcp.getContextAwareDocs",
+          "group": "mcp@2"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "mcp.analyzeCurrentContext",
+          "group": "mcp@1"
+        }
+      ]
+    },
+    "statusBarItems": [
+      {
+        "id": "mcpStatus",
+        "name": "MCP Context7 Status",
+        "alignment": "right",
+        "priority": 100
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "enhancedRAGServer",
+        "label": "Enhanced RAG & Multi-Agent Server"
+      }
+    ],
+    "configuration": {
+      "title": "Context7 MCP Assistant",
+      "properties": {
+        "mcpContext7.serverPort": {
+          "type": "number",
+          "default": 3000,
+          "description": "Port for the MCP Context7 server"
+        },
+        "mcpContext7.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start MCP server when workspace opens"
+        },
+        "mcpContext7.contextDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic context detection from errors and files"
+        },
+        "mcpContext7.suggestionConfidenceThreshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1,
+          "description": "Minimum confidence threshold for MCP suggestions"
+        },
+        "mcpContext7.maxSuggestions": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Maximum number of MCP suggestions to show"
+        },
+        "mcpContext7.logLevel": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warn",
+            "info",
+            "debug"
+          ],
+          "default": "info",
+          "description": "Logging level for MCP extension"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "ws": "^8.14.0"
+  }
+}

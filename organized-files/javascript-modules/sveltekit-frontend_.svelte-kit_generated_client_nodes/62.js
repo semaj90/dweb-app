@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/demo/unocss-svelte5/+page.svelte";

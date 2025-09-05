@@ -1,0 +1,38 @@
+CUsersjamesDesktopdeeds-webdeeds-web-appsveltekit-frontendnpm_check_errorscheck_output.txt
+
+
+#directory_tree review code, attempt to use #context7 sveltekit best practices #sequentialthinking src/lib routing, with bits-ui, css, shared global state? json api xstate
+[plugin:vite-plugin-svelte] src/lib/components/ui/button/Button.svelte:9:2 Cannot use <slot> syntax and {@render ...} tags in the same component. Migrate towards {@render ...} tags completely
+https://svelte.dev/e/slot_snippet_conflict
+src/lib/components/ui/button/Button.svelte:9:2
+7 | {@render children()}
+8 | {:else}
+9 | <slot />
+^
+10 | {/if}
+11 | </button>
+[plugin:vite-plugin-svelte] src/lib/components/ui/button/Button.svelte:9:2 Cannot use <slot> syntax and {@render ...} tags in the same component. Migrate towards {@render ...} tags completely
+https://svelte.dev/e/slot_snippet_conflict
+src/lib/components/ui/button/Button.svelte:9:2
+7 | {@render children()}
+8 | {:else}
+9 | <slot />
+^
+10 | {/if}
+11 | </button>
+
+<script> // Using Svelte 5 runes to get props. // 'children' is a special prop that captures the component's slot content as a "snippet". let { variant = 'default', class: className = '', children, ...restProps } = $props(); </script>
+<button class="btn btn-{variant} {className}" {...restProps}>
+{#if children}
+{@render children()}
+{/if}
+</button>
+
+<style> .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer; font-weight: 600; transition: background-color 0.2s ease-in-out; } .btn-default { background-color: #f3f4f6; /* gray-100 */ color: #1f2937; /* gray-800 */ } .btn-default:hover { background-color: #e5e7eb; /* gray-200 */ } .btn-primary { background-color: #3b82f6; /* blue-500 */ color: white; } .btn-primary:hover { background-color: #2563eb; /* blue-600 */ } </style> <script> // Using Svelte 5 runes to get props. // 'children' is a special prop that captures the component's slot content as a "snippet". let { variant = 'default', class: className = '', children, ...restProps } = $props(); </script>
+<button class="btn btn-{variant} {className}" {...restProps}>
+{#if children}
+{@render children()}
+{/if}
+</button>
+
+<style> .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer; font-weight: 600; transition: background-color 0.2s ease-in-out; } .btn-default { background-color: #f3f4f6; /* gray-100 */ color: #1f2937; /* gray-800 */ } .btn-default:hover { background-color: #e5e7eb; /* gray-200 */ } .btn-primary { background-color: #3b82f6; /* blue-500 */ color: white; } .btn-primary:hover { background-color: #2563eb; /* blue-600 */ } </style>

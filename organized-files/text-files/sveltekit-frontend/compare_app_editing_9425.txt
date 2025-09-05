@@ -1,0 +1,414 @@
+> when you review also look for "placeholder, stubs or mocks" when making 
+  determination
+> make sure the to do is done in the supieor one .svelte appears to be a modern, clean implementation with Svelte 5 patterns ($props, interfaces), while the backup had the detailed TODO roadmap. Let me check if this roadmap exists elsewhere:
+
+continue: claude -resume, claude -c, claude --resume, claude --continue, claude -continue.
+
+al files archived: 46 backup files
+  Key preservation: ✅ TODOs and roadmaps preserved in AIButton.s
+velte
+
+  Ready for more batches? The pattern is very clear now - main files are superior
+  in both size and modern patterns.
+
+> yes keep goingb
+
+● Bash(find . -name "*backup*" -o -name "*.bak" -o -name "*-backup-*" -o -name
+      "*_backup*" | grep -v node_modules | grep -v archived-backups | head -20)
+  ⎿  ./backup-analysis.mjs
+     ./public/js/route-backups
+     ./restore-backups.bat
+     … +18 lines (ctrl+r to expand)
+
+● Continuing with next batch of AI component backups:
+
+● Bash(find ./src/lib/components/ai -name "DeedAnalysis.svelte*")
+  ⎿  ./src/lib/components/ai/DeedAnalysis.svelte
+
+     ./src/lib/components/ai/DeedAnalysis.svelte.backup.1754931624960
+
+● Bash(wc -l "./src/lib/components/ai/DeedAnalysis.svelte"      
+      "./src/lib/components/ai/DeedAnalysis.svelte.backup.1754931624960" 2>/dev/null)
+  ⎿    218 ./src/lib/components/ai/DeedAnalysis.svelte
+
+       207 ./src/lib/components/ai/DeedAnalysis.svelte.backup.1754931624960
+       425 total
+  ⎿  5-hour limit reached ∙ resets 1pm
+     /upgrade to increase your usage limit.
+
+**********************************************************************
+curl -s http://localhost:11434/api/version
+
+*****************************************************************************
+psql postgresql://postgres:123456@localhost:5432/legal_ai_db -c "SELECT table_name, column_name, udt_name FROM information_schema.columns WHERE column_name = 'embedding' ORDER BY table_name;"
+
+***********************************************************************************************
+
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> Start-Process -NoNewWindow -FilePath "ollama.exe" -ArgumentList "serve"        
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> ^Cme=2025-09-04T12:00:26.213-07:00 level=INFO source=routes.go:1331 msg="serverPS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> Start-Sleep 3; curl -s http://localhost:11434/api/version              : OLLAMA{"version":"0.11.8"} OLLAMA_DEBUG:INFO OLLAMA_FLASH_ATTENTION:false OLLAMA_GPU_OVERHEAD:0 OLLAMA_HOST:http://127.0.0.1:11434 OLLAMA_INTEL_GPU:false OPS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> curl http://localhost:11434/api/version   S:0 OLLAMA_MAX_QUEUE:512 OLLAMA_MODEL{"version":"0.11.8"}.ollama\\models OLLAMA_MULTIUSER_CACHE:false OLLAMA_NEW_ENGINE:false OLLAMA_NEW_ESTIMATES:false OLLAMA_NOHISTORY:false OLLAMA_NOPPS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> ollama list t http://localhost:* https://localhost:* http://127.0.0.1 https://1[GIN] 2025/09/04 - 12:00:48 | 200 |            0s |       127.0.0.1 | HEAD     "/"p://0.0.0.0:* https://0.0.0.0:* app://* file://* tauri://* vscode-w[GIN] 2025/09/04 - 12:00:48 | 200 |     30.0753ms |       127.0.0.1 | GET      "/api/tags"
+NAME                       ID              SIZE      MODIFIED    7 msg="total blobs: 21"  
+nomic-embed-text:latest    0a109f422b47    274 MB    2 weeks ago    sg="total unused blobs removed: 0"
+all-minilm:latest          1b226e2802db    45 MB     3 weeks ago    msg="Listening on 127.0.0.1:11434 (version 0.11.8)" 
+gemma2:2b                  8ccf136fdd52    1.6 GB    4 weeks ago    "looking for compatible GPUs"
+gemma3-legal:latest        dce3b5150a10    7.3 GB    5 weeks ago    167 msg=packages count=1
+gemma3:latest              3b45e622e684    3.0 GB    5 weeks ago    214 msg="" package=0 cores=8 efficiency=0 threads=16
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend> "inference compute" id=GPU-8d67bfc5-6752-0bdb-e6a1-a66054883ec0 library=cuda variant=v12 compute=8.6 driver=13.0 name="NVIDIA GeForce RTX 3060 Ti" total="8.0 GiB" available="7.0 GiB"
+time=2025-09-04T12:00:26.496-07:00 level=INFO source=routes.go:1425 msg="entering low vram mode" "total vram"="8.0 GiB" threshold="20.0 GiB
+
+****************************************************************************
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> $testResponse = Invoke-RestMethod -Uri "http://localhost:11434/api/embed" -Method Post -ContentType "application/json" -Body '{"model": "nomic-embed-text", "input": "test"}'; $testResponse | ConvertTo-Json -Depth 3
+Invoke-RestMethod: 
+{
+  "error": "model \u0022nomic-embed-text\u0022 not found, try pulling it first"
+}
+null
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> ollama pull nomic-embed-text
+[GIN] 2025/09/04 - 12:03:31 | 200 |            0s |       127.0.0.1 | HEAD     "/"
+pulling manifest ⠹ [GIN] 2025/09/04 - 12:03:32 | 200 |    1.3964782s |       127.0.0.1 | POST     "/api/pull"
+pulling manifest
+pulling 970aa74c0a90: 100% ▕███████████████████████████████████████████████████████████████████████████████████████▏ 274 MB
+pulling c71d239df917: 100% ▕███████████████████████████████████████████████████████████████████████████████████████▏  11 KB
+pulling ce4a164fc046: 100% ▕███████████████████████████████████████████████████████████████████████████████████████▏   17 B
+pulling 31df23ea7daa: 100% ▕███████████████████████████████████████████████████████████████████████████████████████▏  420 B
+verifying sha256 digest
+writing manifest
+success
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> $testResponse = Invoke-RestMethod -Uri "http://localhost:11434/api/embed" -Method Post -ContentType "application/json" -Body '{"model": "nomic-embed-text", "input": "test"}'; Write-Host "Response keys:"; $testResponse.PSObject.Properties.Name; Write-Host "Embedding length:"; $testResponse.embeddings[0].Length\x3b Write-Host "Embedding length:"\x3b $testResponse.embeddings[0].Length
+Invoke-RestMethod: 
+{
+  "error": "model \u0022nomic-embed-text\u0022 not found, try pulling it first"
+}
+Response keys:
+Embedding length:
+InvalidOperation: Cannot index into a null array.
+
+
+*************************************************************************
+lama.cpp for embeddings works if the model supports embeddings in GGUF. Gemma “legal” is a fine generator, but for vectors use a dedicated embedder. nomc-embed-text dedicated vector store? for indexing, search, sort, using ocr, from minio, upload store local disk, s3 local, cache it? gpu cache parser simd, nomic-emed-text? will work? then we create an embed ingester, like our enhanced rag? system back to neo4j.
+Uniform API: even if you run llama.cpp, consider exposing a stable internal API that both Node and Go call (keeps SvelteKit thin). we'll keep webasm vllm custom server with node.js express service worker hosting llama.cpp webasm? loki.js, indexdb, since node.js? redis-cache microservice managed by rabbitmq, & xstate for sveltekit 2 frontend to postgresql, pg vector, drizzle-orm served though .ts barrel stores from authenticated user global store has ai assistant global store? 
+
+    + FullyQualifiedErrorId : TerminatorExpectedAtEndOfString
+ 
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> powershell -ExecutionPolicy Bypass -File scripts/generate-proto-simple.ps1
+Generating protobuf code...
+Generating Go protobuf code...
+C:\Users\james\Desktop\deeds-web\deeds-web-app\scripts\generate-proto-simple.ps1 : Failed to generate protobuf: protoc not found. Please install 
+Protocol Buffers compiler.
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,generate-proto-simple.ps1
+ 
+Make sure you have:
+   - protoc installed (https://grpc.io/docs/protoc-installation/)
+   - protoc-gen-go: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+   - protoc-gen-go-grpc: go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> ollama list
+
+powershell -ExecutionPolicy Bypass -File scripts/generate-proto-simple.ps1
+
+Start-Process -NoNewWindow -FilePath "ollama.exe" -ArgumentList "serve"
+
+lama.cpp for embeddings works if the model supports embeddings in GGUF. Gemma “legal” is a fine generator, but for vectors use a dedicated embedder. nomc-embed-text dedicated vector store? for indexing, search, sort, using ocr, from minio, upload store local disk, s3 local, cache it? gpu cache parser simd, nomic-emed-text? will work? then we create an embed ingester, like our enhanced rag? system back to neo4j.
+Uniform API: even if you run llama.cpp, consider exposing a stable internal API that both Node and Go call (keeps SvelteKit thin). we'll keep webasm vllm custom server with node.js express service worker hosting llama.cpp webasm? loki.js, indexdb, since node.js? redis-cache microservice managed by rabbitmq, & xstate for sveltekit 2 frontend to postgresql, pg vector, drizzle-orm served though .ts barrel stores from authenticated user global store has ai assistant global store? 
+ChatGPT said:
+Thought for a few seconds
+
+Nice — you’ve sketched a full production-ready pipeline. I’ll summarize a concrete, implementation-ready plan you can run with your stack (SvelteKit 2, Drizzle/Postgres+pgvector, MinIO, RabbitMQ, llama.cpp GGUF embeddings, nomic-embed-text where appropriate, Loki/IndexedDB + Fuse on client, Neo4j for graphing), plus code snippets and protobuf contracts so the pieces talk cleanly over QUIC/gRPC or HTTP.
+
+I’ll cover:
+
+high-level architecture & choices (why use dedicated embedder, where llama.cpp/gguf fits)
+
+ingestion pipeline (MinIO → OCR → chunk → embed → store)
+
+embedding worker options (llama.cpp native, wasm, or call Ollama)
+
+caching, SIMD parsing, and GPU/IO optimizations
+
+DB schemas (Drizzle) for documents, chunks, embeddings
+
+vector search & similarity queries (pgvector + optional Qdrant)
+
+uniform API (gRPC + REST proto examples)
+
+client global AI assistant store (XState + Loki/IndexedDB + Fuse + barrel exports)
+
+Neo4j usage for relation graph & how to sync embeddings → graph
+
+tactical recommendations and next steps + files I can generate for you
+
+1 — High-level decisions (short)
+
+Use a dedicated embedding model (nomic-embed-text, bge-small, or e5) — don’t use Gemma/generative model to build vectors.
+
+llama.cpp (GGUF) works for embeddings if your model supports embedding mode (GGUF embedder models). For generator models, use them for generation only.
+
+Prefer native llama.cpp on server (Node + node-llama-cpp or a local Python/Go worker) over browser WASM for heavy embeddings & generation. WASM is possible but less efficient and limited by browser sandbox/threads.
+
+Keep a uniform internal API (gRPC proto + REST fallback) that all services call for embeddings/ingest/search. This decouples model runtime from callers.
+
+Use RabbitMQ to queue ingest/embedding jobs; GPU workers consume them.
+
+Store canonical documents & chunk metadata in Postgres (Drizzle), store embeddings in pgvector column and optionally mirror into Qdrant for scale.
+
+Neo4j for knowledge graph links (entities/relations). After chunk embedding and entity extraction, write nodes/edges to Neo4j for graph queries and traversal to augment RAG.
+
+Client: XState global AI assistant store + Loki.js persisted to IndexedDB + Fuse.js for local fuzzy search + event streaming from x.events.
+
+2 — Ingest pipeline (concrete flow)
+
+User uploads file → stored to MinIO (S3-compatible).
+
+API publishes document.uploaded job to RabbitMQ with { documentId, minioUri, uploaderId }.
+
+Ingest worker downloads file from MinIO (to local disk or tmp), extracts text:
+
+PDF → use pdfminer/pypdf or tika (Python), or pdfcpu (Go) + OCR fallback with Tesseract for images.
+
+Use SIMD-friendly parsing for structured JSON or large text blobs (simdjson in C/C++ or WASM).
+
+Chunk text into passage windows (e.g., 500 tokens, 50 tokens overlap). Create chunk metadata (offsets, source url).
+
+Publish chunk.embed jobs (or enqueue directly into embedding queue).
+
+Embedding worker consumes chunk jobs — uses llama.cpp or Ollama to produce embedding vector (dedicated embedder).
+
+Worker writes chunk record and embedding into Postgres document_chunks table with vector (pgvector).
+
+Optionally mirror embedding into Qdrant for faster ANN (and to carry chunk payload).
+
+Run entity extraction / auto-tagging (lightweight model or spaCy) and write entities to Neo4j and tags to documents.metadata.
+
+Emit document.ingest.completed via x.events.
+
+3 — Embedding worker options & recommendation
+
+Preferred for your environment (RTX 3060 Ti):
+
+Use quantized GGUF embedding models or nomic-embed-text (via Ollama) to reduce VRAM.
+
+Best runtime: native llama.cpp on server (Node or Python wrapper) with quantized GGUF model.
+
+Node options:
+
+node-llama-cpp for native GGUF inference (embedding mode if model supports).
+
+OR run a small Python worker (transformers / sentence-transformers) if you prefer bitsandbytes and HF models.
+
+WASM:
+
+You can compile llama.cpp to WASM (there are wasm builds) and run on Node (server-side WASM), but performance / memory for 8GB GPU likely worse than native. Use wasm for browser-side inference only for tiny models.
+
+Verdict: run llama.cpp native in a Node worker or Python worker. Keep a stable EmbeddingService API on top so callers don’t care which runtime.
+
+4 — Drizzle schema (documents, chunks, users) + pgvector
+
+Add document_chunks.profile_embedding etc.
+
+// src/lib/server/db/schema-postgres.ts (Drizzle)
+import { pgTable, uuid, text, varchar, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { vector } from "pgvector/drizzle-orm";
+
+export const documents = pgTable("documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 512 }),
+  source_uri: varchar("source_uri", { length: 1024 }), // minio://bucket/key
+  metadata: jsonb("metadata").default({}),
+  size: bigint("size").default(0),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  uploaded_by: uuid("uploaded_by")
+});
+
+export const document_chunks = pgTable("document_chunks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  document_id: uuid("document_id").notNull().references(() => documents.id, { onDelete: "cascade" }),
+  chunk_index:  // integer,
+  text: text("text"),
+  tokens: integer("tokens"),
+  // pgvector column — dimensions must match model (e.g., 384 or 768)
+  vector: vector("vector", { dimensions: 384 }),
+  metadata: jsonb("metadata").default({}),
+  created_at: timestamp("created_at").defaultNow().notNull()
+});
+
+
+(Adjust dimensions: 384 to whichever embedder you use.)
+
+Create HNSW index:
+
+CREATE INDEX IF NOT EXISTS document_chunks_vector_hnsw_idx
+  ON document_chunks USING hnsw (vector vector_cosine_ops);
+
+5 — Similarity search (Drizzle raw SQL example)
+import { sql } from "drizzle-orm";
+
+export async function searchChunksByEmbedding(queryVec: number[], limit = 10) {
+  const rows = await db.execute(
+    sql`SELECT id, document_id, text, vector <-> ${sql.param(queryVec)} AS distance
+        FROM document_chunks
+        WHERE vector IS NOT NULL
+        ORDER BY vector <-> ${sql.param(queryVec)}
+        LIMIT ${sql.param(limit)}`
+  );
+  return rows;
+}
+
+6 — Protobuf contracts (Embedding + Ingest + Chat)
+
+Use these to talk over gRPC/QUIC.
+
+proto/ingest.proto
+
+syntax = "proto3";
+package yorha.ingest;
+message IngestJob { string document_id = 1; string minio_uri = 2; }
+service IngestService {
+  rpc Submit(IngestJob) returns (IngestAck);
+}
+message IngestAck { bool ok = 1; string jobId = 2; }
+
+
+proto/embedding.proto
+
+syntax = "proto3";
+package yorha.embedding;
+message EmbedRequest { string id = 1; string text = 2; string model = 3; }
+message EmbedResponse { repeated float vector = 1; int32 dims = 2; }
+service EmbeddingService { rpc Embed(EmbedRequest) returns (EmbedResponse); }
+
+Generate Go + TS clients and run with gRPC or grpc-web.
+7 — Node-based ingest + embedding ingester (skeleton)
+Below is a minimal Node worker using node-llama-cpp for embeddings if available, else falls back to Ollama HTTP.
+
+// worker/ingest-embedder.ts (Node)
+import amqp from 'amqplib';
+import fetch from 'node-fetch';
+import { Client as LlamaClient } from 'node-llama-cpp'; // hypothetical
+import { db } from '../src/lib/server/db';
+import { document_chunks } from '../src/lib/server/db/schema-postgres';
+import { sql } from 'drizzle-orm';
+
+const AMQP = process.env.AMQP_URL || 'amqp://localhost';
+const OLLAMA = process.env.OLLAMA_URL || 'http://127.0.0.1:11434/api/embeddings';
+const USE_LLAMA_CPP = true;
+
+let llm: any = null;
+async function initLlama() {
+  if (!USE_LLAMA_CPP) return;
+  llm = new LlamaClient({ model: '/models/bge-small.gguf', embedding: true });
+}
+
+async function embedText(text: string) {
+  if (USE_LLAMA_CPP && llm) {
+    return await llm.embed(text); // returns number[]
+  }
+  // fallback to Ollama
+  const res = await fetch(OLLAMA, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'nomic-embed-text', input: text })
+  });
+  const j = await res.json();
+  return j.embedding;
+}
+
+async function main() {
+  await initLlama();
+  const conn = await amqp.connect(AMQP);
+  const ch = await conn.createChannel();
+  await ch.assertQueue('q.document.ingest', { durable: true });
+  ch.consume('q.document.ingest', async (msg) => {
+    if (!msg) return;
+    const job = JSON.parse(msg.content.toString());
+    try {
+      // download file from MinIO (use aws-sdk S3)
+      // extract text, chunk into passages
+      // For demo assume chunks[] = [{ text }]
+      for (const chunk of chunks) {
+        const vec = await embedText(chunk.text);
+        // insert chunk and vector into DB via Drizzle or raw SQL
+        await db.insert(document_chunks).values({
+          document_id: job.documentId,
+          chunk_index: chunk.index,
+          text: chunk.text,
+          tokens: chunk.tokens,
+          vector: vec,
+          metadata: {}
+        });
+      }
+      ch.ack(msg);
+    } catch (err) {
+      console.error('ingest failed', err);
+      ch.nack(msg, false, false); // DLQ
+    }
+  }, { noAck: false });
+}
+
+main().catch(console.error);
+
+Notes: implement chunking, OCR, and MinIO download.
+8 — Caching, simd parsing & GPU optimizations. Use simdjson or simdjson Node bindings for large JSON parse/scanning (faster than JSON.parse).
+Use local disk cache for downloaded files (e.g., /var/cache/yorha/minio) to avoid re-downloading; delete after ingestion or keep TTL.
+Use Redis as a short-term cache for embeddings or job dedupe (store jobId).
+Use prefetch_count=1 in RabbitMQ per worker to avoid running out of memory with big jobs.
+
+For GPU efficiency: Use quantized GGUF models or bitsandbytes 8-bit
+Use batching where possible
+Maintain a warm model (don’t reload model per job)
+For llama.cpp, set n_ctx, n_batch appropriately and prefer streaming generation tokens.
+9 — Client: XState + Loki + IndexedDB + Fuse + global store barrel
+Global AI assistant store: export a TypeScript barrel src/lib/stores/ai.ts with typed functions that XState uses.
+Example barrel exports:
+// src/lib/stores/index.ts
+export * from './ai';
+export * from './auth';
+export * from './documents';
+
+
+AI store (simplified):
+
+// src/lib/stores/ai.ts
+import { createMachine, interpret } from 'xstate';
+import Loki from 'lokijs';
+import Fuse from 'fuse.js';
+import { startEventStream } from '../services/events'; // SSE client
+
+// create Loki DB
+const db = new Loki('yorha.db');
+const messages = db.addCollection('messages', { indices: ['id','session_id'] });
+
+export const aiMachine = createMachine({ /* similar to earlier chatMachine */});
+export const aiService = interpret(aiMachine).start();
+
+export function initClientCache() {
+  // hydrate from IndexedDB (via Loki persistence)
+  // start SSE for x.events
+  startEventStream();
+}
+
+export function searchLocal(query) {
+  const fuse = new Fuse(messages.find(), { keys: ['content'] });
+  return fuse.search(query).map(r => r.item);
+}
+Persist Loki to IndexedDB using lokijs/src/loki-indexed-adapter or similar. On network reconnect, reconcile with server.
+10 — Neo4j knowledge graph integration
+After chunk ingest, run an entity-extraction pipeline (NER with spaCy or small LLM) and map entities to nodes in Neo4j.
+Store relationships (document->entity, entity->entity) and optionally embed entity nodes with aggregated embeddings (average of chunk embeddings where entity appears).
+Query Neo4j for contextual traversal when building RAG context (e.g., find entities connected to caseId).
+Sync pattern: Worker emits entities.extracted with entities → Graph worker upserts to Neo4j via Bolt driver.
+Maintain mapping table in Postgres entity_nodes for easy joins.
+11 — Security, observability, and scale
+Auth: JWT for microservices + Lucia for SvelteKit.
+Rate-limit API endpoints and embedding endpoints.
+Instrumentation: expose Prometheus metrics from workers (queue depth, latency, GPU memory usage). Use Grafana +Loki for logs.
+DLQ: configure RabbitMQ DLQ policies.
+Backups: backup pgvector-enabled DB and MinIO.
+12 — Next steps / artifacts I can produce now
+I can generate any of the following ready-to-run files (pick multiples):
+ Drizzle schema file (complete with documents, document_chunks, users) + migration snippet.
+ Node ingest + embedding worker (using node-llama-cpp or Ollama fallback) that consumes RabbitMQ, extracts, chunks, embeds, writes to Postgres.
+ Python worker alternative (transformers + bitsandbytes) that does generation/embedding.
+ Protobuf ingest.proto + embedding.proto + chat.proto and ts-proto + go generate commands.
+ XState AI global store code + Loki persistence + Fuse search example (SvelteKit 2).
+ Neo4j graph upsert example from entities extracted from chunks.
+ SSE x.events bridge code and Svelte client example to show real-time embedding/ingest progress.
+Tell me which artifacts you want first (or say “all”) a

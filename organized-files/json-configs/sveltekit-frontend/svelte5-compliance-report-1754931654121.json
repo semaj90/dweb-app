@@ -1,0 +1,4815 @@
+{
+  "timestamp": "2025-08-11T17:00:54.121Z",
+  "summary": {
+    "filesScanned": 480,
+    "compliantFiles": 324,
+    "compliancePercentage": 68,
+    "issuesFound": 190,
+    "issuesFixed": 30,
+    "errors": 0
+  },
+  "details": [
+    {
+      "file": "/lib/components/AccessibilityPanel.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AdvancedRichTextEditor.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AgentOrchestrator.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AiAssistant.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIButton.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIButtonPortal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIChatInput.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIChatInterface.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 10
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIChatMessage.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIProcessingDashboard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIPromptSearch.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIRecommendation.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AiSetupBanner.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AIStatusIndicator.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 8
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AISummaryButton.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/AskAI.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/ChatInterface.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/ChatMessage.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 27
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/ComprehensiveSummaryEngine.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/DeedAnalysis.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedAIAssistant.new.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedAIAssistant.simple.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedAIAssistant.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedAIChatTest.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedDocumentUploader.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedInlineEditor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedMCPIntegration.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EnhancedVectorSearch.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/EvidenceTimelineCard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/FileUpload.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/FindModal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/GamingAIButton.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/GamingAIInterface.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/LLMProviderSelector.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/LLMSelector.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/MultiAgentAnalysisCard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/MultiLLMOrchestrator.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/NierAIAssistant.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (7 instances)",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/ollama-agent-shell.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/PersonOfInterestCard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/Phase8Demo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/SOMVisualization.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/ThinkingStyleToggle.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/TypewriterResponse.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/VectorIntelligenceDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/webgpu-viewer.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ai/XStatePhase8Integration.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (13 instances)",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AIAnalysisForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AIAssistant.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AIAssistantButton.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AIFabButton.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/AttractivenessMetr.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/auth/AuthForm.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/auth/LoginModal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/auth/RegisterModal.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Avatar.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/BitsDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/AdvancedEditor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/CitationSidebar.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 40
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/EvidenceNode.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/FabricCanvas.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/POINode.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/canvas/ReportNode.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/CanvasEditor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/CaseInfoForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/cases/CaseCard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/cases/CaseFilters.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/cases/CaseListItem.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/cases/CaseStats.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/cases/EvidenceCard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/chat/ChatMessage.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Chat.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/copilot/AutonomousEngineeringDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/detective/ContextMenu.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/detective/EvidenceCard.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/detective/UploadZone.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Dialog.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/DocumentUploadForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EditableCanvasSystem.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/LegalDocumentEditor.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/ProfessionalEditor.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/ReportEditor.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/RichTextEditor.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/TiptapWithAIAssistant.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (11 instances)",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/editor/WysiwygEditor.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/enhanced-rag/EnhancedRAGInterface.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EnhancedAISearch.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (9 instances)",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EnhancedCanvasEditor.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EnhancedLegalAIDemo.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EnhancedLegalCaseManager.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EnhancedRAGInterface.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ErrorBoundary.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/evidence/EvidenceCard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/evidence-editor/AIAssistantPanel.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/evidence-editor/CanvasEditor.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/evidence-editor/InspectorPanel.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/evidence-editor/VisualEvidenceEditor.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EvidenceAnalysisForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EvidenceGrid.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (10 instances)",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EvidencePanel.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 12
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EvidenceUploadBoard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/EvidenceUploader.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/FileUploadSection.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/CaseForm.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/EnhancedCaseForm.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/EnhancedDocumentUploadForm.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 6
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/EnhancedFileUpload.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 7
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/EnhancedFormInput.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/EvidenceForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 9
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/forms/SmartDocumentForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/gaming/GamingButton.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/gaming/GamingHUD.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/gaming/GamingLayout.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/gaming/GamingPanel.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Header.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/HeadlessDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/InfiniteScrollList.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/keyboard/KeyboardShortcuts.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (10 instances)",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/layout/MasonryGrid.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/layout/Sidebar.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/AISummaryReader.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 7
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/CaseSynthesisWorkflow.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/CollaborationPanel.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (7 instances)",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/CustodyTimeline.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/EvidenceCustodyFlow.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (16 instances)",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/EvidenceReportSummary.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/IntegrityVerification.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/LegalAnalysisDialog.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/LegalDocumentProcessor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (11 instances)",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/LegalPrecedentSearch.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/legal/WorkflowProgress.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/LegalAIChat.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/LegalAnalysisDialog.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/LegalCaseManager.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/LoadingSpinner.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 4
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/MemoryMonitor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/AISummaryModal.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/CaseSummaryModal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/EvidenceAnalysisModal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/EvidenceModal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/EvidenceUploadModal.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/EvidenceUploadModal_backup.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/modals/EvidenceValidationModal.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/MonacoEditor.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Navigation.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/NierHeader.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/NierNavigation.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/NierRichTextEditor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/NierThemeShowcase.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/notifications/DocumentUpdateNotifications.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/notifications/EnhancedNotificationContainer.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/OllamaChatInterface.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/onboarding/OnboardingOverlay.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ProgressIndicator.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/RealTimeEvidenceGrid.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/RealtimeRAG.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 6
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ReportEditor.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ReviewSubmitForm.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/scoring/CaseAIScoringCard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/search/AdvancedSearch.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/SearchBar.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/SearchInput.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 4
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/security/SecurityMonitoringDashboard.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Settings.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Sidebar.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/subcomponents/LoadingSpinner.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 4
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/subcomponents/ProgressIndicator.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/TagList.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/TokenUsageManager.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (14 instances)",
+          "count": 14
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Toolbar.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/Typewriter.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/AIDropdown.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 6
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/alert/Alert.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/alert/AlertDescription.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/alert/AlertTitle.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Badge.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/button/Button.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/button/SimpleButton.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Button.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Card.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CardContent.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CardFooter.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CardHeader.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CardTitle.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/checkbox/Checkbox.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 6
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CommandMenu.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 4
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/CommandPalette.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/context-menu-content.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/context-menu-item.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/context-menu-root.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/context-menu-separator.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/context-menu-trigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/ContextMenuContent.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/ContextMenuItem.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/ContextMenuStandard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/context-menu/ContextMenuTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/ContextMenuContent.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/ContextMenuItem.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/ContextMenuSeparator.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/Dialog.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogContent.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogDescription.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogFooter.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogRoot.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogStandard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogTitle.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dialog/DialogTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/DragDropZone.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/drawer/Drawer.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 7
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dropdown-menu/DropdownMenuContent.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dropdown-menu/DropdownMenuItem.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/dropdown-menu/DropdownMenuTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced/Button.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced/Card.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced/Input.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/AIChatMessage.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/AIDialog.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/AIRecommendations.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/AISearchBar.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/Button.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/Card.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/CardContent.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/CardDescription.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/CardFooter.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/CardHeader.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/CardTitle.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/ChatMessage.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/Dialog.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/DialogWrapper.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/EnhancedBitsDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/EnhancedRAGStudio.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (9 instances)",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/Input.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/Select.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/enhanced-bits/VectorIntelligenceDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/ExpandGrid.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Form.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/forms/FormStandard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/GoldenLayout.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/grid/Grid.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/grid/GridItem.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Input.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 9
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/label/LabelCompat.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Label.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/layout/GoldenRatioGrid.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/MarkdownRenderer.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/modal/Modal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Modal.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/NoteViewerModal.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/progress/Progress.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/RichTextEditor.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/scroll-area/ScrollArea.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/scrollarea/ScrollArea.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/Select.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectContent.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectGroup.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectItem.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectLabel.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectRoot.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectStandard.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/select/SelectValue.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/separator/Separator.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/SmartTextarea.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/tabs/Tabs.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/tabs/TabsContent.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/tabs/TabsTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/textarea/Textarea.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/tooltip/BitsTooltip.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/Tooltip.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/ui/TooltipTrigger.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/upload/AdvancedFileUpload.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/upload/FileUploadForm.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/upload/FileUploadProgress.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/UploadArea.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 2
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/UploadAreaExample.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 52
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/UserDropdown.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/vector/VectorIntelligenceDemo.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/vector/VectorRecommendationsWidget.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/vector/VectorSearchWidget.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaDataGrid.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaDataViz.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaDialog.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaDialogManager.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaForm.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaModal.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaModalManager.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaNotification.svelte",
+      "issues": [
+        {
+          "type": "error",
+          "rule": "No createEventDispatcher",
+          "message": "Component still uses createEventDispatcher - should use callback props",
+          "count": 2
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaNotificationManager.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaTable.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/lib/components/yorha/YoRHaTerminal.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (7 instances)",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "file": "/routes/+error.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/routes/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/admin/cluster/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (7 instances)",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "file": "/routes/admin/gpu-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/routes/ai/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/ai/orchestrator/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/ai-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/ai-test/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (2 instances)",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/routes/aiassistant/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/cases/+layout.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/cases/new/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/cases/[id]/canvas/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/cases/[id]/enhanced/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/compiler-ai-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/routes/context7-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/context7-demo.disabled/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 3
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/copilot/autonomous/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/dashboard/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-assistant/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-complete-test/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-dashboard/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-integration/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-pipeline/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/ai-test/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/gpu-legal-ai/lawpdfs/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/inline-suggestions/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/legal-ai-complete/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/neural-sprite-engine/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/notes/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/simple-test/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/system-summary/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/unocss-svelte5/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/vector-search/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/demo/yorha-tables/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/dev/copilot-optimizer/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (15 instances)",
+          "count": 15
+        }
+      ]
+    },
+    {
+      "file": "/routes/dev/vector-search-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (6 instances)",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "file": "/routes/enhanced-ai-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidence/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 5
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidence/analyze/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidence/files/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidence/hash/+page.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 37
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidence/upload/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/evidenceboard/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (16 instances)",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "file": "/routes/gaming-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/golden-ratio-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/help/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/interactive-canvas/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/law/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 1
+        },
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "file": "/routes/legal-ai-suite/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (8 instances)",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "file": "/routes/login/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/nier-showcase/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/optimization-dashboard/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (5 instances)",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "file": "/routes/phase13-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (12 instances)",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "file": "/routes/register/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (3 instances)",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "/routes/RoutesList.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/saved-citations/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/security/+page.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "file": "/routes/semantic-search-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "No export let",
+          "message": "Component uses export let - should use $props() destructuring",
+          "count": 1
+        },
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/showcase/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (4 instances)",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "file": "/routes/test-simple/+page.svelte",
+      "issues": [
+        {
+          "type": "success",
+          "rule": "Modern Svelte 5 patterns",
+          "message": "✅ Uses modern Svelte 5 runes (1 instances)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/ui-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "info",
+          "rule": "Placeholder CSS classes",
+          "message": "Placeholder CSS class found - should use proper Tailwind classes",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "/routes/windows-gguf-demo/+page.svelte",
+      "issues": [
+        {
+          "type": "warning",
+          "rule": "Legacy reactive statements",
+          "message": "Legacy reactive statement found - consider using $derived or $effect",
+          "count": 4
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

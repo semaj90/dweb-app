@@ -1,0 +1,11 @@
+<script lang="ts">
+  export let menu: any;
+</script>
+
+<div 
+  use:menu 
+  className="${1}"
+  {...$$restProps}
+>
+  <slot />
+</div>

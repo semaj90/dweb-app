@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git remote add:*)",
+      "mcp__filesystem__list_directory",
+      "Bash(npm uninstall:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\cyber-elephant\\accelerator-cpp/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demo\\neural-sprite-engine/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\engines/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\types/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend/**)",
+      "mcp__filesystem__create_directory",
+      "Bash(node:*)",
+      "mcp__filesystem__read_file",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\cmd\\enhanced-rag-som/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\cmd/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\cmd\\multi-protocol-gateway/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app/**)",
+      "mcp__filesystem__write_file",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\cyber-elephant\\backend-go/**)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\internal\\envutil/**)",
+      "Bash(dir:*)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\drizzle/**)",
+      "mcp__filesystem__read_multiple_files",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\cmd\\cuda-service/**)",
+      "Bash(psql:*)",
+      "Read(/C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\services/**)",
+      "Bash(npm install)",
+      "Bash(timeout:*)",
+      "Bash(go build:*)",
+      "Bash($env:AI_SERVICE_PORT='8080')",
+      "Bash($env:AI_SERVICE_PORT=\"8080\")",
+      "Read(/C:\\Users\\james\\Pictures\\Screenshots/**)",
+      "Bash(git commit:*)",
+      "mcp__filesystem__search_files"
+    ],
+    "deny": [],
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+    ]
+  }
+}

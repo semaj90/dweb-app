@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "sinks": {
+    "console": { "level": "info" },
+    "elk": { "enabled": false, "endpoint": "http://localhost:9200", "index": "legal-ai-logs" }
+  },
+  "format": { "timestamp": true, "json": true }
+}

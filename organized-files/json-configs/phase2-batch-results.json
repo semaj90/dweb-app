@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-09-04T18:48:27.254Z",
+  "filesProcessed": 4,
+  "promoted": 0,
+  "archived": 4,
+  "needReview": 0,
+  "successRate": 100,
+  "results": [
+    {
+      "file": "AccessibilityPanel.svelte.backup",
+      "lines": 703,
+      "size": 22188,
+      "score": 10,
+      "hasInterfaces": 1,
+      "hasTodos": 0,
+      "hasStubs": false,
+      "hasTypescriptIgnore": false,
+      "hasSvelte5": false,
+      "isEmpty": false,
+      "recommendation": "archive"
+    },
+    {
+      "file": "AIButtonPortal.svelte.backup",
+      "lines": 41,
+      "size": 828,
+      "score": 0,
+      "hasInterfaces": 0,
+      "hasTodos": 0,
+      "hasStubs": false,
+      "hasTypescriptIgnore": false,
+      "hasSvelte5": false,
+      "isEmpty": false,
+      "recommendation": "archive"
+    },
+    {
+      "file": "AIChatInterface.svelte.backup",
+      "lines": 385,
+      "size": 10145,
+      "score": 0,
+      "hasInterfaces": 0,
+      "hasTodos": 0,
+      "hasStubs": false,
+      "hasTypescriptIgnore": false,
+      "hasSvelte5": false,
+      "isEmpty": false,
+      "recommendation": "archive"
+    },
+    {
+      "file": "AIChatMessage.svelte.backup",
+      "lines": 465,
+      "size": 12821,
+      "score": 5,
+      "hasInterfaces": 0,
+      "hasTodos": 1,
+      "hasStubs": false,
+      "hasTypescriptIgnore": false,
+      "hasSvelte5": false,
+      "isEmpty": false,
+      "recommendation": "archive"
+    }
+  ]
+}

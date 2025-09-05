@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "View Vite Errors",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\.vscode\\vite-errors.json"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Clear Vite Error Log",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "'{\"errors\": [], \"diagnostics\": []}'",
+        ">",
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\.vscode\\vite-errors.json"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart Vite with Clean Logs",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "dev"
+      ],
+      "group": "build",
+      "dependsOn": "Clear Vite Error Log",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [
+        {
+          "owner": "vite",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        }
+      ]
+    }
+  ]
+}

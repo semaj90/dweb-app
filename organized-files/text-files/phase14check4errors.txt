@@ -1,0 +1,1032 @@
+Inside your app-machine.ts, you would handle this event to trigger the next step in your RAG workflow, such as re-indexing the newly generated analysis to make the AI "aware" of its own findings. This creates a powerful self-improvement loop.
+
+123456 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> node check-system-integration.mjs
+🔍 Running comprehensive system integration check...
+
+Password for user legal_admin: 
+
+📊 SYSTEM INTEGRATION REPORT
+==================================================
+
+🚨 CRITICAL ISSUES (Fix immediately):
+  ❌ Database connection failed
+  ❌ Similarity search test failed
+
+⚠️  WARNINGS (Address when possible):
+  ⚠️ GPU service online but acceleration disabled
+  ⚠️ Auto-indexer not responding on port 8081
+  ⚠️ BullMQ Producer not responding on port 3001
+  ⚠️ API endpoint /api/legal returned 404
+  ⚠️ API endpoint /api/legal/gpu returned 404
+  ⚠️ Log file ./logs/gpu-legal-processor.log missing
+  ⚠️ Log file ./logs/auto-indexer.log missing
+  ⚠️ Log file ./logs/bullmq-combined.log missing
+
+✅ PASSING CHECKS:
+  ✅ CUDA/GPU detected
+  ✅ Redis responsive
+  ✅ API endpoint /health responding
+  ✅ API endpoint /metrics responding
+
+📈 PERFORMANCE METRICS:
+  gpu_memory_status: 1418, 8192
+
+🔧 SYSTEM STATUS: 2 critical issues require attention
+
+📋 IMMEDIATE NEXT STEPS:
+  1. Fix critical issues listed above
+  2. Run database migration: psql -f database/gpu-schema-migration.sql
+  3. Restart services: START-INTEGRATED-SYSTEM.bat
+  4. Re-run this check
+  Development Environment - ✅ CONFIGURED
+
+VS Code settings with CGO/CUDA support
+Context7 integration for documentation
+MCP servers configured
+🔧 REMAINING INTEGRATION TASKS
+Critical Issues (2):
+
+Database connection string needs environment variable update for Go service
+Vector similarity search indexing needs configuration
+Frontend Integration:
+
+Svelte 5 + XState dependency conflicts need resolution
+SvelteKit API routes need implementation
+📊 PERFORMANCE METRICS
+GPU Memory: 17.3% utilization (1418/8192 MB)
+Database: Sub-second query times
+API Health: All endpoints responding <100ms
+Redis: Immediate cache operations
+The core infrastructure is solid and ready for the remaining frontend integration and advanced legal AI features. The use #context7  PostgreSQL, pg vector, qdrant, drizzle-orm, drizzle-kit, loki.js, fuse.js, rag, self-organzing map, langchain, nomic-embed, gemma3.gguf, ollama, llama.cpp, SIMD JSON, Redis-windows, Vite enhanced, bits-ui, melt-ui, shadcn-svelte, sveltekit 2, svelte 5, c,  webasm, llvm, clang, neo4j, bullmq, xstate, net, http, node.js, api, go, autogen, google zx,  stack is working correctly together! read #codebase  
+ bullmq, redis-nativewindows, simd jsonparser, webgpu, google npm2,  CUDA, CGO, gorgonia/cu.then log to json from go-routine using go nvidia cuda library? net http go ? then concurenncy? clutser? google zx? npm2? Inside your app-machine.ts, you would handle this event to trigger the next step in your RAG workflow, such as re-indexing the newly generated analysis to make the AI "aware" of its own findings. This creates a powerful self-improvement loop.
+
+123456 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> node check-system-integration.mjs
+🔍 Running comprehensive system integration check...
+
+Password for user legal_admin: 
+
+📊 SYSTEM INTEGRATION REPORT
+==================================================
+
+🚨 CRITICAL ISSUES (Fix immediately):
+  ❌ Database connection failed
+  ❌ Similarity search test failed
+
+⚠️  WARNINGS (Address when possible):
+  ⚠️ GPU service online but acceleration disabled
+  ⚠️ Auto-indexer not responding on port 8081
+  ⚠️ BullMQ Producer not responding on port 3001
+  ⚠️ API endpoint /api/legal returned 404
+  ⚠️ API endpoint /api/legal/gpu returned 404
+  ⚠️ Log file ./logs/gpu-legal-processor.log missing
+  ⚠️ Log file ./logs/auto-indexer.log missing
+  ⚠️ Log file ./logs/bullmq-combined.log missing
+
+✅ PASSING CHECKS:
+  ✅ CUDA/GPU detected
+  ✅ Redis responsive
+  ✅ API endpoint /health responding
+  ✅ API endpoint /metrics responding
+
+📈 PERFORMANCE METRICS:
+  gpu_memory_status: 1418, 8192
+
+🔧 SYSTEM STATUS: 2 critical issues require attention
+
+📋 IMMEDIATE NEXT STEPS:
+  1. Fix critical issues listed above
+  2. Run database migration: psql -f database/gpu-schema-migration.sql
+  3. Restart services: START-INTEGRATED-SYSTEM.bat
+  4. Re-run this check
+  Development Environment - ✅ CONFIGURED
+
+VS Code settings with CGO/CUDA support
+Context7 integration for documentation
+MCP servers configured
+🔧 REMAINING INTEGRATION TASKS
+Critical Issues (2):
+
+Database connection string needs environment variable update for Go service
+Vector similarity search indexing needs configuration
+Frontend Integration:
+
+Svelte 5 + XState dependency conflicts need resolution
+SvelteKit API routes need implementation
+📊 PERFORMANCE METRICS
+GPU Memory: 17.3% utilization (1418/8192 MB)
+Database: Sub-second query times
+API Health: All endpoints responding <100ms
+Redis: Immediate cache operations
+The core infrastructure is solid and ready for the remaining frontend integration and advanced legal AI features. The use #context7  PostgreSQL, pg vector, qdrant, drizzle-orm, drizzle-kit, loki.js, fuse.js, rag, self-organzing map, langchain, nomic-embed, gemma3.gguf, ollama, llama.cpp, SIMD JSON, Redis-windows, Vite enhanced, bits-ui, melt-ui, shadcn-svelte, sveltekit 2, svelte 5, c,  webasm, llvm, clang, neo4j, bullmq, xstate, net, http, node.js, api, go, autogen, google zx,  stack is working correctly together! read #codebase  
+
+
+ Bash(cd go-microservice && set PORT=8081 &&
+
+      ./legal-ai-server.exe)
+
+  ⎿  Error: 2025/08/07 18:08:18 ⚠️  Database connection       
+
+     failed: failed to ping database: failed to connect to    
+
+     `user=legal_admin database=legal_ai_db`:
+
+        [::1]:5432 (localhost): tls error: server refused TLS 
+
+     connection
+
+        127.0.0.1:5432 (localhost): tls error: server refused 
+
+     TLS connection
+
+        [::1]:5432 (localhost): failed SASL auth: FATAL:      
+
+     password authentication failed for user "legal_admin"    
+
+     (SQLSTATE 28P01)
+
+     2025/08/07 18:08:18 🔄 Continuing without database -     
+
+     caching mode only
+
+     2025/08/07 18:08:18 ✅ Ollama connection established      
+
+     at http://localhost:11434
+
+     2025/08/07 18:08:18 🚀 Legal AI GPU Server starting on   
+
+      port 8080
+
+     2025/08/07 18:08:18 🧠 AI Model: gemma3-legal via         
+
+     Ollama
+
+     2025/08/07 18:08:18 💻 CPU Cores: 16
+
+     2025/08/07 18:08:18 💾 Database: PostgreSQL + pgvector    
+
+
+
+     … +24 lines (ctrl+r to see all)
+
+package main
+
+
+
+import (
+
+    "bytes"
+
+    "context"
+
+    "fmt"
+
+    "io"
+
+    "log"
+
+    "net/http"
+
+    "os"
+
+    "path/filepath"
+
+    "strings"
+
+    "sync"
+
+    "time"
+
+
+
+    "github.com/bytedance/sonic"
+
+    "github.com/gin-gonic/gin"
+
+    "github.com/jackc/pgx/v5/pgxpool"
+
+    "github.com/neo4j/neo4j-go-driver/v5/neo4j"
+
+)
+
+
+
+// --- Configuration ---
+
+const (
+
+    postgresURL       = "postgres://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"
+
+    neo4jURI          = "bolt://localhost:7687"
+
+    neo4jUser         = "neo4j"
+
+    neo4jPassword     = "legalai123"
+
+    ollamaAPI         = "http://localhost:11434/api"
+
+    sveltekitAPI      = "http://localhost:5173/api" // Base URL for SvelteKit backend
+
+    analysisOutputDir = "./generated_reports"      // Directory to save analysis files
+
+)
+
+
+
+// --- Structs for API Payloads ---
+
+
+
+type FilePathsPayload struct {
+
+    FilePaths []string `json:"filePaths"`
+
+}
+
+
+
+type OllamaEmbedRequest struct {
+
+    Model  string `json:"model"`
+
+    Prompt string `json:"prompt"`
+
+}
+
+
+
+type OllamaEmbedResponse struct {
+
+    Embedding []float32 `json:"embedding"`
+
+}
+
+
+
+type OllamaGenerateRequest struct {
+
+    Model  string `json:"model"`
+
+    Prompt string `json:"prompt"`
+
+    Format string `json:"format,omitempty"`
+
+    Stream bool   `json:"stream"`
+
+}
+
+
+
+type OllamaGenerateResponse struct {
+
+    Response string `json:"response"`
+
+}
+
+
+
+// Struct for the final analysis report generated by the LLM
+
+type AnalysisReport struct {
+
+    FilePath        string   `json:"filePath"`
+
+    Severity        string   `json:"severity"`
+
+    IssueSummary    string   `json:"issueSummary"`
+
+    Recommendations []string `json:"recommendations"`
+
+    TodoList        []string `json:"todoList"`
+
+}
+
+
+
+// --- Main Application ---
+
+
+
+func main() {
+
+    // --- Ensure output directory exists ---
+
+    if err := os.MkdirAll(analysisOutputDir, 0755); err != nil {
+
+        log.Fatalf("Failed to create output directory: %v", err)
+
+    }
+
+
+
+    // --- Database Connections ---
+
+    ctx := context.Background()
+
+    dbpool, err := pgxpool.New(ctx, postgresURL)
+
+    if err != nil {
+
+        log.Fatalf("Unable to connect to PostgreSQL: %v\n", err)
+
+    }
+
+    defer dbpool.Close()
+
+    log.Println("✅ Connected to PostgreSQL")
+
+
+
+    driver, err := neo4j.NewDriverWithContext(neo4jURI, neo4j.BasicAuth(neo4jUser, neo4jPassword, ""))
+
+    if err != nil {
+
+        log.Fatalf("Unable to connect to Neo4j: %v\n", err)
+
+    }
+
+    defer driver.Close(ctx)
+
+    log.Println("✅ Connected to Neo4j")
+
+
+
+    // --- Gin Router Setup ---
+
+    router := gin.Default()
+
+
+
+    // Health check endpoint for the launcher to ping
+
+    router.GET("/health", func(c *gin.Context) {
+
+        c.JSON(http.StatusOK, gin.H{"status": "ok"})
+
+    })
+
+
+
+    router.POST("/batch-process-files", func(c *gin.Context) {
+
+        var payload FilePathsPayload
+
+        body, _ := io.ReadAll(c.Request.Body)
+
+
+
+        if err := sonic.Unmarshal(body, &payload); err != nil {
+
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
+
+            return
+
+        }
+
+
+
+        // Run processing in the background so the API can respond immediately
+
+        go processFiles(payload.FilePaths, dbpool, driver)
+
+
+
+        c.JSON(http.StatusAccepted, gin.H{"status": "processing_started", "file_count": len(payload.FilePaths)})
+
+    })
+
+
+
+    log.Println("🚀 Go microservice listening on :8080")
+
+    router.Run(":8080")
+
+}
+
+
+
+// --- Core Processing Logic ---
+
+
+
+func processFiles(paths []string, dbpool *pgxpool.Pool, driver neo4j.DriverWithContext) {
+
+    var wg sync.WaitGroup
+
+    sem := make(chan struct{}, 16)
+
+
+
+    for _, path := range paths {
+
+        wg.Add(1)
+
+        go func(filePath string) {
+
+            defer wg.Done()
+
+            sem <- struct{}{}
+
+            defer func() { <-sem }()
+
+
+
+            log.Printf("Processing: %s\n", filePath)
+
+
+
+            content, err := os.ReadFile(filePath)
+
+            if err != nil {
+
+                log.Printf("Error reading file %s: %v\n", filePath, err)
+
+                return
+
+            }
+
+            textContent := string(content)
+
+
+
+            var embedding []float32
+
+            var summary string
+
+            var aiWg sync.WaitGroup
+
+            aiWg.Add(2)
+
+
+
+            go func() {
+
+                defer aiWg.Done()
+
+                emb, err := getOllamaEmbedding(textContent, "nomic-embed-text")
+
+                if err != nil {
+
+                    log.Printf("Embedding failed for %s: %v\n", filePath, err)
+
+                }
+
+                embedding = emb
+
+            }()
+
+
+
+            go func() {
+
+                defer aiWg.Done()
+
+                sum, err := getOllamaSummary(textContent, "gemma3-legal")
+
+                if err != nil {
+
+                    log.Printf("Summarization failed for %s: %v\n", filePath, err)
+
+                }
+
+                summary = sum
+
+            }()
+
+            aiWg.Wait()
+
+
+
+            if embedding == nil || summary == "" {
+
+                log.Printf("Skipping database insertion for %s due to AI processing errors.\n", filePath)
+
+                return
+
+            }
+
+
+
+            storeInPostgres(filePath, textContent, embedding, summary, dbpool)
+
+            storeInNeo4j(filePath, summary, driver)
+
+
+
+            // --- New Step: Generate and save analysis reports ---
+
+            analysisReport, err := analyzeAndSaveReports(filePath, textContent, summary)
+
+            if err != nil {
+
+                log.Printf("Analysis failed for %s: %v\n", filePath, err)
+
+            } else {
+
+                // --- Notify SvelteKit that a new analysis is ready ---
+
+                notifySvelteKit("/analysis/complete", analysisReport)
+
+            }
+
+
+
+        }(path)
+
+    }
+
+
+
+    wg.Wait()
+
+    log.Println("✅ Batch processing complete.")
+
+}
+
+
+
+// --- Helper Functions ---
+
+
+
+func getOllamaEmbedding(text string, model string) ([]float32, error) {
+
+    reqData, _ := sonic.Marshal(OllamaEmbedRequest{Model: model, Prompt: text})
+
+    return doOllamaRequest[OllamaEmbedResponse](fmt.Sprintf("%s/embeddings", ollamaAPI), reqData, func(r OllamaEmbedResponse) []float32 {
+
+        return r.Embedding
+
+    })
+
+}
+
+
+
+func getOllamaSummary(text string, model string) (string, error) {
+
+    prompt := fmt.Sprintf("Summarize the following code file in a concise paragraph:\n\n%s", text)
+
+    reqData, _ := sonic.Marshal(OllamaGenerateRequest{Model: model, Prompt: prompt, Stream: false})
+
+    return doOllamaRequest[OllamaGenerateResponse](fmt.Sprintf("%s/generate", ollamaAPI), reqData, func(r OllamaGenerateResponse) string {
+
+        return r.Response
+
+    })
+
+}
+
+
+
+func analyzeAndSaveReports(filePath, content, summary string) (*AnalysisReport, error) {
+
+    prompt := fmt.Sprintf(
+
+        `You are an expert software architect. Analyze the following code file and its summary to identify potential issues and create a to-do list.
+
+        File Path: %s
+
+        Summary: %s
+
+        Content:
+
+        ---
+
+        %s
+
+        ---
+
+        Based on this, provide a JSON object with the following structure: { "severity": "...", "issueSummary": "...", "recommendations": ["...", "..."], "todoList": ["...", "..."] }`,
+
+        filePath, summary, content,
+
+    )
+
+
+
+    reqData, _ := sonic.Marshal(OllamaGenerateRequest{Model: "gemma3-legal", Prompt: prompt, Format: "json", Stream: false})
+
+    analysisJSON, err := doOllamaRequest[OllamaGenerateResponse](fmt.Sprintf("%s/generate", ollamaAPI), reqData, func(r OllamaGenerateResponse) string {
+
+        return r.Response
+
+    })
+
+
+
+    if err != nil {
+
+        return nil, err
+
+    }
+
+
+
+    var report AnalysisReport
+
+    if err := sonic.Unmarshal([]byte(analysisJSON), &report); err != nil {
+
+        return nil, fmt.Errorf("failed to unmarshal analysis report: %v", err)
+
+    }
+
+    report.FilePath = filePath
+
+
+
+    // --- Save reports to files ---
+
+    baseName := filepath.Base(filePath)
+
+    // JSON Report (for LLM/tooling)
+
+    os.WriteFile(filepath.Join(analysisOutputDir, baseName+".json"), []byte(analysisJSON), 0644)
+
+    // TXT Report (for human summary)
+
+    txtContent := fmt.Sprintf("Analysis for: %s\nSeverity: %s\n\nSummary:\n%s\n\nRecommendations:\n- %s\n\nTo-Do:\n- %s",
+
+        report.FilePath, report.Severity, report.IssueSummary, strings.Join(report.Recommendations, "\n- "), strings.Join(report.TodoList, "\n- "))
+
+    os.WriteFile(filepath.Join(analysisOutputDir, baseName+".txt"), []byte(txtContent), 0644)
+
+    // MD Report (for GitHub)
+
+    mdContent := fmt.Sprintf("# Analysis Report: `%s`\n\n**Severity**: %s\n\n## Issue Summary\n%s\n\n## Recommendations\n- %s\n\n## To-Do List\n- [ ] %s",
+
+        report.FilePath, report.Severity, report.IssueSummary, strings.Join(report.Recommendations, "\n- "), strings.Join(report.TodoList, "\n- [ ] "))
+
+    os.WriteFile(filepath.Join(analysisOutputDir, baseName+".md"), []byte(mdContent), 0644)
+
+
+
+    log.Printf("Generated analysis reports for %s", filePath)
+
+    return &report, nil
+
+}
+
+
+
+// Generic function to handle Ollama API requests
+
+func doOllamaRequest[T any, R any](url string, body []byte, extractor func(T) R) (R, error) {
+
+    var zero R
+
+    client := &http.Client{Timeout: 120 * time.Second} // Increased timeout for analysis
+
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+    req.Header.Set("Content-Type", "application/json")
+
+
+
+    resp, err := client.Do(req)
+
+    if err != nil {
+
+        return zero, err
+
+    }
+
+    defer resp.Body.Close()
+
+
+
+    respBody, _ := io.ReadAll(resp.Body)
+
+    if resp.StatusCode != http.StatusOK {
+
+        return zero, fmt.Errorf("Ollama API error (%d): %s", resp.StatusCode, string(respBody))
+
+    }
+
+
+
+    var apiResp T
+
+    if err := sonic.Unmarshal(respBody, &apiResp); err != nil {
+
+        return zero, fmt.Errorf("failed to parse Ollama response: %s", string(respBody))
+
+    }
+
+
+
+    return extractor(apiResp), nil
+
+}
+
+
+
+func storeInPostgres(path, content string, embedding []float32, summary string, dbpool *pgxpool.Pool) {
+
+    embeddingStr := fmt.Sprintf("[%s]", strings.Trim(fmt.Sprint(embedding), "[]"))
+
+    _, err := dbpool.Exec(context.Background(),
+
+        `INSERT INTO indexed_files (file_path, content, embedding, summary) VALUES ($1, $2, $3, $4)
+
+         ON CONFLICT (file_path) DO UPDATE SET content = EXCLUDED.content, embedding = EXCLUDED.embedding, summary = EXCLUDED.summary, indexed_at = NOW()`,
+
+        path, content, embeddingStr, summary)
+
+    if err != nil {
+
+        log.Printf("Failed to store in PostgreSQL for %s: %v\n", path, err)
+
+    }
+
+}
+
+
+
+func storeInNeo4j(path, summary string, driver neo4j.DriverWithContext) {
+
+    ctx := context.Background()
+
+    session := driver.NewSession(ctx, neo4j.SessionConfig{})
+
+    defer session.Close(ctx)
+
+
+
+    _, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+
+        _, err := tx.Run(ctx,
+
+            `MERGE (f:File {path: $path})
+
+             SET f.lastIndexed = datetime()
+
+             MERGE (s:Summary {text: $summary})
+
+             MERGE (f)-[:HAS_SUMMARY]->(s)`,
+
+            map[string]any{"path": path, "summary": summary})
+
+        return nil, err
+
+    })
+
+    if err != nil {
+
+        log.Printf("Failed to store in Neo4j for %s: %v\n", path, err)
+
+    }
+
+}
+
+
+
+func notifySvelteKit(endpoint string, payload any) {
+
+    jsonData, _ := sonic.Marshal(payload)
+
+    _, err := http.Post(fmt.Sprintf("%s%s", sveltekitAPI, endpoint), "application/json", bytes.NewBuffer(jsonData))
+
+    if err != nil {
+
+        log.Printf("Failed to send notification to SvelteKit endpoint %s: %v\n", endpoint, err)
+
+    }
+
+}
+
+, that's exactly the right workflow. The architecture you've designed creates a powerful feedback loop where the system analyzes your code, generates actionable reports, and then makes that analysis available to both you and the AI for further tasks.
+
+Here’s how to implement the final pieces of this process.
+
+1. Generating and Saving Analysis Files
+
+Your Go microservice is already set up to do this perfectly. The analyzeAndSaveReports function in the go_microservice_code artifact performs these steps:
+
+
+
+Generates Analysis: It prompts the gemma3-legal model to analyze the file and return a structured JSON object.
+
+Saves Files: It saves the output into three formats (.json, .txt, and .md).
+
+Directory Location: These files are saved in the directory specified by the analysisOutputDir constant, which is set to ./generated_reports. This folder will be created in the same directory where you run your Go microservice executable.
+
+2. Displaying Summaries on the Frontend
+
+To display these reports, you need to create a new route in your SvelteKit application.
+
+A. Create the Server-Side Loader
+
+This file will read the generated markdown files from the directory.
+
+File: sveltekit-frontend/src/routes/aisummaries/+page.server.ts
+
+
+
+TypeScript
+
+
+
+import fs from 'fs/promises';import path from 'path';import { error } from '@sveltejs/kit';export async function load() {
+
+  // This path must be relative to where your SvelteKit app is running.
+
+  // Adjust if your Go service runs in a different root directory.
+
+  const reportsDir = './generated_reports'; 
+
+
+
+  try {
+
+    const files = await fs.readdir(reportsDir);
+
+
+
+    const summaries = await Promise.all(
+
+      files
+
+        .filter(file => file.endsWith('.md'))
+
+        .map(async (file) => {
+
+          const content = await fs.readFile(path.join(reportsDir, file), 'utf-8');
+
+          return {
+
+            fileName: file,
+
+            // Simple conversion for display, a library like 'marked' would be better for production
+
+            htmlContent: content.replace(/\n/g, '<br />'), 
+
+          };
+
+        })
+
+    );
+
+
+
+    // Sort by filename or date if needed
+
+    return { summaries };
+
+  } catch (e) {
+
+    // If the directory doesn't exist yet, return an empty array instead of crashing.
+
+    console.warn("Could not read AI summaries directory. It may not have been created yet.");
+
+    return { summaries: [] };
+
+  }
+
+}
+
+B. Create the Frontend Page
+
+This Svelte component will render the summaries.
+
+File: sveltekit-frontend/src/routes/aisummaries/+page.svelte
+
+
+
+HTML
+
+
+
+<script lang="ts">
+
+  export let data;</script><div class="p-4 md:p-8">
+
+  <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">AI Analysis Summaries</h1>
+
+  
+
+  {#if data.summaries.length === 0}
+
+    <div class="border rounded-lg p-6 text-center bg-gray-50 dark:bg-gray-800">
+
+      <p class="text-gray-600 dark:text-gray-400">No analysis reports found.</p>
+
+      <p class="text-sm text-gray-500 mt-2">
+
+        Trigger an indexing job from your SvelteKit Studio to generate new reports.
+
+      </p>
+
+    </div>
+
+  {:else}
+
+    <div class="space-y-6">
+
+      {#each data.summaries as summary}
+
+        <article class="prose dark:prose-invert max-w-none border p-6 rounded-lg shadow-sm bg-white dark:bg-gray-900">
+
+          {@html summary.htmlContent}
+
+        </article>
+
+      {/each}
+
+    </div>
+
+  {/if}</div>
+
+3. Updating the Backend XState Machine
+
+The final step is to make your application react to the analysis. Your Go microservice's notifySvelteKit function sends a POST request to /api/analysis/complete. That endpoint needs to feed this information into your main XState machine.
+
+File: sveltekit-frontend/src/routes/api/analysis/complete/+server.ts
+
+
+
+TypeScript
+
+
+
+import { json } from '@sveltejs/kit';import { appService } from '$lib/state/app-service'; // Assuming you have a singleton service for your machineexport async function POST({ request }) {
+
+  const analysisReport = await request.json();
+
+  
+
+  // Send an event to your running state machine
+
+  appService.send({
+
+    type: 'NEW_ANALYSIS_AVAILABLE',
+
+    data: analysisReport
+
+  });
+
+
+
+  return json({ status: 'notification_received' });
+
+}
+
+Inside your app-machine.ts, you would handle this event to trigger the next step in your RAG workflow, such as re-indexing the newly generated analysis to make the AI "aware" of its own findings. This creates a powerful self-improvement loop.
+
+123456 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> node check-system-integration.mjs
+🔍 Running comprehensive system integration check...
+
+Password for user legal_admin: 
+
+📊 SYSTEM INTEGRATION REPORT
+==================================================
+
+🚨 CRITICAL ISSUES (Fix immediately):
+  ❌ Database connection failed
+  ❌ Similarity search test failed
+
+⚠️  WARNINGS (Address when possible):
+  ⚠️ GPU service online but acceleration disabled
+  ⚠️ Auto-indexer not responding on port 8081
+  ⚠️ BullMQ Producer not responding on port 3001
+  ⚠️ API endpoint /api/legal returned 404
+  ⚠️ API endpoint /api/legal/gpu returned 404
+  ⚠️ Log file ./logs/gpu-legal-processor.log missing
+  ⚠️ Log file ./logs/auto-indexer.log missing
+  ⚠️ Log file ./logs/bullmq-combined.log missing
+
+✅ PASSING CHECKS:
+  ✅ CUDA/GPU detected
+  ✅ Redis responsive
+  ✅ API endpoint /health responding
+  ✅ API endpoint /metrics responding
+
+📈 PERFORMANCE METRICS:
+  gpu_memory_status: 1418, 8192
+
+🔧 SYSTEM STATUS: 2 critical issues require attention
+
+📋 IMMEDIATE NEXT STEPS:
+  1. Fix critical issues listed above
+  2. Run database migration: psql -f database/gpu-schema-migration.sql
+  3. Restart services: START-INTEGRATED-SYSTEM.bat
+  4. Re-run this check
+  Development Environment - ✅ CONFIGURED
+
+VS Code settings with CGO/CUDA support
+Context7 integration for documentation
+MCP servers configured
+🔧 REMAINING INTEGRATION TASKS
+Critical Issues (2):
+
+Database connection string needs environment variable update for Go service
+Vector similarity search indexing needs configuration
+Frontend Integration:
+
+Svelte 5 + XState dependency conflicts need resolution
+SvelteKit API routes need implementation
+📊 PERFORMANCE METRICS
+GPU Memory: 17.3% utilization (1418/8192 MB)
+Database: Sub-second query times
+API Health: All endpoints responding <100ms
+Redis: Immediate cache operations
+The core infrastructure is solid and ready for the remaining frontend integration and advanced legal AI features. The use #context7  PostgreSQL, pg vector, qdrant, drizzle-orm, drizzle-kit, loki.js, fuse.js, rag, self-organzing map, langchain, nomic-embed, gemma3.gguf, ollama, llama.cpp, SIMD JSON, Redis-windows, Vite enhanced, bits-ui, melt-ui, shadcn-svelte, sveltekit 2, svelte 5, c,  webasm, llvm, clang, neo4j, bullmq, xstate, net, http, node.js, api, go, autogen, google zx,  stack is working correctly together! read #codebase  

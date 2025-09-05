@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2025-09-02T22:01:36.356Z",
+  "totalVectors": 156037,
+  "vectorDim": 64,
+  "files": [
+    "go.jsonl",
+    "md.jsonl",
+    "svelte.jsonl",
+    "ts.jsonl"
+  ],
+  "checksum": {
+    "algorithm": "sha256",
+    "value": "aaf93ea01479e70694d10102597af97c1adadda4afd77b5da994ff9932cb3a2f"
+  },
+  "sizeBytes": 216109406
+}

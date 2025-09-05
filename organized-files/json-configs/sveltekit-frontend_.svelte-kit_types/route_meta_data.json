@@ -1,0 +1,1416 @@
+{
+	"/": [
+		"src/routes/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/admin/cluster": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/admin/gpu-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/admin/users": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai-assistant": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai-summary": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/aiassistant": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai/enhanced-mcp": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ai/orchestrator": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/all-routes": [
+		"src/routes/all-routes/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/api/activities": [
+		"src/routes/api/activities/+server.ts"
+	],
+	"/api/activities/[activityId]": [
+		"src/routes/api/activities/[activityId]/+server.ts"
+	],
+	"/api/admin/cluster/events": [
+		"src/routes/api/admin/cluster/events/+server.ts"
+	],
+	"/api/admin/cluster/restart": [
+		"src/routes/api/admin/cluster/restart/+server.ts"
+	],
+	"/api/admin/cluster/scale": [
+		"src/routes/api/admin/cluster/scale/+server.ts"
+	],
+	"/api/admin/cluster/status": [
+		"src/routes/api/admin/cluster/status/+server.ts"
+	],
+	"/api/admin/health": [
+		"src/routes/api/admin/health/+server.ts"
+	],
+	"/api/agent-logs": [
+		"src/routes/api/agent-logs/+server.ts"
+	],
+	"/api/agent-orchestrate": [
+		"src/routes/api/agent-orchestrate/+server.ts"
+	],
+	"/api/ai-boilerplate": [
+		"src/routes/api/ai-boilerplate/+server.ts"
+	],
+	"/api/ai/analyze-evidence": [
+		"src/routes/api/ai/analyze-evidence/+server.ts"
+	],
+	"/api/ai/analyze": [
+		"src/routes/api/ai/analyze/+server.ts"
+	],
+	"/api/ai/ask": [
+		"src/routes/api/ai/ask/+server.ts"
+	],
+	"/api/ai/case-scoring": [
+		"src/routes/api/ai/case-scoring/+server.ts"
+	],
+	"/api/ai/chat-mock": [
+		"src/routes/api/ai/chat-mock/+server.ts"
+	],
+	"/api/ai/chat": [
+		"src/routes/api/ai/chat/+server.ts"
+	],
+	"/api/ai/connect-mock": [
+		"src/routes/api/ai/connect-mock/+server.ts"
+	],
+	"/api/ai/connect": [
+		"src/routes/api/ai/connect/+server.ts"
+	],
+	"/api/ai/context": [
+		"src/routes/api/ai/context/+server.ts"
+	],
+	"/api/ai/conversation/save": [
+		"src/routes/api/ai/conversation/save/+server.ts"
+	],
+	"/api/ai/conversation/[conversationId]": [
+		"src/routes/api/ai/conversation/[conversationId]/+server.ts"
+	],
+	"/api/ai/decode": [
+		"src/routes/api/ai/decode/+server.ts"
+	],
+	"/api/ai/embeddings": [
+		"src/routes/api/ai/embeddings/+server.ts"
+	],
+	"/api/ai/embedding": [
+		"src/routes/api/ai/embedding/+server.ts"
+	],
+	"/api/ai/embed": [
+		"src/routes/api/ai/embed/+server.ts"
+	],
+	"/api/ai/encode": [
+		"src/routes/api/ai/encode/+server.ts"
+	],
+	"/api/ai/enhanced-legal-search": [
+		"src/routes/api/ai/enhanced-legal-search/+server.ts"
+	],
+	"/api/ai/enhanced-microservice": [
+		"src/routes/api/ai/enhanced-microservice/+server.ts"
+	],
+	"/api/ai/evidence-search": [
+		"src/routes/api/ai/evidence-search/+server.ts"
+	],
+	"/api/ai/find": [
+		"src/routes/api/ai/find/+server.ts"
+	],
+	"/api/ai/generate-report": [
+		"src/routes/api/ai/generate-report/+server.ts"
+	],
+	"/api/ai/generate": [
+		"src/routes/api/ai/generate/+server.ts"
+	],
+	"/api/ai/gpu": [
+		"src/routes/api/ai/gpu/+server.ts"
+	],
+	"/api/ai/health-mock": [
+		"src/routes/api/ai/health-mock/+server.ts"
+	],
+	"/api/ai/health": [
+		"src/routes/api/ai/health/+server.ts"
+	],
+	"/api/ai/health/cloud": [
+		"src/routes/api/ai/health/cloud/+server.ts"
+	],
+	"/api/ai/health/local-fixed": [
+		"src/routes/api/ai/health/local-fixed/+server.ts"
+	],
+	"/api/ai/health/local": [
+		"src/routes/api/ai/health/local/+server.ts"
+	],
+	"/api/ai/history": [
+		"src/routes/api/ai/history/+server.ts"
+	],
+	"/api/ai/inference-pipeline": [
+		"src/routes/api/ai/inference-pipeline/+server.ts"
+	],
+	"/api/ai/ingest": [
+		"src/routes/api/ai/ingest/+server.ts"
+	],
+	"/api/ai/legal-bert": [
+		"src/routes/api/ai/legal-bert/+server.ts"
+	],
+	"/api/ai/legal-search": [
+		"src/routes/api/ai/legal-search/+server.ts"
+	],
+	"/api/ai/legal/analyze": [
+		"src/routes/api/ai/legal/analyze/+server.ts"
+	],
+	"/api/ai/load-model": [
+		"src/routes/api/ai/load-model/+server.ts"
+	],
+	"/api/ai/multi-agent": [
+		"src/routes/api/ai/multi-agent/+server.ts"
+	],
+	"/api/ai/ollama-gemma3": [
+		"src/routes/api/ai/ollama-gemma3/+server.ts"
+	],
+	"/api/ai/process-document": [
+		"src/routes/api/ai/process-document/+server.ts"
+	],
+	"/api/ai/process-enhanced": [
+		"src/routes/api/ai/process-enhanced/+server.ts"
+	],
+	"/api/ai/prompt": [
+		"src/routes/api/ai/prompt/+server.ts"
+	],
+	"/api/ai/query": [
+		"src/routes/api/ai/query/+server.ts"
+	],
+	"/api/ai/rl-rag": [
+		"src/routes/api/ai/rl-rag/+server.ts"
+	],
+	"/api/ai/search": [
+		"src/routes/api/ai/search/+server.ts"
+	],
+	"/api/ai/status": [
+		"src/routes/api/ai/status/+server.ts"
+	],
+	"/api/ai/suggestions": [
+		"src/routes/api/ai/suggestions/+server.ts"
+	],
+	"/api/ai/suggest": [
+		"src/routes/api/ai/suggest/+server.ts"
+	],
+	"/api/ai/summarize": [
+		"src/routes/api/ai/summarize/+server.ts"
+	],
+	"/api/ai/summarize/stream": [
+		"src/routes/api/ai/summarize/stream/+server.ts"
+	],
+	"/api/ai/tag": [
+		"src/routes/api/ai/tag/+server.ts"
+	],
+	"/api/ai/test-gemma3": [
+		"src/routes/api/ai/test-gemma3/+server.ts"
+	],
+	"/api/ai/test-ollama": [
+		"src/routes/api/ai/test-ollama/+server.ts"
+	],
+	"/api/ai/upload-auto-tag": [
+		"src/routes/api/ai/upload-auto-tag/+server.ts"
+	],
+	"/api/ai/vector-search": [
+		"src/routes/api/ai/vector-search/+server.ts"
+	],
+	"/api/ai/vector-search/index": [
+		"src/routes/api/ai/vector-search/index/+server.ts"
+	],
+	"/api/ai/voice": [
+		"src/routes/api/ai/voice/+server.ts"
+	],
+	"/api/analytics": [
+		"src/routes/api/analytics/+server.ts"
+	],
+	"/api/analyze": [
+		"src/routes/api/analyze/+server.ts"
+	],
+	"/api/audit/semantic": [
+		"src/routes/api/audit/semantic/+server.ts"
+	],
+	"/api/auth/debug": [
+		"src/routes/api/auth/debug/+server.ts"
+	],
+	"/api/auth/health": [
+		"src/routes/api/auth/health/+server.ts"
+	],
+	"/api/auth/login": [
+		"src/routes/api/auth/login/+server.ts"
+	],
+	"/api/auth/logout": [
+		"src/routes/api/auth/logout/+server.ts"
+	],
+	"/api/auth/me": [
+		"src/routes/api/auth/me/+server.ts"
+	],
+	"/api/auth/register": [
+		"src/routes/api/auth/register/+server.ts"
+	],
+	"/api/autocomplete": [
+		"src/routes/api/autocomplete/+server.ts"
+	],
+	"/api/cache": [
+		"src/routes/api/cache/+server.ts"
+	],
+	"/api/canvas-states": [
+		"src/routes/api/canvas-states/+server.ts"
+	],
+	"/api/canvas": [
+		"src/routes/api/canvas/+server.ts"
+	],
+	"/api/canvas/save": [
+		"src/routes/api/canvas/save/+server.ts"
+	],
+	"/api/cases": [
+		"src/routes/api/cases/+server.ts"
+	],
+	"/api/cases/recent": [
+		"src/routes/api/cases/recent/+server.ts"
+	],
+	"/api/cases/suggest-title": [
+		"src/routes/api/cases/suggest-title/+server.ts"
+	],
+	"/api/cases/summary": [
+		"src/routes/api/cases/summary/+server.ts"
+	],
+	"/api/cases/[caseId]": [
+		"src/routes/api/cases/[caseId]/+server.ts"
+	],
+	"/api/cases/[caseId]/analysis": [
+		"src/routes/api/cases/[caseId]/analysis/+server.ts"
+	],
+	"/api/cases/[caseId]/canvas": [
+		"src/routes/api/cases/[caseId]/canvas/+server.ts"
+	],
+	"/api/cases/[caseId]/deep-analysis": [
+		"src/routes/api/cases/[caseId]/deep-analysis/+server.ts"
+	],
+	"/api/cases/[id]/generate-report": [
+		"src/routes/api/cases/[id]/generate-report/+server.ts"
+	],
+	"/api/cases/[caseId]/pois": [
+		"src/routes/api/cases/[caseId]/pois/+server.ts"
+	],
+	"/api/cases/[caseId]/recommendations": [
+		"src/routes/api/cases/[caseId]/recommendations/+server.ts"
+	],
+	"/api/chat": [
+		"src/routes/api/chat/+server.ts"
+	],
+	"/api/chat/save": [
+		"src/routes/api/chat/save/+server.ts"
+	],
+	"/api/chat/session": [
+		"src/routes/api/chat/session/+server.ts"
+	],
+	"/api/citation-points": [
+		"src/routes/api/citation-points/+server.ts"
+	],
+	"/api/citations": [
+		"src/routes/api/citations/+server.ts"
+	],
+	"/api/clustering/kmeans/cluster": [
+		"src/routes/api/clustering/kmeans/cluster/+server.ts"
+	],
+	"/api/clustering/som-kmeans": [
+		"src/routes/api/clustering/som-kmeans/+server.ts"
+	],
+	"/api/clustering/som/train": [
+		"src/routes/api/clustering/som/train/+server.ts"
+	],
+	"/api/cluster": [
+		"src/routes/api/cluster/+server.ts"
+	],
+	"/api/convert/to-json": [
+		"src/routes/api/convert/to-json/+server.ts"
+	],
+	"/api/copilot/optimize": [
+		"src/routes/api/copilot/optimize/+server.ts"
+	],
+	"/api/copilot/self-prompt": [
+		"src/routes/api/copilot/self-prompt/+server.ts"
+	],
+	"/api/crewai/review": [
+		"src/routes/api/crewai/review/+server.ts"
+	],
+	"/api/criminals": [
+		"src/routes/api/criminals/+server.ts"
+	],
+	"/api/criminals/[criminalId]": [
+		"src/routes/api/criminals/[criminalId]/+server.ts"
+	],
+	"/api/dashboard/stats": [
+		"src/routes/api/dashboard/stats/+server.ts"
+	],
+	"/api/database/health": [
+		"src/routes/api/database/health/+server.ts"
+	],
+	"/api/debug-users": [
+		"src/routes/api/debug-users/+server.ts"
+	],
+	"/api/debug/db": [
+		"src/routes/api/debug/db/+server.ts"
+	],
+	"/api/debug/logs": [
+		"src/routes/api/debug/logs/+server.ts"
+	],
+	"/api/debug/session": [
+		"src/routes/api/debug/session/+server.ts"
+	],
+	"/api/dev-auth": [
+		"src/routes/api/dev-auth/+server.ts"
+	],
+	"/api/dev-auth/diagnostics": [
+		"src/routes/api/dev-auth/diagnostics/+server.ts"
+	],
+	"/api/documents": [
+		"src/routes/api/documents/+server.ts"
+	],
+	"/api/documents/templates": [
+		"src/routes/api/documents/templates/+server.ts"
+	],
+	"/api/documents/update-loop": [
+		"src/routes/api/documents/update-loop/+server.ts"
+	],
+	"/api/documents/upload-embed": [
+		"src/routes/api/documents/upload-embed/+server.ts"
+	],
+	"/api/documents/upload": [
+		"src/routes/api/documents/upload/+server.ts"
+	],
+	"/api/documents/[id]": [
+		"src/routes/api/documents/[id]/+server.ts"
+	],
+	"/api/documents/[id]/auto-save": [
+		"src/routes/api/documents/[id]/auto-save/+server.ts"
+	],
+	"/api/embeddings": [
+		"src/routes/api/embeddings/+server.ts"
+	],
+	"/api/embeddings/generate": [
+		"src/routes/api/embeddings/generate/+server.ts"
+	],
+	"/api/embeddings/hybrid": [
+		"src/routes/api/embeddings/hybrid/+server.ts"
+	],
+	"/api/embed": [
+		"src/routes/api/embed/+server.ts"
+	],
+	"/api/enhanced-cache": [
+		"src/routes/api/enhanced-cache/+server.ts"
+	],
+	"/api/enhanced-rag": [
+		"src/routes/api/enhanced-rag/+server.ts"
+	],
+	"/api/enhanced-rag/query": [
+		"src/routes/api/enhanced-rag/query/+server.ts"
+	],
+	"/api/evaluation": [
+		"src/routes/api/evaluation/+server.ts"
+	],
+	"/api/evidence-enhancement": [
+		"src/routes/api/evidence-enhancement/+server.ts"
+	],
+	"/api/evidence-files": [
+		"src/routes/api/evidence-files/+server.ts"
+	],
+	"/api/evidence": [
+		"src/routes/api/evidence/+server.ts"
+	],
+	"/api/evidence/analyze": [
+		"src/routes/api/evidence/analyze/+server.ts"
+	],
+	"/api/evidence/hash": [
+		"src/routes/api/evidence/hash/+server.ts"
+	],
+	"/api/evidence/hash/bulk": [
+		"src/routes/api/evidence/hash/bulk/+server.ts"
+	],
+	"/api/evidence/hash/history": [
+		"src/routes/api/evidence/hash/history/+server.ts"
+	],
+	"/api/evidence/save-node": [
+		"src/routes/api/evidence/save-node/+server.ts"
+	],
+	"/api/evidence/synthesize": [
+		"src/routes/api/evidence/synthesize/+server.ts"
+	],
+	"/api/evidence/upload": [
+		"src/routes/api/evidence/upload/+server.ts"
+	],
+	"/api/evidence/validate": [
+		"src/routes/api/evidence/validate/+server.ts"
+	],
+	"/api/evidence/[evidenceId]": [
+		"src/routes/api/evidence/[evidenceId]/+server.ts"
+	],
+	"/api/export": [
+		"src/routes/api/export/+server.ts"
+	],
+	"/api/fix-schema": [
+		"src/routes/api/fix-schema/+server.ts"
+	],
+	"/api/gpu-status": [
+		"src/routes/api/gpu-status/+server.ts"
+	],
+	"/api/gpu": [
+		"src/routes/api/gpu/+server.ts"
+	],
+	"/api/gpu/batch": [
+		"src/routes/api/gpu/batch/+server.ts"
+	],
+	"/api/gpu/cuda-status": [
+		"src/routes/api/gpu/cuda-status/+server.ts"
+	],
+	"/api/gpu/devices": [
+		"src/routes/api/gpu/devices/+server.ts"
+	],
+	"/api/gpu/health": [
+		"src/routes/api/gpu/health/+server.ts"
+	],
+	"/api/gpu/memory-status": [
+		"src/routes/api/gpu/memory-status/+server.ts"
+	],
+	"/api/gpu/temperature": [
+		"src/routes/api/gpu/temperature/+server.ts"
+	],
+	"/api/gpu/validate-setup": [
+		"src/routes/api/gpu/validate-setup/+server.ts"
+	],
+	"/api/graphql": [
+		"src/routes/api/graphql/+server.ts"
+	],
+	"/api/graph/plan": [
+		"src/routes/api/graph/plan/+server.ts"
+	],
+	"/api/health-check": [
+		"src/routes/api/health-check/+server.ts"
+	],
+	"/api/health": [
+		"src/routes/api/health/+server.ts"
+	],
+	"/api/import": [
+		"src/routes/api/import/+server.ts"
+	],
+	"/api/indexing/start": [
+		"src/routes/api/indexing/start/+server.ts"
+	],
+	"/api/indexing/store": [
+		"src/routes/api/indexing/store/+server.ts"
+	],
+	"/api/internal/metrics": [
+		"src/routes/api/internal/metrics/+server.ts"
+	],
+	"/api/jobs": [
+		"src/routes/api/jobs/+server.ts"
+	],
+	"/api/jobs/stream": [
+		"src/routes/api/jobs/stream/+server.ts"
+	],
+	"/api/laws/search": [
+		"src/routes/api/laws/search/+server.ts"
+	],
+	"/api/legal-ai/process-document": [
+		"src/routes/api/legal-ai/process-document/+server.ts"
+	],
+	"/api/legal": [
+		"src/routes/api/legal/+server.ts"
+	],
+	"/api/legal/analyze": [
+		"src/routes/api/legal/analyze/+server.ts"
+	],
+	"/api/legal/chat": [
+		"src/routes/api/legal/chat/+server.ts"
+	],
+	"/api/legal/documents": [
+		"src/routes/api/legal/documents/+server.ts"
+	],
+	"/api/legal/documents/[id]": [
+		"src/routes/api/legal/documents/[id]/+server.ts"
+	],
+	"/api/legal/gpu": [
+		"src/routes/api/legal/gpu/+server.ts"
+	],
+	"/api/legal/ingest": [
+		"src/routes/api/legal/ingest/+server.ts"
+	],
+	"/api/legal/precedents": [
+		"src/routes/api/legal/precedents/+server.ts"
+	],
+	"/api/legal/vector-search": [
+		"src/routes/api/legal/vector-search/+server.ts"
+	],
+	"/api/libraries": [
+		"src/routes/api/libraries/+server.ts"
+	],
+	"/api/llm/chat": [
+		"src/routes/api/llm/chat/+server.ts"
+	],
+	"/api/log": [
+		"src/routes/api/log/+server.ts"
+	],
+	"/api/mcp/status": [
+		"src/routes/api/mcp/status/+server.ts"
+	],
+	"/api/memory/neural": [
+		"src/routes/api/memory/neural/+server.ts"
+	],
+	"/api/metrics/gpu": [
+		"src/routes/api/metrics/gpu/+server.ts"
+	],
+	"/api/metrics/gpu/summary": [
+		"src/routes/api/metrics/gpu/summary/+server.ts"
+	],
+	"/api/multi-agent/analyze": [
+		"src/routes/api/multi-agent/analyze/+server.ts"
+	],
+	"/api/ocr/extract": [
+		"src/routes/api/ocr/extract/+server.ts"
+	],
+	"/api/ocr/status": [
+		"src/routes/api/ocr/status/+server.ts"
+	],
+	"/api/ollama/comprehensive-summary": [
+		"src/routes/api/ollama/comprehensive-summary/+server.ts"
+	],
+	"/api/ollama/gpu-config": [
+		"src/routes/api/ollama/gpu-config/+server.ts"
+	],
+	"/api/ollama/gpu-status": [
+		"src/routes/api/ollama/gpu-status/+server.ts"
+	],
+	"/api/ollama/pull": [
+		"src/routes/api/ollama/pull/+server.ts"
+	],
+	"/api/orchestrator": [
+		"src/routes/api/orchestrator/+server.ts"
+	],
+	"/api/perf": [
+		"src/routes/api/perf/+server.ts"
+	],
+	"/api/pgai/summarize": [
+		"src/routes/api/pgai/summarize/+server.ts"
+	],
+	"/api/phase13/integration": [
+		"src/routes/api/phase13/integration/+server.ts"
+	],
+	"/api/phase14/engine": [
+		"src/routes/api/phase14/engine/+server.ts"
+	],
+	"/api/phase14/queue": [
+		"src/routes/api/phase14/queue/+server.ts"
+	],
+	"/api/phase14/workers": [
+		"src/routes/api/phase14/workers/+server.ts"
+	],
+	"/api/pois/[id]": [
+		"src/routes/api/pois/[id]/+server.ts"
+	],
+	"/api/precedents/summary": [
+		"src/routes/api/precedents/summary/+server.ts"
+	],
+	"/api/process-legal-document": [
+		"src/routes/api/process-legal-document/+server.ts"
+	],
+	"/api/process": [
+		"src/routes/api/process/+server.ts"
+	],
+	"/api/qdrant": [
+		"src/routes/api/qdrant/+server.ts"
+	],
+	"/api/qdrant/tag": [
+		"src/routes/api/qdrant/tag/+server.ts"
+	],
+	"/api/queue/status": [
+		"src/routes/api/queue/status/+server.ts"
+	],
+	"/api/rag": [
+		"src/routes/api/rag/+server.ts"
+	],
+	"/api/rag/enhanced-process": [
+		"src/routes/api/rag/enhanced-process/+server.ts"
+	],
+	"/api/rag/self_prompt": [
+		"src/routes/api/rag/self_prompt/+server.ts"
+	],
+	"/api/realtime": [
+		"src/routes/api/realtime/+server.ts"
+	],
+	"/api/recommendations": [
+		"src/routes/api/recommendations/+server.ts"
+	],
+	"/api/reports": [
+		"src/routes/api/reports/+server.ts"
+	],
+	"/api/reports/save": [
+		"src/routes/api/reports/save/+server.ts"
+	],
+	"/api/reports/[reportId]": [
+		"src/routes/api/reports/[reportId]/+server.ts"
+	],
+	"/api/reports/[reportId]/export/pdf": [
+		"src/routes/api/reports/[reportId]/export/pdf/+server.ts"
+	],
+	"/api/search-similarity": [
+		"src/routes/api/search-similarity/+server.ts"
+	],
+	"/api/search": [
+		"src/routes/api/search/+server.ts"
+	],
+	"/api/search/advanced": [
+		"src/routes/api/search/advanced/+server.ts"
+	],
+	"/api/search/cases": [
+		"src/routes/api/search/cases/+server.ts"
+	],
+	"/api/search/evidence": [
+		"src/routes/api/search/evidence/+server.ts"
+	],
+	"/api/search/semantic": [
+		"src/routes/api/search/semantic/+server.ts"
+	],
+	"/api/search/vector": [
+		"src/routes/api/search/vector/+server.ts"
+	],
+	"/api/security/validate": [
+		"src/routes/api/security/validate/+server.ts"
+	],
+	"/api/semantic-search": [
+		"src/routes/api/semantic-search/+server.ts"
+	],
+	"/api/simd": [
+		"src/routes/api/simd/+server.ts"
+	],
+	"/api/simd/test": [
+		"src/routes/api/simd/test/+server.ts"
+	],
+	"/api/sse/updates": [
+		"src/routes/api/sse/updates/+server.ts"
+	],
+	"/api/statutes": [
+		"src/routes/api/statutes/+server.ts"
+	],
+	"/api/storage/minio-test": [
+		"src/routes/api/storage/minio-test/+server.ts"
+	],
+	"/api/suggest/did-you-mean": [
+		"src/routes/api/suggest/did-you-mean/+server.ts"
+	],
+	"/api/summaries": [
+		"src/routes/api/summaries/+server.ts"
+	],
+	"/api/system/check": [
+		"src/routes/api/system/check/+server.ts"
+	],
+	"/api/system/metrics": [
+		"src/routes/api/system/metrics/+server.ts"
+	],
+	"/api/tasks/enqueue": [
+		"src/routes/api/tasks/enqueue/+server.ts"
+	],
+	"/api/test-ai-integration": [
+		"src/routes/api/test-ai-integration/+server.ts"
+	],
+	"/api/test-crud": [
+		"src/routes/api/test-crud/+server.ts"
+	],
+	"/api/test-login": [
+		"src/routes/api/test-login/+server.ts"
+	],
+	"/api/test-mcp": [
+		"src/routes/api/test-mcp/+server.ts"
+	],
+	"/api/test-performance": [
+		"src/routes/api/test-performance/+server.ts"
+	],
+	"/api/test-simple": [
+		"src/routes/api/test-simple/+server.ts"
+	],
+	"/api/test-update-loop": [
+		"src/routes/api/test-update-loop/+server.ts"
+	],
+	"/api/test-vector-pipeline": [
+		"src/routes/api/test-vector-pipeline/+server.ts"
+	],
+	"/api/testing/generate-playwright": [
+		"src/routes/api/testing/generate-playwright/+server.ts"
+	],
+	"/api/test": [
+		"src/routes/api/test/+server.ts"
+	],
+	"/api/text-to-voice": [
+		"src/routes/api/text-to-voice/+server.ts"
+	],
+	"/api/updates": [
+		"src/routes/api/updates/+server.ts"
+	],
+	"/api/upload": [
+		"src/routes/api/upload/+server.ts"
+	],
+	"/api/upload/chunk": [
+		"src/routes/api/upload/chunk/+server.ts"
+	],
+	"/api/upload/finalize": [
+		"src/routes/api/upload/finalize/+server.ts"
+	],
+	"/api/upload/presign": [
+		"src/routes/api/upload/presign/+server.ts"
+	],
+	"/api/users": [
+		"src/routes/api/users/+server.ts"
+	],
+	"/api/users/create": [
+		"src/routes/api/users/create/+server.ts"
+	],
+	"/api/users/[userId]": [
+		"src/routes/api/users/[userId]/+server.ts"
+	],
+	"/api/user/avatar/upload": [
+		"src/routes/api/user/avatar/upload/+server.ts"
+	],
+	"/api/user/profile": [
+		"src/routes/api/user/profile/+server.ts"
+	],
+	"/api/v1": [
+		"src/routes/api/v1/+server.ts"
+	],
+	"/api/v1/crud": [
+		"src/routes/api/v1/crud/+server.ts"
+	],
+	"/api/v1/ingest/batch": [
+		"src/routes/api/v1/ingest/batch/+server.ts"
+	],
+	"/api/v1/minio/upload": [
+		"src/routes/api/v1/minio/upload/+server.ts"
+	],
+	"/api/v1/multi-protocol": [
+		"src/routes/api/v1/multi-protocol/+server.ts"
+	],
+	"/api/v1/nlp/metrics": [
+		"src/routes/api/v1/nlp/metrics/+server.ts"
+	],
+	"/api/v1/quic": [
+		"src/routes/api/v1/quic/+server.ts"
+	],
+	"/api/v1/quic/push": [
+		"src/routes/api/v1/quic/push/+server.ts"
+	],
+	"/api/v1/quic/tensor": [
+		"src/routes/api/v1/quic/tensor/+server.ts"
+	],
+	"/api/v1/rag/enhanced": [
+		"src/routes/api/v1/rag/enhanced/+server.ts"
+	],
+	"/api/v1/redis/metrics": [
+		"src/routes/api/v1/redis/metrics/+server.ts"
+	],
+	"/api/v1/vector": [
+		"src/routes/api/v1/vector/+server.ts"
+	],
+	"/api/v1/vector/health": [
+		"src/routes/api/v1/vector/health/+server.ts"
+	],
+	"/api/v1/vector/search": [
+		"src/routes/api/v1/vector/search/+server.ts"
+	],
+	"/api/v1/vector/similar-cases": [
+		"src/routes/api/v1/vector/similar-cases/+server.ts"
+	],
+	"/api/vector-search": [
+		"src/routes/api/vector-search/+server.ts"
+	],
+	"/api/vector": [
+		"src/routes/api/vector/+server.ts"
+	],
+	"/api/vector/analyze": [
+		"src/routes/api/vector/analyze/+server.ts"
+	],
+	"/api/vector/recommendations": [
+		"src/routes/api/vector/recommendations/+server.ts"
+	],
+	"/api/vector/search": [
+		"src/routes/api/vector/search/+server.ts"
+	],
+	"/api/vector/search/enhanced": [
+		"src/routes/api/vector/search/enhanced/+server.ts"
+	],
+	"/api/voice-to-text": [
+		"src/routes/api/voice-to-text/+server.ts"
+	],
+	"/api/websocket": [
+		"src/routes/api/websocket/+server.ts"
+	],
+	"/api/workers": [
+		"src/routes/api/workers/+server.ts"
+	],
+	"/api/workers/jobs": [
+		"src/routes/api/workers/jobs/+server.ts"
+	],
+	"/api/workers/jobs/clean-server": [
+		"src/routes/api/workers/jobs/clean-server/+server.ts"
+	],
+	"/api/ws": [
+		"src/routes/api/ws/+server.ts"
+	],
+	"/bits-uno-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases": [
+		"src/routes/cases/+page.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/create": [
+		"src/routes/cases/create/+page.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/new": [
+		"src/routes/cases/new/+page.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/[id]": [
+		"src/routes/cases/[id]/+page.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/[id]/canvas": [
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/[id]/enhanced": [
+		"src/routes/cases/[id]/enhanced/+page.server.ts",
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/cases/[caseId]/rag": [
+		"src/routes/cases/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/chat": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/compiler-ai-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/context7-demo.disabled": [
+		"src/routes/context7-demo.disabled/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/context7-demo": [
+		"src/routes/context7-demo/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/copilot/autonomous": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/crud-dashboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dashboard": [
+		"src/routes/dashboard/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-assistant": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-complete-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-dashboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-integration": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-pipeline": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-summary": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/ai-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/bvector-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/component-gallery": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/cyber-elephant": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/document-ai": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/full-stack-integration": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/gpu-legal-ai": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/gpu-legal-ai/lawpdfs": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/hybrid-cache-architecture": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/inline-suggestions": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/legal-ai-complete": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/live-agents": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/nes-yorha-hybrid": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/neural-sprite-engine": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/notes": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/phase5": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/professional-editor": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/quic-tensor": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/rag-integration": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/simple-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/system-summary": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/unified-architecture": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/unified-inference": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/unocss-svelte5": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/vector-intelligence": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/vector-pipeline": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/vector-search": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/webgpu-ranking-cache": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/demo/yorha-tables": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/detective": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/detective/canvas": [
+		"src/routes/detective/canvas/+page.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/ai-setup": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/cache-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/context7-test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/copilot-optimizer": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/enhanced-processor": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/mcp-tools": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/self-prompting-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/suggestions": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/vector-search-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/dev/vite-error-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/document-editor-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/editor": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/enhanced-ai-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/enhanced": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence-editor": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidenceboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence": [
+		"src/routes/evidence/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/evidence/+server.ts"
+	],
+	"/evidence/analyze": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence/files": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence/hash": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence/manage": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence/realtime": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/evidence/upload": [
+		"src/routes/evidence/upload/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/export": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/frameworks-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/gaming-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/golden-ratio-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/help": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/import": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/interactive-canvas": [
+		"src/routes/interactive-canvas/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/laws": [
+		"src/routes/laws/+page.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/law": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/legal-ai-suite": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/legal/documents": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/local-ai-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/login": [
+		"src/routes/login/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/logout": [
+		"src/routes/logout/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/logs/svelte-suggestions.json": [
+		"src/routes/logs/svelte-suggestions.json/+server.ts"
+	],
+	"/memory-dashboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/modern-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/nier-showcase": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/optimization-dashboard": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/original-home": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/perf": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/persons": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/phase13-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/profile": [
+		"src/routes/profile/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/proxy": [
+		"src/routes/proxy/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/rag-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/register": [
+		"src/routes/register/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/report-builder": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/reports": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/saved-citations": [
+		"src/routes/saved-citations/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/search": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/security": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/semantic-search-demo": [
+		"src/routes/semantic-search-demo/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/settings": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/showcase": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/studio": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-ai-ask": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-components": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-gemma3": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-integration": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-simple": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test-upload": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/test": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ui-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/upload": [
+		"src/routes/upload/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/wasm-gpu-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/windows-gguf-demo": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/ws/precedents": [
+		"src/routes/ws/precedents/+server.ts"
+	]
+}

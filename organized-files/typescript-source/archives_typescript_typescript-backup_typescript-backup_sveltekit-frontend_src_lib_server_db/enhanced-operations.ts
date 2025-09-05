@@ -1,0 +1,717 @@
+// Enhanced Database Operations with pgvector Integration
+// Production-ready database operations for SvelteKit 2
+
+import { db, sql } from './index';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { eq, and, or, desc, asc, ilike, count, isNull, isNotNull, sql as sqlRaw, gte, lte } from 'drizzle-orm';
+import {
+  cases, evidence, users, legal_documents
+} from './schema-postgres';
+import {
+  ragSessions, ragMessages, userAiQueries, embeddingCache,
+  documentChunks, caseEmbeddings, evidenceVectors, legalPrecedents,
+  evidenceChainOfCustody, caseAssignments
+} from './additional-tables';
+import { ApiErrorClass, CommonErrors } from '../api/response';
+import { arrayToPgVector, generateSampleEmbedding } from './vector-operations';
+import type { Case, Evidence, LegalDocument, User } from './schema-types';
+
+// Transaction wrapper for safe database operations
+export async function withTransaction<T>(
+  operation: (tx: any) => Promise<T>
+): Promise<T> {
+  return await db.transaction(async (tx) => {
+    try {
+      return await operation(tx);
+    } catch (error: any) {
+      // Transaction will be rolled back automatically
+      throw error instanceof Error 
+        ? CommonErrors.DatabaseError('transaction', { originalError: error.message })
+        : CommonErrors.InternalError('Transaction failed');
+    }
+  });
+}
+
+// Enhanced Case Operations
+export class CaseOperations {
+  // Instance method for compatibility with existing code
+  async getCaseById(caseId: string, userId: string): Promise<Case | null> {
+    return CaseOperations.getById(caseId, userId);
+  }
+  
+  // Instance method for compatibility with existing code
+  async createCase(caseData: any): Promise<Case> {
+    return CaseOperations.create(caseData);
+  }
+  
+  // Instance method for compatibility with existing code
+  async searchCases(options: any): Promise<{ cases: Case[]; total: number; stats: any }> {
+    const result = await CaseOperations.search({
+      query: options.search,
+      status: options.status ? [options.status] : undefined,
+      priority: options.priority ? [options.priority] : undefined,
+      limit: options.limit,
+      offset: (options.page - 1) * options.limit
+    });
+    
+    // Calculate stats
+    const stats = {
+      total: result.total,
+      open: result.cases.filter(c => c.status === 'open').length,
+      investigating: result.cases.filter(c => c.status === 'investigating').length,
+      pending: result.cases.filter(c => c.status === 'pending').length,
+      closed: result.cases.filter(c => c.status === 'closed').length,
+      archived: result.cases.filter(c => c.status === 'archived').length,
+      high: result.cases.filter(c => c.priority === 'high').length,
+      critical: result.cases.filter(c => c.priority === 'critical').length,
+      medium: result.cases.filter(c => c.priority === 'medium').length,
+      low: result.cases.filter(c => c.priority === 'low').length
+    };
+    
+    return { ...result, stats };
+  }
+  
+  // Static method to get case by ID with user access check
+  static async getById(caseId: string, userId: string): Promise<any> {
+    try {
+      const result = await db.select()
+        .from(cases)
+        .where(and(
+          eq(cases.id, caseId),
+          or(
+            eq(cases.userId, userId),
+            eq(cases.userId, userId)
+          )
+        ))
+        .limit(1);
+      
+      return result[0] || null;
+    } catch (error: any) {
+      console.error('Failed to get case by ID:', error);
+      return null;
+    }
+  }
+  // Create case with validation and audit trail
+  static async create(
+    caseData: {
+      title: string;
+      description?: string;
+      priority?: 'low' | 'medium' | 'high' | 'critical';
+      status?: 'open' | 'investigating' | 'pending' | 'closed' | 'archived';
+      incidentDate?: Date;
+      location?: string;
+      jurisdiction?: string;
+      createdBy: string;
+    }
+  ): Promise<Case> {
+    return withTransaction(async (tx) => {
+      // Generate unique case number
+      const caseCount = await tx.select({ count: count() }).from(cases);
+      const year = new Date().getFullYear();
+      const sequence = (caseCount[0]?.count || 0) + 1;
+      const caseNumber = `CR-${year}-${sequence.toString().padStart(4, '0')}`;
+
+      const [newCase] = await tx.insert(cases).values({
+        ...caseData,
+        caseNumber,
+        priority: caseData.priority || 'medium',
+        status: caseData.status || 'open',
+        created_at: new Date(),
+        updated_at: new Date()
+      }).returning();
+
+      // Generate AI summary if description exists
+      if (newCase.description) {
+        const embedding = generateSampleEmbedding(384); // Match schema dimensions
+        await tx.insert(caseEmbeddings).values({
+          caseId: newCase.id,
+          embedding: arrayToPgVector(embedding),
+          embeddingType: 'description',
+          sourceField: 'description',
+          model: 'nomic-embed-text'
+        });
+      }
+
+      return newCase;
+    });
+  }
+
+  // Advanced case search with vector similarity
+  static async search(
+    params: {
+      query?: string;
+      status?: string[];
+      priority?: string[];
+      dateRange?: { start: Date; end: Date };
+      assignedTo?: string;
+      limit?: number;
+      offset?: number;
+      useVectorSearch?: boolean;
+    }
+  ): Promise<{ cases: Case[]; total: number }> {
+    const { query, status, priority, dateRange, assignedTo, limit = 50, offset = 0, useVectorSearch = true } = params;
+
+    let conditions = [];
+    
+    // Build WHERE conditions
+    if (status && status.length > 0) {
+      conditions.push(sqlRaw`status = ANY(${status})`);
+    }
+    if (priority && priority.length > 0) {
+      conditions.push(sqlRaw`priority = ANY(${priority})`);
+    }
+    if (assignedTo) {
+      conditions.push(eq(cases.userId, assignedTo));
+    }
+    if (dateRange) {
+      conditions.push(
+        and(
+          gte(cases.created_at, dateRange.start),
+          lte(cases.created_at, dateRange.end)
+        )
+      );
+    }
+
+    // Vector search for semantic similarity
+    if (query && useVectorSearch) {
+      try {
+        const queryEmbedding = generateSampleEmbedding(768);
+        const vectorQuery = arrayToPgVector(queryEmbedding);
+        
+        const vectorResults = await db.execute(sqlRaw`
+          SELECT 
+            c.*,
+            (1 - (ce.embedding <=> ${vectorQuery}::vector)) as similarity_score
+          FROM cases c
+          LEFT JOIN case_embeddings ce ON c.id = ce.case_id
+          WHERE 
+            ${conditions.length > 0 ? sqlRaw`(${conditions.join(' AND ')}) AND` : sqlRaw``}
+            ce.embedding IS NOT NULL AND
+            (1 - (ce.embedding <=> ${vectorQuery}::vector)) > 0.7
+          ORDER BY similarity_score DESC
+          LIMIT ${limit}
+          OFFSET ${offset}
+        `);
+        
+        return {
+          cases: vectorResults as unknown as Case[],
+          total: vectorResults.length
+        };
+      } catch (error: any) {
+        console.warn('Vector search failed, falling back to text search:', error);
+      }
+    }
+
+    // Fallback to traditional text search
+    if (query) {
+      conditions.push(
+        or(
+          ilike(cases.title, `%${query}%`),
+          ilike(cases.description, `%${query}%`),
+          ilike(cases.title, `%${query}%`)
+        )
+      );
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    
+    const [results, totalCount] = await Promise.all([
+      db.select({
+        id: cases.id,
+        caseNumber: cases.title,
+        title: cases.title,
+        description: cases.description,
+        status: cases.status,
+        priority: cases.priority,
+        incidentDate: cases.created_at,
+        location: cases.description,
+        jurisdiction: cases.title, // Use title since caseType doesn't exist in schema
+        leadProsecutor: cases.userId,
+        createdAt: cases.created_at,
+        updatedAt: cases.updated_at,
+        closedAt: cases.updated_at
+      })
+      .from(cases)
+      .where(whereClause)
+      .orderBy(desc(cases.created_at))
+      .limit(limit)
+      .offset(offset),
+      
+      db.select({ count: count() })
+      .from(cases)
+      .where(whereClause)
+    ]);
+
+    return {
+      cases: results as Case[],
+      total: totalCount[0]?.count || 0
+    };
+  }
+
+  // Update case with audit trail
+  static async update(
+    caseId: string,
+    updates: Partial<Pick<Case, 'title' | 'description' | 'status' | 'priority' | 'location' | 'jurisdiction'>>,
+    updatedBy: string
+  ): Promise<Case> {
+    return withTransaction(async (tx) => {
+      const [updatedCase] = await tx.update(cases)
+        .set({
+          ...updates,
+          updated_at: new Date(),
+          ...(updates.status === 'closed' && { closedAt: new Date() })
+        })
+        .where(eq(cases.id, caseId))
+        .returning();
+
+      if (!updatedCase) {
+        throw CommonErrors.NotFound('Case');
+      }
+
+      // Update vector embeddings if content changed
+      if (updates.title || updates.description) {
+        const embedding = generateSampleEmbedding(384); // Match schema dimensions
+        
+        await tx.insert(caseEmbeddings).values({
+          caseId: updatedCase.id,
+          embedding: arrayToPgVector(embedding),
+          embeddingType: updates.description ? 'description' : 'title',
+          sourceField: updates.description ? 'description' : 'title',
+          model: 'nomic-embed-text'
+        }).onConflictDoUpdate({
+          target: [caseEmbeddings.caseId],
+          set: {
+            embedding: arrayToPgVector(embedding),
+            embeddingType: updates.description ? 'description' : 'title',
+            sourceField: updates.description ? 'description' : 'title',
+            updated_at: new Date()
+          }
+        });
+      }
+
+      return updatedCase;
+    });
+  }
+
+  // Get case with related data
+  static async getWithRelations(caseId: string): Promise<Case & { 
+    evidence: Evidence[];
+    createdByUser?: User;
+    leadProsecutorUser?: User;
+  } | null> {
+    const caseData = await db.query.cases.findFirst({
+      where: eq(cases.id, caseId),
+      with: {
+        evidence: {
+          orderBy: [desc(evidence.created_at)],
+          limit: 50
+        }
+      }
+    });
+
+    return caseData as any || null;
+  }
+}
+
+// Enhanced Evidence Operations
+export class EvidenceOperations {
+  // Create evidence with AI analysis
+  static async create(
+    evidenceData: {
+      caseId?: string;
+      title: string;
+      description?: string;
+      evidenceType: string;
+      fileType?: string;
+      fileUrl?: string;
+      fileName?: string;
+      fileSize?: number;
+      mimeType?: string;
+      hash?: string;
+      tags?: string[];
+      collectedAt?: Date;
+      collectedBy?: string;
+      location?: string;
+      uploadedBy?: string;
+    }
+  ): Promise<Evidence> {
+    return withTransaction(async (tx) => {
+      const [newEvidence] = await tx.insert(evidence).values({
+        ...evidenceData,
+        tags: evidenceData.tags || [],
+        chainOfCustody: [],
+        labAnalysis: {},
+        aiAnalysis: {},
+        aiTags: [],
+        isAdmissible: true,
+        confidentialityLevel: 'standard',
+        canvasPosition: {},
+        uploadedAt: new Date(),
+        updated_at: new Date()
+      }).returning();
+
+      // Generate vector embeddings for AI search
+      if (newEvidence.description || newEvidence.title) {
+        const content = `${newEvidence.title} ${newEvidence.description || ''} ${newEvidence.evidenceType}`;
+        const embedding = generateSampleEmbedding(768);
+        
+        await tx.insert(evidenceVectors).values({
+          evidenceId: newEvidence.id,
+          content,
+          embedding: arrayToPgVector(embedding),
+          metadata: {
+            evidenceType: newEvidence.evidenceType,
+            fileType: newEvidence.fileType,
+            caseId: newEvidence.caseId,
+            tags: newEvidence.tags
+          }
+        });
+      }
+
+      return newEvidence;
+    });
+  }
+
+  // Advanced evidence search
+  static async search(
+    params: {
+      query?: string;
+      caseId?: string;
+      evidenceTypes?: string[];
+      tags?: string[];
+      dateRange?: { start: Date; end: Date };
+      limit?: number;
+      offset?: number;
+      useVectorSearch?: boolean;
+    }
+  ): Promise<{ evidence: any[]; total: number }> {
+    const { query, caseId, evidenceTypes, tags, dateRange, limit = 50, offset = 0, useVectorSearch = true } = params;
+
+    let conditions = [];
+    
+    if (caseId) {
+      conditions.push(eq(evidence.caseId, caseId));
+    }
+    if (evidenceTypes && evidenceTypes.length > 0) {
+      conditions.push(sqlRaw`evidence_type = ANY(${evidenceTypes})`);
+    }
+    if (tags && tags.length > 0) {
+      conditions.push(sqlRaw`tags && ${tags}`);
+    }
+    if (dateRange) {
+      conditions.push(
+        and(
+          gte(evidence.created_at, dateRange.start),
+          lte(evidence.created_at, dateRange.end)
+        )
+      );
+    }
+
+    // Vector search for semantic similarity
+    if (query && useVectorSearch) {
+      try {
+        const queryEmbedding = generateSampleEmbedding(768);
+        const vectorQuery = arrayToPgVector(queryEmbedding);
+        
+        const vectorResults = await db.execute(sqlRaw`
+          SELECT 
+            e.*,
+            (1 - (ev.embedding <=> ${vectorQuery}::vector)) as similarity_score
+          FROM evidence e
+          LEFT JOIN evidence_vectors ev ON e.id = ev.evidence_id
+          WHERE 
+            ${conditions.length > 0 ? sqlRaw`(${conditions.join(' AND ')}) AND` : sqlRaw``}
+            ev.embedding IS NOT NULL AND
+            (1 - (ev.embedding <=> ${vectorQuery}::vector)) > 0.7
+          ORDER BY similarity_score DESC
+          LIMIT ${limit}
+          OFFSET ${offset}
+        `);
+        
+        return {
+          evidence: vectorResults as unknown as Evidence[],
+          total: vectorResults.length
+        };
+      } catch (error: any) {
+        console.warn('Evidence vector search failed, falling back to text search:', error);
+      }
+    }
+
+    // Fallback to traditional text search
+    if (query) {
+      conditions.push(
+        or(
+          ilike(evidence.title, `%${query}%`),
+          ilike(evidence.description, `%${query}%`),
+          ilike(evidence.title, `%${query}%`) // Use title instead of fileName
+        )
+      );
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    
+    const [results, totalCount] = await Promise.all([
+      db.select()
+      .from(evidence)
+      .where(whereClause)
+      .orderBy(desc(evidence.created_at))
+      .limit(limit)
+      .offset(offset),
+      
+      db.select({ count: count() })
+      .from(evidence)
+      .where(whereClause)
+    ]);
+
+    return {
+      evidence: results,
+      total: totalCount[0]?.count || 0
+    };
+  }
+
+  // Update evidence with chain of custody
+  static async update(
+    evidenceId: string,
+    updates: Partial<Pick<Evidence, 'title' | 'description' | 'evidenceType' | 'tags' | 'isAdmissible'>>,
+    updatedBy: string,
+    custodyNotes?: string
+  ): Promise<Evidence> {
+    return withTransaction(async (tx) => {
+      // Get current evidence for chain of custody
+      const currentEvidence = await tx.select().from(evidence).where(eq(evidence.id, evidenceId)).limit(1);
+      if (currentEvidence.length === 0) {
+        throw CommonErrors.NotFound('Evidence');
+      }
+
+      // Update chain of custody
+      const newCustodyEntry = {
+        timestamp: new Date().toISOString(),
+        action: 'updated',
+        updatedBy,
+        changes: Object.keys(updates),
+        notes: custodyNotes || 'Evidence updated'
+      };
+
+      const updatedChainOfCustody = [...(currentEvidence[0].chainOfCustody as any[]), newCustodyEntry];
+
+      const [updatedEvidence] = await tx.update(evidence)
+        .set({
+          ...updates,
+          chainOfCustody: updatedChainOfCustody,
+          updated_at: new Date()
+        })
+        .where(eq(evidence.id, evidenceId))
+        .returning();
+
+      // Update vector embeddings if content changed
+      if (updates.title || updates.description) {
+        const content = `${updatedEvidence.title} ${updatedEvidence.description || ''} ${updatedEvidence.evidenceType}`;
+        const embedding = generateSampleEmbedding(768);
+        
+        await tx.insert(evidenceVectors).values({
+          evidenceId: updatedEvidence.id,
+          content,
+          embedding: arrayToPgVector(embedding),
+          metadata: {
+            evidenceType: updatedEvidence.evidenceType,
+            fileType: updatedEvidence.fileType,
+            caseId: updatedEvidence.caseId,
+            tags: updatedEvidence.tags,
+            updatedBy,
+            updated_at: new Date().toISOString()
+          }
+        }).onConflictDoUpdate({
+          target: [evidenceVectors.evidenceId],
+          set: {
+            content,
+            embedding: arrayToPgVector(embedding),
+            metadata: {
+              evidenceType: updatedEvidence.evidenceType,
+              fileType: updatedEvidence.fileType,
+              caseId: updatedEvidence.caseId,
+              tags: updatedEvidence.tags,
+              updatedBy,
+              updated_at: new Date().toISOString()
+            }
+          }
+        });
+      }
+
+      return updatedEvidence;
+    });
+  }
+}
+
+// Enhanced Legal Document Operations
+export class LegalDocumentOperations {
+  // Advanced legal precedent search
+  static async searchPrecedents(
+    params: {
+      query: string;
+      jurisdiction?: string;
+      dateRange?: { start: number; end: number };
+      limit?: number;
+      similarityThreshold?: number;
+    }
+  ): Promise<{ precedents: any[]; total: number }> {
+    const { query, jurisdiction, dateRange, limit = 20, similarityThreshold = 0.75 } = params;
+
+    try {
+      const queryEmbedding = generateSampleEmbedding(768);
+      const vectorQuery = arrayToPgVector(queryEmbedding);
+      
+      let conditions = [sqlRaw`(1 - (embedding <=> ${vectorQuery}::vector)) > ${similarityThreshold}`];
+      
+      if (jurisdiction) {
+        conditions.push(eq(legalPrecedents.jurisdiction, jurisdiction));
+      }
+      if (dateRange) {
+        conditions.push(
+          and(
+            gte(legalPrecedents.year, dateRange.start),
+            lte(legalPrecedents.year, dateRange.end)
+          )
+        );
+      }
+
+      const results = await db.execute(sqlRaw`
+        SELECT 
+          *,
+          (1 - (embedding <=> ${vectorQuery}::vector)) as relevance_score
+        FROM legal_precedents
+        WHERE ${conditions.join(' AND ')}
+        ORDER BY relevance_score DESC
+        LIMIT ${limit}
+      `);
+      
+      return {
+        precedents: results,
+        total: results.length
+      };
+    } catch (error: any) {
+      console.warn('Legal precedent vector search failed:', error);
+      
+      // Fallback to text search
+      const results = await db.select()
+        .from(legalPrecedents)
+        .where(
+          and(
+            or(
+              ilike(legalPrecedents.title, `%${query}%`),
+              ilike(legalPrecedents.summary, `%${query}%`)
+            ),
+            jurisdiction ? eq(legalPrecedents.jurisdiction, jurisdiction) : sqlRaw`1=1`
+          )
+        )
+        .limit(limit);
+        
+      return {
+        precedents: results,
+        total: results.length
+      };
+    }
+  }
+}
+
+// RAG (Retrieval Augmented Generation) Operations
+export class RAGOperations {
+  // Store AI query with embeddings
+  static async storeQuery(
+    queryData: {
+      userId: string;
+      caseId?: string;
+      query: string;
+      response: string;
+      model?: string;
+      confidence?: number;
+      processingTime?: number;
+      contextUsed?: any[];
+    }
+  ): Promise<void> {
+    return withTransaction(async (tx) => {
+      const queryEmbedding = generateSampleEmbedding(768);
+      
+      await tx.insert(userAiQueries).values({
+        ...queryData,
+        embedding: arrayToPgVector(queryEmbedding),
+        model: queryData.model || 'gemma3-legal',
+        confidence: queryData.confidence || 0.8,
+        processingTime: queryData.processingTime || 0,
+        contextUsed: queryData.contextUsed || [],
+        metadata: {
+          timestamp: new Date().toISOString(),
+          embeddingModel: 'nomic-embed-text',
+          version: '2.0'
+        },
+        isSuccessful: true
+      });
+    });
+  }
+
+  // Find similar queries for context
+  static async findSimilarQueries(
+    queryText: string,
+    userId?: string,
+    limit: number = 5
+  ): Promise<any[]> {
+    try {
+      const queryEmbedding = generateSampleEmbedding(768);
+      const vectorQuery = arrayToPgVector(queryEmbedding);
+      
+      const conditions = [sqlRaw`(1 - (embedding <=> ${vectorQuery}::vector)) > 0.7`];
+      if (userId) {
+        conditions.push(eq(userAiQueries.userId, userId));
+      }
+
+      const results = await db.execute(sqlRaw`
+        SELECT 
+          query,
+          response,
+          confidence,
+          (1 - (embedding <=> ${vectorQuery}::vector)) as similarity_score,
+          created_at
+        FROM user_ai_queries
+        WHERE ${conditions.join(' AND ')}
+        ORDER BY similarity_score DESC
+        LIMIT ${limit}
+      `);
+      
+      return results;
+    } catch (error: any) {
+      console.warn('Similar query search failed:', error);
+      return [];
+    }
+  }
+}
+
+// Database Health Check
+export async function checkDatabaseHealth(): Promise<{
+  connected: boolean;
+  pgvectorEnabled: boolean;
+  queryTime: number;
+  errors: string[];
+}> {
+  const startTime = Date.now();
+  const errors: string[] = [];
+  let connected = false;
+  let pgvectorEnabled = false;
+
+  try {
+    // Test basic connection
+    await db.execute(sqlRaw`SELECT 1`);
+    connected = true;
+
+    // Test pgvector extension
+    await db.execute(sqlRaw`SELECT '[1,2,3]'::vector`);
+    pgvectorEnabled = true;
+  } catch (error: any) {
+    errors.push(error instanceof Error ? error.message : 'Unknown database error');
+  }
+
+  return {
+    connected,
+    pgvectorEnabled,
+    queryTime: Date.now() - startTime,
+    errors
+  };
+}

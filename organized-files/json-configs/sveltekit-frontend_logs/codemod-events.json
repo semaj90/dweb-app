@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-09-01T17:39:40.867Z",
+  "changed": 18,
+  "changedFiles": [
+    "src\\lib\\components\\FileUploadWithFallback.svelte",
+    "src\\lib\\components\\EvidenceUploader.svelte",
+    "src\\lib\\components\\EditableCanvasSystem.svelte",
+    "src\\lib\\components\\DocumentUploadForm.svelte",
+    "src\\lib\\components\\upload\\MinIOUpload.svelte",
+    "src\\lib\\components\\upload\\EnhancedMinIODragDrop.svelte",
+    "src\\lib\\components\\upload\\EnhancedLegalUpload.svelte",
+    "src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+    "src\\lib\\components\\ui\\modular\\FileUpload.svelte",
+    "src\\lib\\components\\modals\\EvidenceUploadModal.svelte",
+    "src\\lib\\components\\forms\\EnhancedFileUpload.svelte",
+    "src\\lib\\components\\forms\\EnhancedDocumentUploadForm.svelte",
+    "src\\lib\\components\\evidence-editor\\CanvasEditor.svelte",
+    "src\\lib\\components\\detective\\UploadZone.svelte",
+    "src\\lib\\components\\ai\\webgpu-viewer.svelte",
+    "src\\lib\\components\\ai\\SimpleFileUpload.svelte",
+    "src\\lib\\components\\ai\\EnhancedDocumentUploader.svelte",
+    "src\\lib\\components\\ai\\AIButton.svelte"
+  ]
+}

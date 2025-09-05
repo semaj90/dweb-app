@@ -1,0 +1,122 @@
+{
+  "mcpServers": {
+    "file-management": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "env": {
+        "ALLOWED_DIRECTORIES": "C:\\Users\\james\\Desktop\\web-app"
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "time": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-time"]
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": ""
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:password@localhost:5432/prosecutor_db"
+      }
+    },
+    "svelte-llm": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://svelte-llm.khromov.se/mcp/mcp"],
+      "type": "stdio"
+    },
+   
+  "security.allowedUNCHosts": ["home"],
+  "chat.mcp.serverSampling": {
+    "web-app/.vscode/mcp.json: time": {
+      "allowedModels": [
+        "github.copilot-chat/gpt-4.1",
+        "github.copilot-chat/claude-opus-4",
+        "github.copilot-chat/claude-3.5-sonnet",
+        "github.copilot-chat/claude-3.7-sonnet",
+        "github.copilot-chat/claude-3.7-sonnet-thought",
+        "github.copilot-chat/claude-sonnet-4",
+        "github.copilot-chat/gemini-2.0-flash-001",
+        "github.copilot-chat/Gemini-models/gemini-2.5-flash-preview-04-17",
+        "github.copilot-chat/gemini-2.5-pro",
+        "github.copilot-chat/Gemini-models/gemini-2.5-pro-preview-03-25",
+        "github.copilot-chat/Gemini-models/gemma-3-27b-it",
+        "github.copilot-chat/gpt-4o",
+        "github.copilot-chat/o3",
+        "github.copilot-chat/o3-mini",
+        "github.copilot-chat/o4-mini"
+      ]
+    },
+  "mcpServers": {
+    "file-management": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "env": {
+        "ALLOWED_DIRECTORIES": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "time": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-time"]
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": ""
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:password@localhost:5432/deeds_web_db"
+      }
+    },
+    "svelte-llm": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://svelte-llm.khromov.se/mcp/mcp"],
+      "type": "stdio"
+    }
+  },
+  "chat.mcp.serverSampling": {
+    "*": {
+      "allowedModels": [
+        "github.copilot-chat/gpt-4.1",
+        "github.copilot-chat/claude-opus-4",
+        "github.copilot-chat/claude-sonnet-4",
+        "github.copilot-chat/gemini-2.0-flash-001",
+        "github.copilot-chat/gpt-4o"
+      ]
+    }
+  },
+  "copilot.mcp.enabled": true,
+  "copilot.chat.useProjectContext": true
+}

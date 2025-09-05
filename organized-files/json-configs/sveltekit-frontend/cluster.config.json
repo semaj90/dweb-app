@@ -1,0 +1,54 @@
+{
+  "workers": 4,
+  "port": 3000,
+  "host": "0.0.0.0",
+  "gracefulShutdownTimeout": 15000,
+  "healthCheckInterval": 5000,
+  "maxMemoryUsage": 768,
+  "restartOnHighMemory": true,
+  "loadBalancingStrategy": "least-connections",
+  "enableStickySession": false,
+  "redisUrl": "redis://localhost:6379",
+  
+  "monitoring": {
+    "enableMetrics": true,
+    "metricsInterval": 10000,
+    "logLevel": "info",
+    "enableHealthEndpoint": true,
+    "healthEndpointPath": "/health"
+  },
+  
+  "scaling": {
+    "autoScale": false,
+    "minWorkers": 2,
+    "maxWorkers": 8,
+    "cpuThreshold": 80,
+    "memoryThreshold": 85,
+    "scaleUpCooldown": 300000,
+    "scaleDownCooldown": 600000
+  },
+  
+  "performance": {
+    "maxRequestsPerWorker": 1000,
+    "requestTimeout": 30000,
+    "keepAliveTimeout": 5000,
+    "enableCompression": true,
+    "compressionLevel": 6
+  },
+  
+  "security": {
+    "enableRateLimit": true,
+    "rateLimitWindow": 60000,
+    "rateLimitMax": 100,
+    "enableRequestLogging": true,
+    "trustedProxies": ["127.0.0.1", "::1"]
+  },
+  
+  "caching": {
+    "enableSharedCache": true,
+    "cacheProvider": "redis",
+    "cacheTTL": 300,
+    "enableETag": true,
+    "enableLastModified": true
+  }
+}

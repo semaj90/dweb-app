@@ -1,0 +1,33 @@
+{
+  "description": "Legal AI SvelteKit 2 app using Svelte 5, SSR, PostgreSQL (with pgvector), Drizzle ORM, and vanilla JavaScript. Integrates best practices for scalable, type-safe, and AI-powered web apps. Uses bits-ui for UI components.",
+  "excludeFolders": [
+    "node_modules",
+    ".svelte-kit",
+    "build",
+    "dist",
+    "test",
+    "tests",
+    "__tests__",
+    "coverage",
+    "scripts",
+    "docker",
+    "Ollama",
+    "llama.cpp",
+    "bits-ui-main",
+    "melt-ui-develop",
+    "shadcn-svelte-main",
+    "unocss-main"
+  ],
+  "rules": [
+    "Always use Drizzle ORM for database access; avoid raw SQL unless necessary.",
+    "Use pgvector for vector search and AI features; store embeddings in a dedicated column.",
+    "SSR is enabled by default; prefer server-side data loading for sensitive or large data.",
+    "Use vanilla JavaScript for utility scripts and Svelte actions; TypeScript is optional but recommended for app logic.",
+    "bits-ui components are preferred for UI; import from $lib/components/ui or context7-docs/bits-ui.md for usage examples.",
+    "When adding new docs for context7, place them in the context7-docs/ folder at the project root.",
+    "For SvelteKit 2, use the new routing and load function conventions; see context7-docs/sveltekit2.md for details.",
+    "For Drizzle ORM, see context7-docs/drizzle.md for schema and query best practices.",
+    "For pgvector, see context7-docs/pgvector.md for setup and usage patterns.",
+    "For bits-ui, see context7-docs/bits-ui.md for custom UI component documentation."
+  ]
+}

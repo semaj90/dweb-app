@@ -1,0 +1,253 @@
+    ~~~~~~~~
+
+node_modules/vite/dist/node/index.d.ts:5:41 - error TS2307: Cannot find module 'rollup/parseAst' or its corresponding type declarations.
+  There are types at 'C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/node_modules/rollup/dist/parseAst.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+
+5 export { parseAst, parseAstAsync } from 'rollup/parseAst';
+                                          ~~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:5:37 - error TS2307: Cannot find module './$types' or its corresponding type declarations.
+
+5 import type { RequestHandler } from "./$types";
+                                      ~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:6:20 - error TS2307: Cannot find module '$lib/server/db/index' or its corresponding type declarations.
+
+6 import { db } from "$lib/server/db/index";
+                     ~~~~~~~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:7:33 - error TS2307: Cannot find module '$lib/server/db/schema-postgres' or its corresponding type declarations.
+
+7 import { evidence, cases } from "$lib/server/db/schema-postgres";
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:9:36 - error TS2307: Cannot find module '$lib/services/enhanced-rag-service' or its corresponding type declarations.
+
+9 import { enhancedRAGService } from "$lib/services/enhanced-rag-service";
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:10:34 - error TS2307: Cannot find module '$lib/types/rag' or its corresponding type declarations.
+
+10 import type { RAGResponse } from "$lib/types/rag";
+                                    ~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:11:27 - error TS2307: Cannot find module '$lib/services/ai-service' or its corresponding type declarations.
+
+11 import { aiService } from "$lib/services/ai-service";
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/routes/api/evidence/synthesize/+server.ts:386:26 - error TS2802: Type 'Set<any>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+
+386   const uniqueTags = [...new Set(allTags)];
+                             ~~~~~~~~~~~~~~~~
+
+
+Found 46 errors in 22 files.
+
+Errors  Files
+     1  ../node_modules/@redis/client/dist/lib/client/commands-queue.d.ts:27
+     1  ../node_modules/@redis/client/dist/lib/client/index.d.ts:92
+     1  ../node_modules/@redis/client/dist/lib/client/multi-command.d.ts:25
+     1  ../node_modules/@redis/client/dist/lib/client/pub-sub.d.ts:17
+     1  ../node_modules/@redis/client/dist/lib/client/socket.d.ts:39
+     1  ../node_modules/@redis/client/dist/lib/cluster/cluster-slots.d.ts:37
+     1  ../node_modules/@redis/client/dist/lib/cluster/index.d.ts:46
+     1  ../node_modules/@redis/client/dist/lib/cluster/multi-command.d.ts:25
+     1  ../node_modules/@redis/graph/dist/graph.d.ts:15
+     2  node_modules/@sveltejs/kit/types/index.d.ts:6
+     1  node_modules/drizzle-orm/mysql-core/db.d.ts:1
+     1  node_modules/drizzle-orm/mysql-core/query-builders/delete.d.ts:32
+     7  node_modules/drizzle-orm/mysql-core/query-builders/select.d.ts:199
+     1  node_modules/drizzle-orm/mysql-core/query-builders/select.types.d.ts:130
+     1  node_modules/drizzle-orm/pg-core/query-builders/query.d.ts:23
+     1  node_modules/drizzle-orm/sqlite-core/columns/blob.d.ts:2
+     1  node_modules/drizzle-orm/sqlite-core/query-builders/query.d.ts:25
+     5  node_modules/drizzle-orm/sqlite-core/query-builders/select.d.ts:202
+     1  node_modules/drizzle-orm/sqlite-core/query-builders/select.types.d.ts:122
+     8  node_modules/svelte/types/index.d.ts:2113
+     1  node_modules/vite/dist/node/index.d.ts:5
+     7  src/routes/api/evidence/synthesize/+server.ts:5
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend>
+make it use postgresql
+and pg vector.
+install those, make them work?
+javascript drizzle-orm version is needed?
+then install the rest, look up docs. parse out what's not needed.
+front-end stuff.
+
+ersion
+9.4
+Application Mode
+Desktop
+Commit
+Python Version
+3.13.5
+Current User
+pgadmin4@pgadmin.org
+Electron Version
+35.4.0
+Browser
+Chrome 134.0.6998.205
+Operating System
+Windows-10-10.0.19045-SP0
+pgAdmin Database File
+C:\Users\james\AppData\Roaming\pgAdmin\pgadmin4.db
+Log File
+C:\Users\james\AppData\Roaming\pgAdmin\pgadmin4.log
+pgAdmin Server Configuration
+ALLOW_SAVE_PASSWORD = True
+ALLOW_SAVE_TUNNEL_PASSWORD = False
+ALLOW_SPECIAL_EMAIL_DOMAINS = []
+APP_COPYRIGHT = "Copyright (C) 2013 - 2025, The pgAdmin Development Team"
+APP_DEFAULT_EMAIL = "pgadmin4@pgadmin.org"
+APP_ICON = "pg-icon"
+APP_NAME = "pgAdmin 4"
+APP_PATH = "pgadmin"
+APP_RELEASE = 9
+APP_REVISION = 4
+APP_SHORT_NAME = "pgadmin4"
+APP_SUFFIX = ""
+APP_VERSION = "9.4"
+APP_VERSION_EXTN = ('.css', '.js', '.html', '.svg', '.png', '.gif', '.ico')
+APP_VERSION_INT = 90400
+APP_VERSION_PARAM = "ver"
+APP_WIN_PATH = "pgAdmin"
+AUTHENTICATION_SOURCES = ['internal']
+AUTO_DISCOVER_SERVERS = True
+AZURE_CREDENTIAL_CACHE_DIR = "C:\Users\james\AppData\Roaming\pgAdmin\azurecredentialcache"
+CA_FILE = "C:\Program Files\PostgreSQL\17\pgAdmin 4\web\cacert.pem"
+CHECK_EMAIL_DELIVERABILITY = False
+CHECK_SESSION_FILES_INTERVAL = 24
+CHECK_SUPPORTED_BROWSER = True
+COMMIT_HASH = ""
+COMPRESS_LEVEL = 9
+COMPRESS_MIMETYPES = ['text/html', 'text/css', 'text/xml', 'text/javascript', 'application/json', 'application/javascript']
+COMPRESS_MIN_SIZE = 500
+CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW = 100
+CONFIG_DATABASE_CONNECTION_POOL_SIZE = 5
+CONFIG_DATABASE_URI = ""
+CONSOLE_LOG_FORMAT = "%(asctime)s: %(levelname)s	%(name)s:	%(message)s"
+CONSOLE_LOG_FORMAT_JSON = OrderedDict({'time': 'asctime', 'message': 'message', 'level': 'levelname'})
+CONSOLE_LOG_LEVEL = 30
+CONTENT_SECURITY_POLICY = "default-src ws: http: data: blob: 'unsafe-inline' 'unsafe-eval';"
+COOKIE_DEFAULT_DOMAIN = None
+COOKIE_DEFAULT_PATH = "/"
+DATA_DIR = "C:\Users\james\AppData\Roaming\pgAdmin"
+DATA_RESULT_ROWS_PER_PAGE = 1000
+DEBUG = False
+DEFAULT_BINARY_PATHS = {'pg': '$DIR/../runtime', 'ppas': ''}
+DEFAULT_SERVER = "127.0.0.1"
+DEFAULT_SERVER_PORT = 5050
+DESKTOP_USER = "pgadmin4@pgadmin.org"
+EFFECTIVE_SERVER_PORT = 54593
+ENABLE_BINARY_PATH_BROWSING = False
+ENABLE_PSQL = True
+ENABLE_SERVER_PASS_EXEC_CMD = False
+ENHANCED_COOKIE_PROTECTION = True
+FILE_LOG_FORMAT = "%(asctime)s: %(levelname)s	%(name)s:	%(message)s"
+FILE_LOG_FORMAT_JSON = OrderedDict({'time': 'asctime', 'message': 'message', 'level': 'levelname'})
+FILE_LOG_LEVEL = 30
+FIXED_BINARY_PATHS = {'pg': '', 'pg-13': '', 'pg-14': '', 'pg-15': '', 'pg-16': '', 'pg-17': '', 'ppas': '', 'ppas-13': '', 'ppas-14': '', 'ppas-15': '', 'ppas-16': '', 'ppas-17': ''}
+GLOBALLY_DELIVERABLE = True
+HELP_PATH = "../../../docs/en_US/html/"
+IS_WIN = True
+JSON_LOGGER = False
+KERBEROS_CCACHE_DIR = "C:\Users\james\AppData\Roaming\pgAdmin\krbccache"
+KEYRING_NAME = "Windows WinVaultKeyring"
+KRB_APP_HOST_NAME = "127.0.0.1"
+KRB_AUTO_CREATE_USER = True
+KRB_KTNAME = "<KRB5_KEYTAB_FILE>"
+LANGUAGES = {'en': 'English', 'zh_Hans_CN': 'Chinese (Simplified)', 'zh_Hant_TW': 'Chinese (Traditional)', 'cs': 'Czech', 'fr': 'French', 'de': 'German', 'id': 'Indonesian', 'it': 'Italian', 'ja': 'Japanese', 'ko': 'Korean', 'pl': 'Polish', 'pt_BR': 'Portuguese (Brazilian)', 'ru': 'Russian', 'es': 'Spanish'}
+LDAP_ANONYMOUS_BIND = False
+LDAP_AUTO_CREATE_USER = True
+LDAP_BASE_DN = "<Base-DN>"
+LDAP_BIND_FORMAT = "{LDAP_USERNAME_ATTRIBUTE}={LDAP_USERNAME},{LDAP_BASE_DN}"
+LDAP_BIND_USER = None
+LDAP_CA_CERT_FILE = ""
+LDAP_CERT_FILE = ""
+LDAP_CONNECTION_TIMEOUT = 10
+LDAP_DN_CASE_SENSITIVE = False
+LDAP_IGNORE_MALFORMED_SCHEMA = False
+LDAP_KEY_FILE = ""
+LDAP_SEARCH_BASE_DN = "<Search-Base-DN>"
+LDAP_SEARCH_FILTER = "(objectclass=*)"
+LDAP_SEARCH_SCOPE = "SUBTREE"
+LDAP_SERVER_URI = "ldap://<ip-address>:<port>"
+LDAP_USERNAME_ATTRIBUTE = "<User-id>"
+LDAP_USE_STARTTLS = False
+LOGIN_ATTEMPT_FIELDS = ['password']
+LOGIN_BANNER = ""
+LOG_FILE = "C:\Users\james\AppData\Roaming\pgAdmin\pgadmin4.log"
+LOG_ROTATION_AGE = 1440
+LOG_ROTATION_MAX_LOG_FILES = 90
+LOG_ROTATION_SIZE = 10
+MAIL_DEBUG = False
+MAIL_PORT = 25
+MAIL_SERVER = "localhost"
+MAIL_USERNAME = ""
+MAIL_USE_SSL = False
+MAIL_USE_TLS = False
+MASTER_PASSWORD_HOOK = None
+MASTER_PASSWORD_REQUIRED = True
+MAX_LOGIN_ATTEMPTS = 3
+MAX_QUERY_HIST_STORED = 20
+MAX_SERVER_TAGS_ALLOWED = 5
+MAX_SESSION_IDLE_TIME = 60
+MFA_EMAIL_SUBJECT = None
+MFA_ENABLED = False
+MFA_FORCE_REGISTRATION = False
+MFA_SUPPORTED_METHODS = ['email', 'authenticator']
+MODULE_BLACKLIST = ['test']
+NODE_BLACKLIST = []
+OAUTH2_AUTO_CREATE_USER = True
+OAUTH2_CONFIG = [{'OAUTH2_NAME': None, 'OAUTH2_DISPLAY_NAME': '<Oauth2 Display Name>', 'OAUTH2_CLIENT_ID': None, 'OAUTH2_CLIENT_SECRET': None, 'OAUTH2_TOKEN_URL': None, 'OAUTH2_AUTHORIZATION_URL': None, 'OAUTH2_SERVER_METADATA_URL': None, 'OAUTH2_API_BASE_URL': None, 'OAUTH2_USERINFO_ENDPOINT': None, 'OAUTH2_SCOPE': None, 'OAUTH2_USERNAME_CLAIM': None, 'OAUTH2_ICON': None, 'OAUTH2_BUTTON_COLOR': None, 'OAUTH2_ADDITIONAL_CLAIMS': None, 'OAUTH2_SSL_CERT_VERIFICATION': True, 'OAUTH2_LOGOUT_URL': None}]
+ON_DEMAND_LOG_COUNT = 10000
+OVERRIDE_USER_INACTIVITY_TIMEOUT = True
+PASSWORD_LENGTH_MIN = 6
+PG_DEFAULT_DRIVER = "psycopg3"
+PROXY_X_FOR_COUNT = 1
+PROXY_X_HOST_COUNT = 0
+PROXY_X_PORT_COUNT = 1
+PROXY_X_PREFIX_COUNT = 0
+PROXY_X_PROTO_COUNT = 1
+SECURITY_EMAIL_SENDER = "no-reply@localhost"
+SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = "Your password for pgAdmin 4 has been changed"
+SECURITY_EMAIL_SUBJECT_PASSWORD_NOTICE = "Your pgAdmin 4 password has been reset"
+SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for pgAdmin 4"
+SECURITY_EMAIL_VALIDATOR_ARGS = {'check_deliverability': False}
+SEND_FILE_MAX_AGE_DEFAULT = 31556952
+SERVER_HEARTBEAT_TIMEOUT = 30
+SERVER_MODE = False
+SESSION_COOKIE_DOMAIN = None
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "pga4_session"
+SESSION_COOKIE_PATH = "/"
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False
+SESSION_DB_PATH = "C:\Users\james\AppData\Roaming\pgAdmin\sessions"
+SESSION_EXPIRATION_TIME = 7
+SESSION_SKIP_PATHS = ['/misc/ping']
+SETTINGS_SCHEMA_VERSION = 44
+SHARED_STORAGE = []
+SHOW_GRAVATAR_IMAGE = True
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLITE_PATH = "C:\Users\james\AppData\Roaming\pgAdmin\pgadmin4.db"
+SQLITE_TIMEOUT = 500
+STORAGE_DIR = "C:\Users\james\AppData\Roaming\pgAdmin\storage"
+STRICT_TRANSPORT_SECURITY = "max-age=31536000; includeSubDomains"
+STRICT_TRANSPORT_SECURITY_ENABLED = False
+SUPPORT_SSH_TUNNEL = True
+TEST_SQLITE_PATH = "C:\Users\james\AppData\Roaming\pgAdmin\test_pgadmin4.db"
+THREADED_MODE = True
+UPGRADE_CHECK_ENABLED = True
+UPGRADE_CHECK_KEY = "edb-pgadmin4"
+UPGRADE_CHECK_URL = "https://www.pgadmin.org/versions.json"
+USER_INACTIVITY_TIMEOUT = 0
+USE_OS_SECRET_STORAGE = True
+WEBSERVER_AUTO_CREATE_USER = True
+WEBSERVER_REMOTE_USER = "REMOTE_USER"
+WEB_SERVER = "Python"
+WTF_CSRF_HEADERS = ['X-pgA-CSRFToken']
+X_CONTENT_TYPE_OPTIONS = "nosniff"
+X_FRAME_OPTIONS = "SAMEORIGIN"
+X_XSS_PROTECTION = "1; mode=block"

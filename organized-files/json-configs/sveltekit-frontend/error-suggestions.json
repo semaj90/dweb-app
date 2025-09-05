@@ -1,0 +1,175 @@
+{
+  "timestamp": "2025-08-12T01:06:08.993Z",
+  "totalErrors": 18,
+  "processed": 18,
+  "statistics": {
+    "totalErrors": 18,
+    "processed": 18,
+    "fixed": 18,
+    "failed": 0,
+    "queued": 18,
+    "suggestions": [],
+    "performance": {
+      "startTime": 1754960766092,
+      "avgProcessingTime": 2761.6154441833496,
+      "errorsPerSecond": 6.204756980351603,
+      "gpuUtilization": 0,
+      "memoryUsage": 0
+    },
+    "clusters": {
+      "active": 4,
+      "workers": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "suggestions": [
+    {
+      "errorId": "675406b678d41bf8666b6e45789ef1e5",
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 10,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 2867
+    },
+    {
+      "errorId": "e87856144417c9c58ce95e4ef5ec936b",
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 11,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 2038
+    },
+    {
+      "errorId": "6456017994a470b0bc960a3e98a831ac",
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 12,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 1631
+    },
+    {
+      "errorId": "1af03ecd1b8a3b8bf72163ad919f7133",
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 15,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 1632
+    },
+    {
+      "errorId": "99e6a9708c964a98e2ba9bad740aeed8",
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 16,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 2551
+    },
+    {
+      "errorId": "fefd05740f10be500f36c289db44a685",
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 17,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 1660
+    },
+    {
+      "errorId": "0439a81189ff35a3381060c09a0be155",
+      "file": "src/lib/stores/user-store.ts",
+      "line": 20,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 2688
+    },
+    {
+      "errorId": "7025634dabd3faa7fb3eae090e5b2c67",
+      "file": "src/lib/stores/user-store.ts",
+      "line": 21,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 1886
+    },
+    {
+      "errorId": "924da75e46617cf5e8428d041a63b6b9",
+      "file": "src/lib/stores/user-store.ts",
+      "line": 22,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 1759
+    },
+    {
+      "errorId": "64c05d3cf69246d46214c3ff4afa4f24",
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 25,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 1763
+    },
+    {
+      "errorId": "b3bf764ebf4c3ae7c980520d1a98666f",
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 26,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 1836
+    },
+    {
+      "errorId": "b3e31ba5a0e0d7632ee4a70cbfe2f55c",
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 27,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 1917
+    },
+    {
+      "errorId": "6311d9b6189de0c598244087ee29d3e4",
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 30,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 1804
+    },
+    {
+      "errorId": "2a84e304101d4b27c91b8db0b6b227ae",
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 31,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 1839
+    },
+    {
+      "errorId": "1562439b83f9530cf5e2a7d49a2a69e2",
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 32,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 2411
+    },
+    {
+      "errorId": "18815b3d486c2dd15ff71c1d15c269c1",
+      "file": "src/app.d.ts",
+      "line": 35,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "suggestions": [],
+      "processingTime": 2056
+    },
+    {
+      "errorId": "aa62607f64d468da4f50753cfbb3552c",
+      "file": "src/app.d.ts",
+      "line": 36,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "suggestions": [],
+      "processingTime": 2743
+    },
+    {
+      "errorId": "909f3f62326f92ee4b39073150b8aa8e",
+      "file": "src/app.d.ts",
+      "line": 37,
+      "message": "Cannot find name 'fetch' in this scope",
+      "suggestions": [],
+      "processingTime": 2492
+    }
+  ]
+}

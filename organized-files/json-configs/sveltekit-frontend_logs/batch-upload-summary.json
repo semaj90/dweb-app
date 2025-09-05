@@ -1,0 +1,15 @@
+{
+  "totalFiles": 37,
+  "attempted": 5,
+  "success": 5,
+  "failed": 0,
+  "avgSuccessMs": 314,
+  "totalTimeSeconds": 0.9,
+  "config": {
+    "LIMIT": 5,
+    "DRY_RUN": true,
+    "CONCURRENCY": 2,
+    "RETRIES": 3,
+    "RESUME": true
+  }
+}

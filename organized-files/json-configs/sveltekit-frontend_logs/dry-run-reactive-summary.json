@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2025-08-29T05:10:00.000Z",
+  "strategy": "codemod-first (dry-run)",
+  "rules": {
+    "convert_simple_assignment_$": "convert to $derived for safe pure expressions",
+    "do_not_convert_side_effect_block": "skip blocks with statements (assignments, function calls) — require manual $effect conversion",
+    "user_constraint_event_directives": "do not auto-convert component-level on: directives; only element-level on: for native elements"
+  },
+  "proposedConversions": [
+    {
+      "file": "src/lib/components/Sidebar.svelte",
+      "line": 27,
+      "original": "  $: sidebarOpen = $sidebarStore?.open || isHovered || isPinned;",
+      "proposed": "  const sidebarOpen = $derived(() => $sidebarStore?.open || isHovered || isPinned);",
+      "type": "simple_assignment",
+      "confidence": "high",
+      "notes": "Pure read-only expression from stores/flags — safe to convert to $derived"
+    },
+    {
+      "file": "src/lib/components/Sidebar.svelte",
+      "line": 28,
+      "original": "  $: evidenceItems = $lokiStore?.evidence ?? [];",
+      "proposed": "  const evidenceItems = $derived(() => $lokiStore?.evidence ?? []);",
+      "type": "simple_assignment",
+      "confidence": "high",
+      "notes": "Read-only store mapping — safe"
+    },
+    {
+      "file": "src/lib/components/search/AdvancedSearch.svelte",
+      "line": 93,
+      "original": "  $: searchValue = $inputValue;",
+      "proposed": "  const searchValue = $derived(() => $inputValue);",
+      "type": "simple_assignment",
+      "confidence": "high",
+      "notes": "Direct mirror of combobox store — safe"
+    },
+    {
+      "file": "src/lib/vendor/bits-ui-fallback/ComponentFallback.svelte",
+      "line": 33,
+      "original": "  $: fallbackClasses = [\\n    class,",
+      "proposed": "  const fallbackClasses = $derived(() => [\\n    class,",
+      "type": "simple_assignment",
+      "confidence": "medium",
+      "notes": "Depends on local \"class\" variable — verify no mutations after declaration"
+    },
+    {
+      "file": "src/routes/auth/+page.svelte",
+      "line": 93,
+      "original": "  $: isFormValid = (authMode === 'login')\n    ? Boolean(formData.email && formData.password)",
+      "proposed": "  const isFormValid = $derived(() => ((authMode === 'login') ? Boolean(formData.email && formData.password) : undefined));",
+      "type": "simple_assignment",
+      "confidence": "low",
+      "notes": "Ternary with fallback — manual review recommended to preserve fallback behavior and typing"
+    }
+  ],
+  "counts": {
+    "scanner_total": 52,
+    "proposed_simple_assignment": 7
+  },
+  "nextSteps": [
+    "Please review logs/dry-run-reactive-simple-assignment.patch and logs/dry-run-reactive-summary.json.",
+    "If you approve, reply 'apply dry-run' and I will apply these patches to source files and run TypeScript check/build.",
+    "I will not convert conditional or side-effect blocks automatically; those will be prepared as separate suggested patches for manual review."
+  ]
+}

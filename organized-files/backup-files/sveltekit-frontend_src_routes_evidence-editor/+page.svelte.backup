@@ -1,0 +1,92 @@
+<script lang="ts">
+  import { page } from '$app/stores';
+  import VisualEvidenceEditor from '$lib/components/evidence-editor/VisualEvidenceEditor.svelte';
+  import { Button } from '$lib/components/ui';
+  import { onMount } from 'svelte';
+  
+  let caseId: string | null = null;
+  let readOnly = false;
+  
+  onMount(() => {
+    // Get case ID from URL params if provided
+    caseId = $page.url.searchParams.get('caseId');
+    readOnly = $page.url.searchParams.get('readOnly') === 'true';
+  });
+  
+  function toggleReadOnly() {
+    readOnly = !readOnly;
+  }
+</script>
+
+<svelte:head>
+  <title>Visual Evidence Editor - Legal AI Assistant</title>
+  <meta name="description" content="Advanced visual evidence management with AI-powered tagging and analysis" />
+</svelte:head>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <!-- Header -->
+  <div class="mx-auto px-4 max-w-7xl">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div>
+        <h1 class="mx-auto px-4 max-w-7xl">Visual Evidence Editor</h1>
+        <p class="mx-auto px-4 max-w-7xl">
+          Drag and drop evidence files for AI-powered analysis and tagging
+        </p>
+      </div>
+      
+      <div class="mx-auto px-4 max-w-7xl">
+        <Button 
+          on:click={toggleReadOnly}
+          variant={readOnly ? "default" : "outline"}
+          size="sm"
+        >
+          {readOnly ? 'Enable Editing' : 'Read Only'}
+        </Button>
+        
+        <div class="mx-auto px-4 max-w-7xl">
+          {#if caseId}
+            Case: {caseId}
+          {:else}
+            Demo Mode
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Editor -->
+  <div class="mx-auto px-4 max-w-7xl">
+    <VisualEvidenceEditor {caseId} {readOnly} />
+  </div>
+</div>
+
+<!-- Help Overlay (initially hidden) -->
+<div class="mx-auto px-4 max-w-7xl" style="display: none;" id="help-overlay">
+  <h3 class="mx-auto px-4 max-w-7xl">Quick Start Guide</h3>
+  <ul class="mx-auto px-4 max-w-7xl">
+    <li>• Drag files onto the canvas to add evidence</li>
+    <li>• Files are automatically analyzed with AI</li>
+    <li>• Click evidence to view details in the inspector</li>
+    <li>• Use the AI assistant for search and insights</li>
+    <li>• Edit metadata and tags in the inspector panel</li>
+  </ul>
+  <Button 
+    size="sm" 
+    class="mx-auto px-4 max-w-7xl"
+    on:click={() => {
+      const helpOverlay = document.getElementById('help-overlay');
+      if (helpOverlay) {
+        helpOverlay.style.display = 'none';
+      }
+    "
+  >
+    Got it!
+  </Button>
+</div>
+
+<style>
+  .evidence-editor-page {
+    height: 100vh;
+    overflow: hidden;
+  }
+</style>

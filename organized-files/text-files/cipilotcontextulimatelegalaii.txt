@@ -1,0 +1,1181 @@
+# GitHub Copilot Context - Ultimate Legal AI (Complete Tech Stack)
+
+## Context7 + MCP Enhanced Integration
+
+### Multi-Model AI Support with Complete Documentation Access
+GitHub Copilot configured with Context7 real-time documentation for 25+ technologies, ensuring all AI models have comprehensive, current knowledge:
+
+**Supported Models:**
+- **GPT Models**: gpt-4.1, gpt-4o
+- **Claude Models**: claude-opus-4, claude-sonnet-4, claude-3.5-sonnet, claude-3.7-sonnet
+- **Gemini Models**: gemini-2.0-flash-001, gemini-2.5-pro, gemma-3-27b-it
+- **O-Models**: o3, o3-mini, o4-mini
+
+### Context7 Documentation Sources (Prioritized)
+
+#### **Critical Priority** (Core Framework)
+1. **SvelteKit** - Latest routing, SSR, data loading, error handling
+2. **Svelte 5** - Runes, snippets, modern reactivity, migration guides
+3. **Tailwind CSS** - Utility classes, responsive design, JIT compilation
+4. **UnoCSS** - Atomic CSS, instant compilation, custom rules
+5. **Drizzle ORM** - Type-safe queries, migrations, performance optimization
+
+#### **High Priority** (State & Graphics)
+6. **XState** - Finite state machines for complex legal workflows
+7. **XState Store** - Global state management with predictable transitions
+8. **Fabric.js** - Interactive canvas for legal document annotation
+9. **LangChain** - LLM application framework with chains and agents
+10. **PostgreSQL** - Advanced SQL, JSON/JSONB, performance tuning
+11. **pgvector** - Vector similarity search, embeddings, AI integration
+
+#### **Medium Priority** (Tools & Libraries)
+12. **JavaScript ES2024** - Modern language features, async patterns
+13. **TypeScript** - Advanced types, generics, utility types
+14. **Ollama** - Local LLM runtime and model management
+15. **CSS Almanac** - Comprehensive CSS patterns from CSS-Tricks
+16. **PostCSS** - CSS post-processing with plugins
+17. **Zod** - Schema validation with TypeScript inference
+18. **Lucia Auth** - Session-based authentication patterns
+19. **SvelteKit Superforms** - Advanced form handling
+20. **bits-ui** - Accessible component primitives
+
+## Advanced Legal Workflow Patterns
+
+### XState Legal Case State Machine
+```typescript
+<script lang="ts">
+  import { useMachine } from '@xstate/svelte';
+  import { legalCaseMachine } from '$lib/machines/legal-case-machine';
+  import type { LegalCase, Evidence } from '$lib/types';
+  
+  interface Props {
+    initialCase?: LegalCase;
+  }
+  
+  let { initialCase }: Props = $props();
+  
+  const { state, send } = useMachine(legalCaseMachine, {
+    input: { caseId: initialCase?.id }
+  });
+  
+  // Reactive state derived from XState
+  let currentCase = $derived(state.context.case);
+  let evidence = $derived(state.context.evidence);
+  let isLoading = $derived(state.matches('loading'));
+  let canAddEvidence = $derived(state.can('ADD_EVIDENCE'));
+  let canGenerateReport = $derived(state.can('GENERATE_REPORT'));
+  let currentStep = $derived(state.context.currentStep);
+  let errors = $derived(state.context.errors);
+  
+  // Legal workflow actions
+  const loadCase = (caseId: number) => {
+    send({ type: 'LOAD_CASE', caseId });
+  };
+  
+  const addEvidence = (evidenceFile: File) => {
+    send({ 
+      type: 'ADD_EVIDENCE', 
+      evidence: { file: evidenceFile, caseId: currentCase!.id } 
+    });
+  };
+  
+  const updateCaseStatus = (status: CaseStatus) => {
+    send({ type: 'UPDATE_STATUS', status });
+  };
+  
+  const requestAIAnalysis = () => {
+    send({ type: 'REQUEST_AI_ANALYSIS' });
+  };
+  
+  const generateReport = () => {
+    send({ type: 'GENERATE_REPORT' });
+  };
+</script>
+
+<!-- Legal Case Workflow Interface -->
+<div class="legal-workflow-container">
+  <!-- State Machine Status -->
+  <div class="workflow-status">
+    <div class="status-header">
+      <h2 class="workflow-title">Case Workflow</h2>
+      <div class="state-indicator {state.value}">
+        {state.value}
+      </div>
+    </div>
+    
+    {#if errors.length > 0}
+      <div class="error-alerts">
+        {#each errors as error}
+          <div class="error-alert">
+            <i class="i-lucide-alert-circle"></i>
+            {error}
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
+  
+  <!-- Workflow Steps -->
+  <div class="workflow-steps">
+    <div class="step-indicator">
+      <div class="step {currentStep === 'overview' ? 'active' : ''}">
+        <div class="step-icon">
+          <i class="i-lucide-eye"></i>
+        </div>
+        <span class="step-label">Overview</span>
+      </div>
+      
+      <div class="step {currentStep === 'evidence' ? 'active' : ''}">
+        <div class="step-icon">
+          <i class="i-lucide-file-plus"></i>
+        </div>
+        <span class="step-label">Evidence</span>
+      </div>
+      
+      <div class="step {currentStep === 'analysis' ? 'active' : ''}">
+        <div class="step-icon">
+          <i class="i-lucide-brain"></i>
+        </div>
+        <span class="step-label">AI Analysis</span>
+      </div>
+      
+      <div class="step {currentStep === 'report' ? 'active' : ''}">
+        <div class="step-icon">
+          <i class="i-lucide-file-text"></i>
+        </div>
+        <span class="step-label">Report</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Case Information -->
+  {#if currentCase}
+    <div class="case-info-section">
+      <div class="case-header">
+        <h3 class="case-title">{currentCase.title}</h3>
+        <span class="case-number">#{currentCase.caseNumber}</span>
+        <span class="status-badge status-{currentCase.status}">
+          {currentCase.status}
+        </span>
+      </div>
+      
+      <div class="case-meta">
+        <div class="meta-item">
+          <i class="i-lucide-calendar"></i>
+          Created: {formatDate(currentCase.createdAt)}
+        </div>
+        <div class="meta-item">
+          <i class="i-lucide-clock"></i>
+          Updated: {formatRelativeTime(currentCase.updatedAt)}
+        </div>
+        <div class="meta-item">
+          <i class="i-lucide-paperclip"></i>
+          Evidence: {evidence.length} items
+        </div>
+      </div>
+    </div>
+  {/if}
+  
+  <!-- Action Buttons -->
+  <div class="workflow-actions">
+    {#if canAddEvidence}
+      <button 
+        class="action-btn primary"
+        onclick={() => document.getElementById('evidence-input')?.click()}
+      >
+        <i class="i-lucide-upload"></i>
+        Add Evidence
+      </button>
+      <input 
+        id="evidence-input"
+        type="file"
+        accept=".pdf,.doc,.docx,.jpg,.png"
+        onchange={(e) => e.target.files?.[0] && addEvidence(e.target.files[0])}
+        style="display: none;"
+      />
+    {/if}
+    
+    {#if state.matches('loaded.viewing') && currentCase}
+      <button 
+        class="action-btn secondary"
+        onclick={requestAIAnalysis}
+        disabled={isLoading}
+      >
+        <i class="i-lucide-brain"></i>
+        AI Analysis
+      </button>
+      
+      <div class="status-dropdown">
+        <select 
+          bind:value={currentCase.status}
+          onchange={(e) => updateCaseStatus(e.target.value)}
+          class="status-select"
+        >
+          <option value="open">Open</option>
+          <option value="pending">Pending</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+    {/if}
+    
+    {#if canGenerateReport}
+      <button 
+        class="action-btn success"
+        onclick={generateReport}
+        disabled={isLoading}
+      >
+        <i class="i-lucide-file-text"></i>
+        Generate Report
+      </button>
+    {/if}
+  </div>
+  
+  <!-- Loading States -->
+  {#if isLoading}
+    <div class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">
+        {#if state.matches('loading')}
+          Loading case data...
+        {:else if state.matches('loaded.addingEvidence')}
+          Processing evidence...
+        {:else if state.matches('loaded.analyzingWithAI')}
+          Performing AI analysis...
+        {:else if state.matches('loaded.generatingReport')}
+          Generating report...
+        {:else}
+          Processing...
+        {/if}
+      </p>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .legal-workflow-container {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 p-6 relative;
+  }
+  
+  .workflow-status {
+    @apply mb-6;
+  }
+  
+  .status-header {
+    @apply flex justify-between items-center mb-4;
+  }
+  
+  .workflow-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+  
+  .state-indicator {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .state-indicator.idle {
+    @apply bg-gray-100 text-gray-800;
+  }
+  
+  .state-indicator.loading {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .state-indicator.loaded {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .state-indicator.error {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .error-alerts {
+    @apply space-y-2;
+  }
+  
+  .error-alert {
+    @apply flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700;
+  }
+  
+  .workflow-steps {
+    @apply mb-6;
+  }
+  
+  .step-indicator {
+    @apply flex justify-between items-center;
+  }
+  
+  .step {
+    @apply flex flex-col items-center space-y-2 flex-1;
+  }
+  
+  .step-icon {
+    @apply w-10 h-10 rounded-full border-2 flex items-center justify-center;
+    @apply border-gray-300 text-gray-400;
+  }
+  
+  .step.active .step-icon {
+    @apply border-blue-500 text-blue-600 bg-blue-50;
+  }
+  
+  .step-label {
+    @apply text-sm font-medium text-gray-600;
+  }
+  
+  .step.active .step-label {
+    @apply text-blue-600;
+  }
+  
+  .case-info-section {
+    @apply mb-6 p-4 bg-gray-50 rounded-lg;
+  }
+  
+  .case-header {
+    @apply flex items-center space-x-3 mb-3;
+  }
+  
+  .case-title {
+    @apply text-lg font-semibold text-gray-900 flex-1;
+  }
+  
+  .case-number {
+    @apply text-sm font-mono text-gray-500 bg-gray-200 px-2 py-1 rounded;
+  }
+  
+  .status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+  
+  .status-open {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-closed {
+    @apply bg-gray-100 text-gray-800;
+  }
+  
+  .case-meta {
+    @apply flex space-x-4 text-sm text-gray-600;
+  }
+  
+  .meta-item {
+    @apply flex items-center space-x-1;
+  }
+  
+  .workflow-actions {
+    @apply flex space-x-3 flex-wrap;
+  }
+  
+  .action-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+    @apply flex items-center space-x-2;
+  }
+  
+  .action-btn.primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+  
+  .action-btn.secondary {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  }
+  
+  .action-btn.success {
+    @apply bg-green-600 text-white hover:bg-green-700;
+  }
+  
+  .action-btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  .status-dropdown {
+    @apply relative;
+  }
+  
+  .status-select {
+    @apply px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+  
+  .loading-overlay {
+    @apply absolute inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center;
+    @apply backdrop-blur-sm rounded-lg;
+  }
+  
+  .loading-spinner {
+    @apply w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin;
+  }
+  
+  .loading-text {
+    @apply mt-4 text-gray-600 font-medium;
+  }
+</style>
+```
+
+### Fabric.js Interactive Document Annotation
+```typescript
+<script lang="ts">
+  import { fabric } from 'fabric';
+  import { onMount, onDestroy } from 'svelte';
+  import { globalStore } from '$lib/stores/global-store';
+  import type { Evidence, Annotation } from '$lib/types';
+  
+  interface Props {
+    evidence: Evidence;
+    annotations?: Annotation[];
+    readonly?: boolean;
+    onAnnotationChange?: (annotations: Annotation[]) => void;
+    onExportRequest?: (format: 'png' | 'pdf') => void;
+  }
+  
+  let { 
+    evidence, 
+    annotations = [], 
+    readonly = false, 
+    onAnnotationChange,
+    onExportRequest 
+  }: Props = $props();
+  
+  let canvasElement: HTMLCanvasElement;
+  let fabricCanvas: fabric.Canvas;
+  let currentTool = $state<'select' | 'text' | 'highlight' | 'redact' | 'arrow'>('select');
+  let selectedColor = $state('#ffff00');
+  let isDrawing = $state(false);
+  let canvasReady = $state(false);
+  
+  // Fabric.js canvas setup
+  onMount(async () => {
+    await initializeCanvas();
+    await loadDocumentBackground();
+    loadExistingAnnotations();
+    setupCanvasEvents();
+    canvasReady = true;
+  });
+  
+  onDestroy(() => {
+    if (fabricCanvas) {
+      fabricCanvas.dispose();
+    }
+  });
+  
+  const initializeCanvas = async () => {
+    fabricCanvas = new fabric.Canvas(canvasElement, {
+      width: 800,
+      height: 1000,
+      backgroundColor: '#ffffff',
+      selection: !readonly,
+      preserveObjectStacking: true
+    });
+    
+    // Configure canvas for legal document annotation
+    fabricCanvas.on('selection:created', handleObjectSelection);
+    fabricCanvas.on('selection:updated', handleObjectSelection);
+    fabricCanvas.on('selection:cleared', handleSelectionCleared);
+    
+    if (!readonly) {
+      fabricCanvas.on('object:added', saveAnnotations);
+      fabricCanvas.on('object:modified', saveAnnotations);
+      fabricCanvas.on('object:removed', saveAnnotations);
+    }
+  };
+  
+  const loadDocumentBackground = async () => {
+    try {
+      let imageUrl: string;
+      
+      if (evidence.mimeType.includes('pdf')) {
+        // Convert PDF page to image
+        imageUrl = `/api/evidence/${evidence.id}/render?page=1&format=png`;
+      } else if (evidence.mimeType.includes('image')) {
+        imageUrl = `/api/evidence/${evidence.id}/content`;
+      } else {
+        // For text documents, create a rendered version
+        imageUrl = `/api/evidence/${evidence.id}/render?format=png`;
+      }
+      
+      fabric.Image.fromURL(imageUrl, (img) => {
+        if (!img) return;
+        
+        // Scale image to fit canvas while maintaining aspect ratio
+        const scaleX = fabricCanvas.width! / img.width!;
+        const scaleY = fabricCanvas.height! / img.height!;
+        const scale = Math.min(scaleX, scaleY);
+        
+        img.set({
+          left: 0,
+          top: 0,
+          scaleX: scale,
+          scaleY: scale,
+          selectable: false,
+          evented: false,
+          excludeFromExport: false
+        });
+        
+        fabricCanvas.add(img);
+        fabricCanvas.sendToBack(img);
+        fabricCanvas.renderAll();
+      }, { crossOrigin: 'anonymous' });
+      
+    } catch (error) {
+      console.error('Failed to load document background:', error);
+      globalStore.send({
+        type: 'addNotification',
+        notification: {
+          id: crypto.randomUUID(),
+          type: 'error',
+          message: 'Failed to load document for annotation',
+          timestamp: new Date()
+        }
+      });
+    }
+  };
+  
+  const loadExistingAnnotations = () => {
+    annotations.forEach(annotation => {
+      createAnnotationObject(annotation);
+    });
+  };
+  
+  const createAnnotationObject = (annotation: Annotation) => {
+    let obj: fabric.Object;
+    
+    switch (annotation.type) {
+      case 'text':
+        obj = new fabric.IText(annotation.content || 'Text annotation', {
+          left: annotation.position.left,
+          top: annotation.position.top,
+          fontSize: 14,
+          fill: annotation.style?.color || '#000000',
+          backgroundColor: annotation.style?.backgroundColor || 'rgba(255, 255, 255, 0.8)',
+          padding: 5,
+          cornerStyle: 'circle',
+          cornerColor: '#0066cc'
+        });
+        break;
+        
+      case 'highlight':
+        obj = new fabric.Rect({
+          left: annotation.position.left,
+          top: annotation.position.top,
+          width: annotation.position.width,
+          height: annotation.position.height,
+          fill: annotation.style?.color || 'rgba(255, 255, 0, 0.3)',
+          stroke: annotation.style?.borderColor || '#ffdd00',
+          strokeWidth: 1,
+          cornerStyle: 'circle',
+          cornerColor: '#ffdd00'
+        });
+        break;
+        
+      case 'redact':
+        obj = new fabric.Rect({
+          left: annotation.position.left,
+          top: annotation.position.top,
+          width: annotation.position.width,
+          height: annotation.position.height,
+          fill: '#000000',
+          stroke: '#000000',
+          strokeWidth: 2,
+          cornerStyle: 'circle',
+          cornerColor: '#ff0000'
+        });
+        break;
+        
+      case 'arrow':
+        const arrow = createArrowShape(
+          annotation.position.left,
+          annotation.position.top,
+          annotation.position.left + annotation.position.width,
+          annotation.position.top + annotation.position.height
+        );
+        obj = arrow;
+        break;
+        
+      default:
+        return;
+    }
+    
+    // Add metadata to object
+    obj.set({
+      data: {
+        id: annotation.id,
+        type: annotation.type,
+        createdAt: annotation.createdAt,
+        createdBy: annotation.createdBy,
+        content: annotation.content
+      }
+    });
+    
+    fabricCanvas.add(obj);
+  };
+  
+  const createArrowShape = (x1: number, y1: number, x2: number, y2: number) => {
+    const line = new fabric.Line([x1, y1, x2, y2], {
+      stroke: '#ff0000',
+      strokeWidth: 3,
+      selectable: false
+    });
+    
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const arrowHead = new fabric.Triangle({
+      left: x2,
+      top: y2,
+      angle: (angle * 180) / Math.PI + 90,
+      width: 10,
+      height: 10,
+      fill: '#ff0000',
+      selectable: false
+    });
+    
+    return new fabric.Group([line, arrowHead], {
+      selectable: true,
+      cornerStyle: 'circle',
+      cornerColor: '#ff0000'
+    });
+  };
+  
+  const setupCanvasEvents = () => {
+    if (readonly) return;
+    
+    fabricCanvas.on('mouse:down', (e) => {
+      if (!e.pointer) return;
+      
+      switch (currentTool) {
+        case 'text':
+          addTextAnnotation(e.pointer);
+          break;
+        case 'highlight':
+          startHighlight(e.pointer);
+          break;
+        case 'redact':
+          addRedaction(e.pointer);
+          break;
+        case 'arrow':
+          startArrow(e.pointer);
+          break;
+      }
+    });
+  };
+  
+  const addTextAnnotation = (pointer: fabric.Point) => {
+    const text = new fabric.IText('Click to edit...', {
+      left: pointer.x,
+      top: pointer.y,
+      fontSize: 14,
+      fill: '#000000',
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      padding: 5,
+      cornerStyle: 'circle',
+      cornerColor: '#0066cc',
+      data: {
+        type: 'text',
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        createdBy: globalStore.getSnapshot().context.user?.id
+      }
+    });
+    
+    fabricCanvas.add(text);
+    fabricCanvas.setActiveObject(text);
+    text.enterEditing();
+    text.selectAll();
+  };
+  
+  const startHighlight = (pointer: fabric.Point) => {
+    const highlight = new fabric.Rect({
+      left: pointer.x,
+      top: pointer.y,
+      width: 100,
+      height: 20,
+      fill: selectedColor + '50', // Add transparency
+      stroke: selectedColor,
+      strokeWidth: 1,
+      cornerStyle: 'circle',
+      cornerColor: selectedColor,
+      data: {
+        type: 'highlight',
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        createdBy: globalStore.getSnapshot().context.user?.id
+      }
+    });
+    
+    fabricCanvas.add(highlight);
+    fabricCanvas.setActiveObject(highlight);
+  };
+  
+  const addRedaction = (pointer: fabric.Point) => {
+    const redaction = new fabric.Rect({
+      left: pointer.x,
+      top: pointer.y,
+      width: 100,
+      height: 20,
+      fill: '#000000',
+      stroke: '#000000',
+      strokeWidth: 2,
+      cornerStyle: 'circle',
+      cornerColor: '#ff0000',
+      data: {
+        type: 'redaction',
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        createdBy: globalStore.getSnapshot().context.user?.id,
+        sensitive: true
+      }
+    });
+    
+    fabricCanvas.add(redaction);
+    fabricCanvas.setActiveObject(redaction);
+  };
+  
+  const startArrow = (pointer: fabric.Point) => {
+    // For simplicity, create a basic arrow
+    const arrow = createArrowShape(
+      pointer.x,
+      pointer.y,
+      pointer.x + 50,
+      pointer.y + 30
+    );
+    
+    arrow.set({
+      data: {
+        type: 'arrow',
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        createdBy: globalStore.getSnapshot().context.user?.id
+      }
+    });
+    
+    fabricCanvas.add(arrow);
+    fabricCanvas.setActiveObject(arrow);
+  };
+  
+  const saveAnnotations = () => {
+    const objects = fabricCanvas.getObjects().filter(obj => obj.data?.type);
+    const currentAnnotations: Annotation[] = objects.map(obj => ({
+      id: obj.data.id,
+      type: obj.data.type,
+      position: {
+        left: obj.left!,
+        top: obj.top!,
+        width: obj.width! * obj.scaleX!,
+        height: obj.height! * obj.scaleY!
+      },
+      content: obj.type === 'i-text' ? (obj as fabric.IText).text : obj.data.content,
+      style: {
+        color: obj.fill as string,
+        backgroundColor: (obj as any).backgroundColor,
+        borderColor: obj.stroke as string
+      },
+      createdAt: obj.data.createdAt,
+      createdBy: obj.data.createdBy
+    }));
+    
+    onAnnotationChange?.(currentAnnotations);
+  };
+  
+  const handleObjectSelection = (e: fabric.IEvent) => {
+    // Update UI based on selected object
+    const activeObject = e.selected?.[0] || e.target;
+    if (activeObject?.data?.type) {
+      currentTool = 'select';
+    }
+  };
+  
+  const handleSelectionCleared = () => {
+    // Reset tool state if needed
+  };
+  
+  const exportCanvas = (format: 'png' | 'pdf') => {
+    if (format === 'png') {
+      const dataURL = fabricCanvas.toDataURL({
+        format: 'png',
+        quality: 1.0,
+        multiplier: 2
+      });
+      
+      const link = document.createElement('a');
+      link.download = `annotated-${evidence.filename}.png`;
+      link.href = dataURL;
+      link.click();
+    }
+    
+    onExportRequest?.(format);
+  };
+  
+  const clearAllAnnotations = () => {
+    if (confirm('Remove all annotations? This cannot be undone.')) {
+      const objects = fabricCanvas.getObjects().filter(obj => obj.data?.type);
+      objects.forEach(obj => fabricCanvas.remove(obj));
+      fabricCanvas.renderAll();
+      saveAnnotations();
+    }
+  };
+  
+  const undoLastAction = () => {
+    // Implement undo functionality
+    const objects = fabricCanvas.getObjects();
+    if (objects.length > 1) { // Keep background image
+      fabricCanvas.remove(objects[objects.length - 1]);
+      fabricCanvas.renderAll();
+      saveAnnotations();
+    }
+  };
+</script>
+
+<!-- Document Annotation Interface -->
+<div class="document-annotation-container">
+  <!-- Annotation Toolbar -->
+  {#if !readonly && canvasReady}
+    <div class="annotation-toolbar">
+      <!-- Tool Selection -->
+      <div class="tool-section">
+        <div class="tool-group">
+          <button 
+            class="tool-btn {currentTool === 'select' ? 'active' : ''}"
+            onclick={() => currentTool = 'select'}
+            title="Select and move objects"
+          >
+            <i class="i-lucide-mouse-pointer"></i>
+          </button>
+          <button 
+            class="tool-btn {currentTool === 'text' ? 'active' : ''}"
+            onclick={() => currentTool = 'text'}
+            title="Add text annotation"
+          >
+            <i class="i-lucide-type"></i>
+          </button>
+          <button 
+            class="tool-btn {currentTool === 'highlight' ? 'active' : ''}"
+            onclick={() => currentTool = 'highlight'}
+            title="Highlight text"
+          >
+            <i class="i-lucide-highlighter"></i>
+          </button>
+          <button 
+            class="tool-btn {currentTool === 'redact' ? 'active' : ''}"
+            onclick={() => currentTool = 'redact'}
+            title="Redact sensitive information"
+          >
+            <i class="i-lucide-eye-off"></i>
+          </button>
+          <button 
+            class="tool-btn {currentTool === 'arrow' ? 'active' : ''}"
+            onclick={() => currentTool = 'arrow'}
+            title="Add arrow pointer"
+          >
+            <i class="i-lucide-arrow-up-right"></i>
+          </button>
+        </div>
+        
+        <!-- Color Selection -->
+        <div class="color-section">
+          <label class="color-label">Color:</label>
+          <input 
+            type="color" 
+            bind:value={selectedColor}
+            class="color-picker"
+            title="Select annotation color"
+          />
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-section">
+        <button 
+          class="action-btn secondary"
+          onclick={undoLastAction}
+          title="Undo last annotation"
+        >
+          <i class="i-lucide-undo"></i>
+          Undo
+        </button>
+        <button 
+          class="action-btn primary"
+          onclick={() => exportCanvas('png')}
+          title="Export as PNG"
+        >
+          <i class="i-lucide-download"></i>
+          Export PNG
+        </button>
+        <button 
+          class="action-btn primary"
+          onclick={() => exportCanvas('pdf')}
+          title="Export as PDF"
+        >
+          <i class="i-lucide-file-type"></i>
+          Export PDF
+        </button>
+        <button 
+          class="action-btn danger"
+          onclick={clearAllAnnotations}
+          title="Clear all annotations"
+        >
+          <i class="i-lucide-trash-2"></i>
+          Clear All
+        </button>
+      </div>
+    </div>
+  {/if}
+  
+  <!-- Canvas Container -->
+  <div class="canvas-container">
+    <canvas bind:this={canvasElement}></canvas>
+  </div>
+  
+  <!-- Loading State -->
+  {#if !canvasReady}
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading document for annotation...</p>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .document-annotation-container {
+    @apply flex flex-col h-full bg-gray-50 relative;
+  }
+  
+  .annotation-toolbar {
+    @apply bg-white border-b border-gray-200 p-4 flex justify-between items-center;
+    @apply shadow-sm sticky top-0 z-10;
+  }
+  
+  .tool-section {
+    @apply flex items-center space-x-6;
+  }
+  
+  .tool-group {
+    @apply flex space-x-1 bg-gray-100 rounded-lg p-1;
+  }
+  
+  .tool-btn {
+    @apply w-10 h-10 flex items-center justify-center rounded-md;
+    @apply text-gray-600 hover:text-gray-900 transition-colors;
+  }
+  
+  .tool-btn.active {
+    @apply bg-white shadow-sm text-blue-600;
+  }
+  
+  .color-section {
+    @apply flex items-center space-x-2;
+  }
+  
+  .color-label {
+    @apply text-sm font-medium text-gray-700;
+  }
+  
+  .color-picker {
+    @apply w-8 h-8 rounded border border-gray-300 cursor-pointer;
+  }
+  
+  .action-section {
+    @apply flex items-center space-x-2;
+  }
+  
+  .action-btn {
+    @apply px-3 py-2 flex items-center space-x-2 rounded-lg;
+    @apply font-medium text-sm transition-colors;
+  }
+  
+  .action-btn.primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+  
+  .action-btn.secondary {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  }
+  
+  .action-btn.danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+  
+  .canvas-container {
+    @apply flex-1 p-4 overflow-auto;
+    @apply flex items-center justify-center;
+  }
+  
+  .loading-state {
+    @apply absolute inset-0 flex flex-col items-center justify-center;
+    @apply bg-white bg-opacity-90;
+  }
+  
+  .loading-spinner {
+    @apply w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin;
+  }
+</style>
+```
+
+### LangChain Legal Analysis Integration
+```typescript
+// API Route: /src/routes/api/ai/analyze-document/+server.ts
+import type { RequestHandler } from './$types';
+import { json } from '@sveltejs/kit';
+import { LegalAnalysisChain } from '$lib/server/ai/legal-chains';
+import { z } from 'zod';
+
+const analysisRequestSchema = z.object({
+  evidenceId: z.number(),
+  analysisType: z.enum(['document', 'contract', 'case_law', 'evidence']),
+  options: z.object({
+    includeRiskAssessment: z.boolean().default(true),
+    generateActionItems: z.boolean().default(true),
+    extractEntities: z.boolean().default(true)
+  }).optional()
+});
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+  try {
+    // Authentication check
+    if (!locals.user) {
+      return json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Validate request
+    const body = await request.json();
+    const validatedData = analysisRequestSchema.parse(body);
+    
+    // Get evidence content
+    const evidence = await db.query.evidence.findFirst({
+      where: eq(evidenceTable.id, validatedData.evidenceId),
+      with: {
+        case: true
+      }
+    });
+    
+    if (!evidence) {
+      return json({ error: 'Evidence not found' }, { status: 404 });
+    }
+    
+    // Check user permissions
+    if (evidence.case.createdBy !== locals.user.id && locals.user.role !== 'admin') {
+      return json({ error: 'Access denied' }, { status: 403 });
+    }
+    
+    // Initialize LangChain analysis
+    const analysisChain = new LegalAnalysisChain();
+    let result: any;
+    
+    switch (validatedData.analysisType) {
+      case 'document':
+        result = await analysisChain.analyzeDocument(
+          evidence.content,
+          evidence.documentType || 'legal_document'
+        );
+        break;
+        
+      case 'contract':
+        result = await analysisChain.reviewContract(evidence.content);
+        break;
+        
+      case 'evidence':
+        const allEvidence = await db.query.evidence.findMany({
+          where: eq(evidenceTable.caseId, evidence.caseId)
+        });
+        result = await analysisChain.analyzeEvidence(allEvidence);
+        break;
+        
+      default:
+        return json({ error: 'Invalid analysis type' }, { status: 400 });
+    }
+    
+    // Store analysis results
+    const analysisRecord = await db.insert(aiAnalysisTable).values({
+      evidenceId: evidence.id,
+      caseId: evidence.caseId,
+      analysisType: validatedData.analysisType,
+      result: JSON.stringify(result),
+      createdBy: locals.user.id,
+      createdAt: new Date()
+    }).returning();
+    
+    // Log audit trail
+    await logAuditTrail({
+      action: 'ai_analysis',
+      resourceType: 'evidence',
+      resourceId: evidence.id,
+      userId: locals.user.id,
+      metadata: {
+        analysisType: validatedData.analysisType,
+        analysisId: analysisRecord[0].id
+      }
+    });
+    
+    return json({
+      success: true,
+      analysis: result,
+      analysisId: analysisRecord[0].id,
+      metadata: {
+        evidenceId: evidence.id,
+        analysisType: validatedData.analysisType,
+        timestamp: new Date()
+      }
+    });
+    
+  } catch (error) {
+    console.error('AI analysis error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return json(
+        { error: 'Invalid request data', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    return json(
+      { error: 'Analysis failed', details: error.message },
+      { status: 500 }
+    );
+  }
+};
+```
+
+## Context7 Enhanced Development Benefits
+
+### Real-Time Documentation Integration
+With 25+ Context7 sources, GitHub Copilot now has comprehensive, always-current knowledge of:
+
+#### **Framework & State Management**
+- **Latest SvelteKit patterns** - Routing, SSR, form actions, error handling
+- **Svelte 5 runes system** - Modern reactivity, migration patterns
+- **XState workflows** - Complex state machines for legal processes
+- **XState Store** - Global state with predictable transitions
+
+#### **Graphics & Interaction**
+- **Fabric.js canvas operations** - Interactive document annotation
+- **HTML to Canvas conversion** - Document rendering and manipulation
+- **Advanced drawing tools** - Legal markup and redaction patterns
+
+#### **AI & LLM Integration**
+- **LangChain framework** - Building sophisticated AI chains
+- **Ollama integration** - Local LLM deployment and management
+- **Vector search patterns** - Semantic similarity and embeddings
+- **NVIDIA optimization** - GPU acceleration for AI workloads
+
+#### **Database & Performance**
+- **PostgreSQL advanced features** - JSON operations, full-text search
+- **pgvector optimization** - Efficient vector similarity queries
+- **Drizzle ORM patterns** - Type-safe migrations and relations
+
+#### **Styling & UI**
+- **UnoCSS atomic patterns** - Instant CSS compilation
+- **Tailwind optimization** - JIT compilation and purging
+- **PostCSS workflows** - Advanced CSS processing
+- **CSS Almanac patterns** - Comprehensive CSS reference
+
+### Enhanced AI Code Generation
+All AI models can now generate:
+- ✅ **Complex state machines** for legal workflow management
+- ✅ **Interactive canvas components** for document annotation
+- ✅ **LangChain AI pipelines** for legal document analysis
+- ✅ **Vector search systems** with semantic similarity
+- ✅ **Advanced database schemas** with pgvector integration
+- ✅ **Modern reactive interfaces** with Svelte 5 runes
+- ✅ **Optimized styling systems** with atomic CSS patterns
+- ✅ **Type-safe API endpoints** with comprehensive validation
+
+This ultimate Context7 + MCP integration ensures GitHub Copilot provides cutting-edge AI assistance for sophisticated legal application development with complete technology stack coverage.

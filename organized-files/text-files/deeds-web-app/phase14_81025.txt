@@ -1,0 +1,147 @@
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -NoProfile -Command "Set-Location 'c:\Users\james\Desktop\deeds-web\deeds-web-app\go-microservice'; $env:GO_SERVER_PORT='8084'; $env:OLLAMA_HOST='http://localhost:11434'; $env:MODEL_NAME='gemma3-legal:latest'; go run main.go"
+run main.go"=8084: The term '=8084' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+=http://localhost:11434: The term '=http://localhost:11434' is not recognized as a name of a cmdlet, function, script file, or executable
+program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+=gemma3-legal:latest: The term '=gemma3-legal:latest' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+2025/08/10 09:44:31 ✅ Services initialized successfully
+2025/08/10 09:44:31 🔧 Redis: localhost:6379
+2025/08/10 09:44:31 🐘 PostgreSQL: Connected
+2025/08/10 09:44:31 🎯 Gemma Model Path: C:/AI/Models/gemma3-legal-8b-q4_k_m.gguf
+2025/08/10 09:44:31 🚀 CUDA GPU Enabled: true
+2025/08/10 09:44:31 🚀 Enhanced Legal AI Microservice starting on port 8084
+2025/08/10 09:44:31 🔗 API Documentation: http://localhost:8084/
+2025/08/10 09:44:31 💚 Health Check: http://localhost:8084/api/health
+2025/08/10 09:44:31 💚 Health Alias:  http://localhost:8084/health
+2025/08/10 09:44:31 📊 Metrics: http://localhost:8084/api/metrics
+
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> cmd /c "START-GPU-LEGAL-AI-8084.bat"
+================================
+ Starting GPU Legal AI (8084)
+================================
+
+SUCCESS: The process with PID 61868 has been terminated.
+Checking Ollama status...
+Checking Redis status...
+Building Go microservice...
+Starting GPU Legal AI service on port 8084...
+Service:   http://localhost:8084/
+Health:    http://localhost:8084/api/health   (alias: /health)
+Metrics:   http://localhost:8084/api/metrics
+2025/08/10 10:17:55 🎯 Gemma Model Path: C:/AI/Models/gemma3-legal-8b-q4_k_m.gguf
+2025/08/10 10:17:55 🚀 CUDA GPU Enabled: true
+2025/08/10 10:17:55 🚀 Enhanced Legal AI Microservice starting on port 8084
+2025/08/10 10:17:55 🔗 API Documentation: http://localhost:8084/
+2025/08/10 10:17:55 💚 Health Check: http://localhost:8084/api/health
+2025/08/10 10:17:55 💚 Health Alias:  http://localhost:8084/health
+2025/08/10 10:17:55 📊 Metrics: http://localhost:8084/api/metrics
+Terminate batch job (Y/N)? pwsh -Command "Invoke-RestMethod -Uri 'http://localhost:8084/api/health' -TimeoutSec 10 | ConvertTo-Json"
+Terminate batch job (Y/N)? n
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> cmd /c "START-GPU-LEGAL-AI-8084.bat"
+================================
+ Starting GPU Legal AI (8084)
+================================
+
+SUCCESS: The process with PID 22144 has been terminated.
+Checking Ollama status...
+Checking Redis status...
+Building Go microservice...
+Starting GPU Legal AI service on port 8084...
+Service:   http://localhost:8084/
+Health:    http://localhost:8084/api/health   (alias: /health)
+Metrics:   http://localhost:8084/api/metrics
+GPU Stats: http://localhost:8084/api/gpu-status
+
+Γ£à Startup sequence initiated. Press any key to exit this window.
+2025/08/10 10:23:32 ✅ Services initialized successfully
+2025/08/10 10:23:32 🔧 Redis: localhost:6379
+2025/08/10 10:23:32 🐘 PostgreSQL: Connected
+2025/08/10 10:23:32 🎯 Gemma Model Path: C:/AI/Models/gemma3-legal-8b-q4_k_m.gguf
+2025/08/10 10:23:32 🚀 CUDA GPU Enabled: true
+2025/08/10 10:23:32 🚀 Enhanced Legal AI Microservice starting on port 8084
+2025/08/10 10:23:32 🔗 API Documentation: http://localhost:8084/
+2025/08/10 10:23:32 💚 Health Check: http://localhost:8084/api/health
+2025/08/10 10:23:32 💚 Health Alias:  http://localhost:8084/health
+2025/08/10 10:23:32 📊 Metrics: http://localhost:8084/api/metrics
+Terminate batch job (Y/N)? pwsh -Command "Invoke-RestMethod -Uri 'http://localhost:8084/api/health' -TimeoutSec 10 | ConvertTo-Json -Depth 6"
+Terminate batch job (Y/N)? yy
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-RestMethod -Uri 'http://localhost:8084/api/health' -TimeoutSec 5 | ConvertTo-Json -Depth 6 } catch { Write-Host '❌ API health failed:' $_.Exception.Message }"
+{
+  "services": {
+    "gpu": "enabled",
+    "postgres": "healthy",
+    "redis": "healthy"
+  },
+  "status": "healthy",
+  "system": {
+    "goroutines": 3,
+    "memory": {
+      "alloc_mb": 2,
+      "gc_cycles": 0,
+      "sys_mb": 10,
+      "total_alloc_mb": 2
+    },
+    "uptime": "37m27.9020945s"
+  },
+  "timestamp": 1754848945
+}
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-RestMethod -Uri 'http://localhost:8084/api/chat' -Method POST -Body (@{model='gemma3-legal:latest';prompt='Say hello';temperature=0.2;stream=$false} | ConvertTo-Json) -ContentType 'application/json' -TimeoutSec 15 | ConvertTo-Json -Depth 6 } catch { Write-Host '❌ Chat failed:' $_.Exception.Message }"15 | ConvertTo-Json -Depth 6 } catch { Write-Host '? Chat failed:' $_.Exception.Message }"
+{
+  "model": "gemma3-legal:latest",
+  "response": "Hello! I'm your specialized Legal AI Assistant, powered by Gemma 3. I'm here to provide legal analysis, assist with contract review, evaluate evidence, and offer insights into regulatory compliance. \n\nPlease remember that I am an AI and cannot provide legal advice. My responses are for informational purposes only and should not substitute consultation with a qualified legal professional for any critical legal decisions. \n\nHow can I assist you today?",
+  "done": true,
+
+
+Terminate batch job (Y/N)? yy
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-RestMethod -Uri 'http://localhost:8084/api/health' -TimeoutSec 5 | ConvertTo-Json -Depth 6 } catch { Write-Host '❌ API health failed:' $_.Exception.Message }"
+{
+  "services": {
+    "gpu": "enabled",
+    "postgres": "healthy",
+    "redis": "healthy"
+  },
+  "status": "healthy",
+  "system": {
+    "goroutines": 3,
+    "memory": {
+      "alloc_mb": 2,
+      "gc_cycles": 0,
+      "sys_mb": 10,
+      "total_alloc_mb": 2
+    },
+    "uptime": "37m27.9020945s"
+  },
+  "timestamp": 1754848945
+}
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-RestMethod -Uri 'http://localhost:8084/api/chat' -Method POST -Body (@{model='gemma3-legal:latest';prompt='Say hello';temperature=0.2;stream=$false} | ConvertTo-Json) -ContentType 'application/json' -TimeoutSec 15 | ConvertTo-Json -Depth 6 } catch { Write-Host '❌ Chat failed:' $_.Exception.Message }"15 | ConvertTo-Json -Depth 6 } catch { Write-Host '? Chat failed:' $_.Exception.Message }"
+{
+  "model": "gemma3-legal:latest",
+  "response": "Hello! I'm your specialized Legal AI Assistant, powered by Gemma 3. I'm here to provide legal analysis, assist with contract review, evaluate evidence, and offer insights into regulatory compliance. \n\nPlease remember that I am an AI and cannot provide legal advice. My responses are for informational purposes only and should not substitute consultation with a qualified legal professional for any critical legal decisions. \n\nHow can I assist you today?",
+  "done": true,
+  "created_at": "2025-08-10T11:02:46-07:00"
+}
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -Command "try { Invoke-RestMethod -Uri 'http://localhost:5173/api/ai/health' -TimeoutSec 10 | ConvertTo-Json -Depth 6 } catch { Write-Host '❌ Frontend health failed:' $_.Exception.Message }"
+{
+  "status": "healthy",
+  "services": {
+    "ollama": {
+      "healthy": true,
+      "models": [
+        "nomic-embed-text:latest",
+        "gemma2:2b",
+        "gemma3-legal:latest",
+        "gemma3:latest"
+      ],
+      "responseTime": 3,
+      "url": "http://localhost:11434"
+    },
+    "system": {
+      "memory": "370MB",
+      "uptime": "1.51h",
+      "nodeVersion": "v22.17.1"
+    },
+    "timestamp": "2025-08-10T18:03:17.742Z"
+  },
+  "message": "All systems operational (4 models available)"

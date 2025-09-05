@@ -1,0 +1,34 @@
+{
+  "name": "interactive",
+  "type": "module",
+  "version": "66.3.2",
+  "private": true,
+  "scripts": {
+    "build": "nuxi prepare && esno scripts/prepare.ts && nuxi generate",
+    "dev": "nuxi prepare && esno scripts/prepare.ts && nuxi dev",
+    "preview": "nuxi preview",
+    "fetch": "esno scripts/fetch.ts"
+  },
+  "devDependencies": {
+    "@antfu/utils": "catalog:",
+    "@shikijs/markdown-it": "catalog:",
+    "@unocss/autocomplete": "workspace:*",
+    "@unocss/nuxt": "workspace:*",
+    "@vueuse/nuxt": "catalog:",
+    "esno": "catalog:",
+    "fs-extra": "catalog:",
+    "fuse.js": "catalog:",
+    "js-yaml": "catalog:",
+    "knitwork": "catalog:",
+    "markdown-it-link-attributes": "catalog:",
+    "nuxt": "catalog:",
+    "p-limit": "catalog:",
+    "postcss-nested": "catalog:",
+    "prettier": "catalog:",
+    "shiki": "catalog:",
+    "theme-vitesse": "catalog:",
+    "unplugin-vue-markdown": "catalog:",
+    "vue": "catalog:",
+    "vue-virtual-scroller": "catalog:"
+  }
+}

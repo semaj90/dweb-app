@@ -1,0 +1,141 @@
+{
+  "gpu_acceleration": {
+    "enabled": true,
+    "gpu_layers": -1,
+    "main_gpu": 0,
+    "gpu_split": "auto",
+    "low_vram": false,
+    "offload_kqv": true,
+    "flash_attention": true,
+    "numa": false
+  },
+  "memory_optimization": {
+    "mmap": true,
+    "mlock": true,
+    "numa": false,
+    "ctx_size": 8192,
+    "batch_size": 512,
+    "n_threads": -1,
+    "n_threads_batch": -1,
+    "rope_scaling_type": "linear",
+    "rope_freq_base": 10000.0,
+    "rope_freq_scale": 1.0
+  },
+  "performance_tuning": {
+    "predict_tokens": 2048,
+    "repeat_penalty": 1.1,
+    "repeat_last_n": 64,
+    "temperature": 0.3,
+    "top_k": 40,
+    "top_p": 0.9,
+    "tfs_z": 1.0,
+    "typical_p": 1.0,
+    "presence_penalty": 0.0,
+    "frequency_penalty": 0.0,
+    "penalize_newline": true,
+    "stop_sequences": ["Human:", "User:", "\n\n"]
+  },
+  "model_configs": {
+    "gemma3-legal": {
+      "model_file": "gemma3Q4_K_M/mohf16-Q4_K_M.gguf",
+      "template": "{% if messages %}{% for message in messages %}{% if message['role'] == 'system' %}{{ message['content'] }}{% elif message['role'] == 'user' %}{{ '\\n\\nUser: ' + message['content'] }}{% elif message['role'] == 'assistant' %}{{ '\\n\\nAssistant: ' + message['content'] }}{% endif %}{% endfor %}{{ '\\n\\nAssistant:' }}{% endif %}",
+      "parameters": {
+        "num_ctx": 8192,
+        "num_batch": 512,
+        "num_gpu": -1,
+        "num_thread": -1,
+        "num_predict": 2048,
+        "temperature": 0.3,
+        "top_k": 40,
+        "top_p": 0.9,
+        "repeat_penalty": 1.1,
+        "repeat_last_n": 64,
+        "seed": -1,
+        "tfs_z": 1.0,
+        "num_keep": 0,
+        "typical_p": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "mirostat": 0,
+        "mirostat_lr": 0.1,
+        "mirostat_ent": 5.0,
+        "penalize_newline": true,
+        "stop": ["Human:", "User:", "\\n\\n"]
+      },
+      "system_prompt": "You are a specialized legal AI assistant trained to help prosecutors with case analysis, evidence evaluation, and legal research. You provide thorough, accurate, and ethically sound legal guidance while maintaining objectivity and professional standards.",
+      "optimization": {
+        "use_gpu": true,
+        "low_memory_mode": false,
+        "quantization": "Q4_K_M",
+        "context_length": 8192,
+        "batch_processing": true
+      }
+    }
+  },
+  "server_config": {
+    "host": "0.0.0.0",
+    "port": 11434,
+    "origins": ["*"],
+    "keep_alive": "5m",
+    "timeout": "300s",
+    "max_concurrent_requests": 4,
+    "gpu_memory_utilization": 0.9,
+    "max_model_len": 8192,
+    "disable_log_stats": false,
+    "disable_log_requests": false
+  },
+  "environment_variables": {
+    "OLLAMA_HOST": "0.0.0.0:11434",
+    "OLLAMA_ORIGINS": "*",
+    "OLLAMA_MODELS": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\models",
+    "OLLAMA_KEEP_ALIVE": "5m",
+    "OLLAMA_MAX_LOADED_MODELS": "2",
+    "OLLAMA_MAX_QUEUE": "512",
+    "OLLAMA_NUM_PARALLEL": "4",
+    "OLLAMA_RUNNERS_DIR": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\runners",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:512"
+  },
+  "low_memory_profiles": {
+    "ultra_low_memory": {
+      "gpu_layers": 20,
+      "ctx_size": 2048,
+      "batch_size": 128,
+      "predict_tokens": 512,
+      "temperature": 0.7,
+      "description": "For systems with <4GB GPU memory"
+    },
+    "low_memory": {
+      "gpu_layers": 35,
+      "ctx_size": 4096,
+      "batch_size": 256,
+      "predict_tokens": 1024,
+      "temperature": 0.5,
+      "description": "For systems with 4-8GB GPU memory"
+    },
+    "balanced": {
+      "gpu_layers": -1,
+      "ctx_size": 8192,
+      "batch_size": 512,
+      "predict_tokens": 2048,
+      "temperature": 0.3,
+      "description": "For systems with 8-16GB GPU memory"
+    },
+    "high_performance": {
+      "gpu_layers": -1,
+      "ctx_size": 16384,
+      "batch_size": 1024,
+      "predict_tokens": 4096,
+      "temperature": 0.2,
+      "description": "For systems with 16GB+ GPU memory"
+    }
+  },
+  "monitoring": {
+    "enable_metrics": true,
+    "metrics_port": 11435,
+    "log_level": "info",
+    "performance_logging": true,
+    "gpu_monitoring": true,
+    "memory_monitoring": true
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-09-04T18:52:43.104Z",
+  "phase": "2-final-complete",
+  "totalFilesProcessed": 123,
+  "totalPromoted": 12,
+  "totalArchived": 89,
+  "successRate": 82.1,
+  "highValueFiles": [
+    {
+      "file": "som-rag-system.backup.ts",
+      "path": "sveltekit-frontend\\archived-backups\\som-rag-system.backup.ts",
+      "score": 65,
+      "reason": "High quality"
+    },
+    {
+      "file": "thinking-processor.ts.backup",
+      "path": "sveltekit-frontend\\archived-backups\\thinking-processor.ts.backup",
+      "score": 65,
+      "reason": "High quality"
+    },
+    {
+      "file": "+page.svelte.backup",
+      "path": "sveltekit-frontend\\src\\routes\\local-ai-demo\\+page.svelte.backup",
+      "score": 65,
+      "reason": "High quality"
+    },
+    {
+      "file": "+page.svelte.backup.1754931625465",
+      "path": "sveltekit-frontend\\src\\routes\\local-ai-demo\\+page.svelte.backup.1754931625465",
+      "score": 65,
+      "reason": "High quality"
+    },
+    {
+      "file": "app.d.ts.backup",
+      "path": "sveltekit-frontend\\archived-backups\\app.d.ts.backup",
+      "score": 60,
+      "reason": "High quality"
+    },
+    {
+      "file": "+page.svelte.backup",
+      "path": "sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte.backup",
+      "score": 60,
+      "reason": "High quality"
+    },
+    {
+      "file": "+page.svelte.backup.1754931625402",
+      "path": "sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte.backup.1754931625402",
+      "score": 60,
+      "reason": "High quality"
+    },
+    {
+      "file": "AskAI.svelte.backup",
+      "path": "sveltekit-frontend\\archived-backups\\AskAI.svelte.backup",
+      "score": 50,
+      "reason": "High quality"
+    }
+  ]
+}

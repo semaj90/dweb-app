@@ -1,0 +1,19 @@
+{
+  // VS Code Extension Recommendations and Workspace Configuration
+  // This file controls which extensions are enabled/disabled in this workspace
+  
+  "recommendations": [
+    // Essential extensions for this project
+    "svelte.svelte-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode"
+  ],
+  
+  "unwantedRecommendations": [
+    // Extensions that may cause conflicts - disabled in this workspace
+    "octref.vetur",
+    "vue.volar",
+    "johnsoncodehk.volar"
+  ]
+}

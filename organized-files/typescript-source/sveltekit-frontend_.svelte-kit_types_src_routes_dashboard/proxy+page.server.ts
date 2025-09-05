@@ -1,0 +1,30 @@
+// @ts-nocheck
+// @ts-nocheck
+import { cases, criminals } from "$lib/server/db/schema-postgres";
+import { redirect } from "@sveltejs/kit";
+import { db } from "$lib/server/db";
+import type { PageServerLoad } from "./$types";
+
+export const load = async ({ locals }: Parameters<PageServerLoad>[0]) => {
+  if (!locals.session || !locals.user) {
+    throw redirect(302, "/login");
+  }
+  // Get recent cases
+  const recentCases = await db
+    .select()
+    .from(cases)
+    .limit(5)
+    .orderBy(cases.createdAt);
+
+  // Get recent criminals/POIs
+  const recentCriminals = await db
+    .select()
+    .from(criminals)
+    .limit(6)
+    .orderBy(criminals.createdAt);
+
+  return {
+    recentCases,
+    recentCriminals,
+  };
+};

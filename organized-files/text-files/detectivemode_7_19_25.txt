@@ -1,0 +1,1672 @@
+# Detective Evidence Synthesizer - Production Architecture
+
+## 🏗️ Core Technologies Stack
+
+```
+Frontend: Svelte 5 + SvelteKit 2.6 + UnoCSS
+Canvas: Native HTML5 Canvas (no external dependencies)
+State: XState for workflow orchestration
+Database: PostgreSQL + pgvector + Drizzle ORM
+Vector Search: Qdrant for semantic similarity
+Caching: Redis for session/analysis caching
+Queue: RabbitMQ for async processing
+AI: LangChain + Ollama for local LLM analysis
+Client Storage: LokiJS for offline evidence caching
+```
+
+## 📁 Production Project Structure
+
+```
+src/
+├── lib/
+│   ├── components/
+│   │   ├── DetectiveCanvas.svelte          # Native canvas component
+│   │   ├── EvidenceUploader.svelte         # File upload with drag/drop
+│   │   ├── RelationshipManager.svelte      # Evidence linking UI
+│   │   ├── AIAnalysisPanel.svelte          # Analysis results display
+│   │   ├── TagEditor.svelte                # Manual tag editing
+│   │   └── CaseTimeline.svelte             # Evidence timeline
+│   ├── stores/
+│   │   ├── evidence-machine.ts             # XState state machine
+│   │   ├── canvas-store.svelte.ts          # Canvas state with runes
+│   │   ├── evidence-store.svelte.ts        # Evidence management
+│   │   └── analysis-store.svelte.ts        # AI analysis state
+│   ├── services/
+│   │   ├── database/
+│   │   │   ├── schema.ts                   # Drizzle schema definitions
+│   │   │   ├── evidence-queries.ts         # Evidence CRUD operations
+│   │   │   └── relationship-queries.ts     # Relationship operations
+│   │   ├── vector/
+│   │   │   ├── qdrant-client.ts           # Vector operations
+│   │   │   ├── embedding-generator.ts      # Text/image embeddings
+│   │   │   └── similarity-search.ts        # Semantic search
+│   │   ├── cache/
+│   │   │   ├── redis-client.ts            # Redis caching
+│   │   │   └── loki-manager.ts            # Client-side storage
+│   │   ├── queue/
+│   │   │   ├── rabbitmq-producer.ts       # Queue operations
+│   │   │   └── analysis-consumer.ts        # Background processing
+│   │   └── ai/
+│   │       ├── langchain-analyzer.ts       # AI analysis pipeline
+│   │       ├── pdf-processor.ts           # PDF text extraction
+│   │       └── image-analyzer.ts          # Image analysis
+│   ├── types/
+│   │   ├── evidence.ts                    # Evidence type definitions
+│   │   ├── relationships.ts               # Relationship types
+│   │   ├── analysis.ts                    # AI analysis types
+│   │   └── canvas.ts                      # Canvas object types
+│   └── utils/
+│       ├── canvas/
+│       │   ├── canvas-renderer.ts         # Native canvas utilities
+│       │   ├── drag-drop-handler.ts       # Canvas drag/drop
+│       │   └── relationship-drawer.ts      # Connection lines
+│       ├── file-processor.ts              # File handling utilities
+│       └── vector-helpers.ts              # Vector math utilities
+├── routes/
+│   ├── detective/
+│   │   ├── +page.svelte                   # Main detective interface
+│   │   ├── +page.server.ts               # Server-side data loading
+│   │   └── case/
+│   │       └── [id]/
+│   │           ├── +page.svelte           # Individual case view
+│   │           └── +page.server.ts       # Case data loading
+│   ├── api/
+│   │   ├── evidence/
+│   │   │   ├── upload/+server.ts          # File upload endpoint
+│   │   │   ├── analyze/+server.ts         # AI analysis trigger
+│   │   │   ├── search/+server.ts          # Vector search endpoint
+│   │   │   └── [id]/+server.ts           # Evidence CRUD
+│   │   ├── relationships/
+│   │   │   ├── create/+server.ts          # Relationship creation
+│   │   │   ├── suggest/+server.ts         # Auto-suggestion API
+│   │   │   └── [id]/+server.ts           # Relationship CRUD
+│   │   ├── analysis/
+│   │   │   ├── queue/+server.ts           # Queue analysis job
+│   │   │   └── results/[id]/+server.ts    # Get analysis results
+│   │   └── tags/
+│   │       ├── suggest/+server.ts         # Auto-tag suggestions
+│   │       └── update/+server.ts          # Manual tag updates
+│   └── +layout.svelte                     # Global layout
+├── app.html                               # Main HTML template
+├── app.css                                # UnoCSS imports
+└── hooks.server.ts                        # Server hooks
+```
+
+## 🗄️ Database Schema (Drizzle ORM)
+
+```typescript
+// src/lib/services/database/schema.ts
+import { pgTable, uuid, text, timestamp, jsonb, vector, integer, boolean } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+
+export const cases = pgTable('cases', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: text('status').notNull().default('active'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  metadata: jsonb('metadata')
+});
+
+export const evidence = pgTable('evidence', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  caseId: uuid('case_id').references(() => cases.id),
+  filename: text('filename').notNull(),
+  fileType: text('file_type').notNull(),
+  filePath: text('file_path').notNull(),
+  fileSize: integer('file_size'),
+  tags: jsonb('tags').$type<string[]>().default([]),
+  extractedText: text('extracted_text'),
+  embedding: vector('embedding', { dimensions: 1536 }),
+  canvasPosition: jsonb('canvas_position').$type<{x: number, y: number}>(),
+  analysisStatus: text('analysis_status').default('pending'),
+  createdAt: timestamp('created_at').defaultNow(),
+  metadata: jsonb('metadata')
+});
+
+export const relationships = pgTable('relationships', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  evidenceId1: uuid('evidence_id_1').references(() => evidence.id),
+  evidenceId2: uuid('evidence_id_2').references(() => evidence.id),
+  relationshipType: text('relationship_type').notNull(),
+  confidence: integer('confidence').default(0),
+  isManual: boolean('is_manual').default(true),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow(),
+  metadata: jsonb('metadata')
+});
+
+export const analysisResults = pgTable('analysis_results', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  evidenceId: uuid('evidence_id').references(() => evidence.id),
+  analysisType: text('analysis_type').notNull(),
+  results: jsonb('results'),
+  confidence: integer('confidence'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Relations
+export const casesRelations = relations(cases, ({ many }) => ({
+  evidence: many(evidence)
+}));
+
+export const evidenceRelations = relations(evidence, ({ one, many }) => ({
+  case: one(cases, {
+    fields: [evidence.caseId],
+    references: [cases.id]
+  }),
+  analysisResults: many(analysisResults),
+  relationshipsAsSource: many(relationships, {
+    relationName: 'source'
+  }),
+  relationshipsAsTarget: many(relationships, {
+    relationName: 'target'
+  })
+}));
+```
+
+## 🎯 XState Evidence Workflow Machine
+
+```typescript
+// src/lib/stores/evidence-machine.ts
+import { createMachine, assign } from 'xstate';
+
+export const evidenceMachine = createMachine({
+  id: 'evidence',
+  initial: 'idle',
+  context: {
+    selectedEvidence: [],
+    canvasItems: [],
+    analysisQueue: [],
+    relationships: [],
+    errors: []
+  },
+  states: {
+    idle: {
+      on: {
+        'UPLOAD_FILE': {
+          target: 'uploading',
+          actions: assign({
+            errors: () => []
+          })
+        },
+        'SELECT_EVIDENCE': {
+          actions: assign({
+            selectedEvidence: ({ context, event }) => {
+              const exists = context.selectedEvidence.find(e => e.id === event.evidence.id);
+              return exists 
+                ? context.selectedEvidence.filter(e => e.id !== event.evidence.id)
+                : [...context.selectedEvidence, event.evidence];
+            }
+          })
+        },
+        'CREATE_RELATIONSHIP': {
+          target: 'creatingRelationship',
+          guard: ({ context }) => context.selectedEvidence.length === 2
+        },
+        'TRIGGER_ANALYSIS': {
+          target: 'analyzing'
+        }
+      }
+    },
+    
+    uploading: {
+      invoke: {
+        src: 'uploadEvidence',
+        onDone: {
+          target: 'uploaded',
+          actions: assign({
+            canvasItems: ({ context, event }) => [
+              ...context.canvasItems,
+              event.output
+            ]
+          })
+        },
+        onError: {
+          target: 'idle',
+          actions: assign({
+            errors: ({ event }) => [event.data]
+          })
+        }
+      }
+    },
+    
+    uploaded: {
+      after: {
+        1000: 'queueingAnalysis'
+      },
+      on: {
+        'PLACE_ON_CANVAS': {
+          target: 'idle',
+          actions: assign({
+            canvasItems: ({ context, event }) => 
+              context.canvasItems.map(item => 
+                item.id === event.evidenceId 
+                  ? { ...item, x: event.x, y: event.y, placed: true }
+                  : item
+              )
+          })
+        }
+      }
+    },
+    
+    queueingAnalysis: {
+      invoke: {
+        src: 'queueAnalysis',
+        onDone: {
+          target: 'idle',
+          actions: assign({
+            analysisQueue: ({ context, event }) => [
+              ...context.analysisQueue,
+              event.output
+            ]
+          })
+        },
+        onError: 'idle'
+      }
+    },
+    
+    analyzing: {
+      invoke: {
+        src: 'analyzeEvidence',
+        onDone: {
+          target: 'idle',
+          actions: assign({
+            analysisQueue: ({ context, event }) => 
+              context.analysisQueue.filter(item => item.id !== event.output.evidenceId)
+          })
+        },
+        onError: 'idle'
+      }
+    },
+    
+    creatingRelationship: {
+      invoke: {
+        src: 'createRelationship',
+        onDone: {
+          target: 'idle',
+          actions: assign({
+            relationships: ({ context, event }) => [
+              ...context.relationships,
+              event.output
+            ],
+            selectedEvidence: () => []
+          })
+        },
+        onError: 'idle'
+      }
+    }
+  }
+}, {
+  services: {
+    uploadEvidence: async ({ event }) => {
+      // Upload file and extract metadata
+      const formData = new FormData();
+      formData.append('file', event.file);
+      formData.append('caseId', event.caseId);
+      
+      const response = await fetch('/api/evidence/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      return await response.json();
+    },
+    
+    queueAnalysis: async ({ event }) => {
+      // Queue AI analysis job
+      const response = await fetch('/api/analysis/queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceId: event.evidenceId })
+      });
+      
+      return await response.json();
+    },
+    
+    analyzeEvidence: async ({ event }) => {
+      // Trigger comprehensive AI analysis
+      const response = await fetch(`/api/evidence/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceId: event.evidenceId })
+      });
+      
+      return await response.json();
+    },
+    
+    createRelationship: async ({ context, event }) => {
+      const [evidence1, evidence2] = context.selectedEvidence;
+      
+      const response = await fetch('/api/relationships/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          evidenceId1: evidence1.id,
+          evidenceId2: evidence2.id,
+          relationshipType: event.type || 'related',
+          isManual: true
+        })
+      });
+      
+      return await response.json();
+    }
+  }
+});
+```
+
+## 🎨 Native Canvas Component (Svelte 5)
+
+```svelte
+<!-- src/lib/components/DetectiveCanvas.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import type { Evidence, CanvasItem, Relationship } from '$lib/types';
+  
+  interface Props {
+    evidence: Evidence[];
+    relationships: Relationship[];
+    onCreateRelationship: (id1: string, id2: string) => void;
+    onSelectEvidence: (evidence: Evidence) => void;
+  }
+  
+  let { evidence, relationships, onCreateRelationship, onSelectEvidence }: Props = $props();
+  
+  let canvas: HTMLCanvasElement;
+  let ctx: CanvasRenderingContext2D;
+  let canvasItems = $state<CanvasItem[]>([]);
+  let selectedItems = $state<CanvasItem[]>([]);
+  let draggedItem = $state<CanvasItem | null>(null);
+  let mousePos = $state({ x: 0, y: 0 });
+  let isConnecting = $state(false);
+  
+  onMount(() => {
+    ctx = canvas.getContext('2d')!;
+    setupCanvas();
+    draw();
+  });
+  
+  function setupCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+  }
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw grid
+    drawGrid();
+    
+    // Draw relationships
+    relationships.forEach(drawRelationship);
+    
+    // Draw evidence items
+    canvasItems.forEach(drawEvidenceItem);
+    
+    // Draw connection line if connecting
+    if (isConnecting && selectedItems.length === 1) {
+      drawConnectionLine(selectedItems[0], mousePos);
+    }
+    
+    requestAnimationFrame(draw);
+  }
+  
+  function drawGrid() {
+    ctx.strokeStyle = '#f0f0f0';
+    ctx.lineWidth = 1;
+    
+    for (let x = 0; x < canvas.width; x += 50) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+    
+    for (let y = 0; y < canvas.height; y += 50) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+  }
+  
+  function drawEvidenceItem(item: CanvasItem) {
+    const isSelected = selectedItems.includes(item);
+    const isDragged = draggedItem === item;
+    
+    // Draw evidence card
+    ctx.fillStyle = isSelected ? '#3b82f6' : '#ffffff';
+    ctx.strokeStyle = isSelected ? '#1d4ed8' : '#d1d5db';
+    ctx.lineWidth = isSelected ? 3 : 1;
+    
+    const width = 120;
+    const height = 80;
+    
+    ctx.fillRect(item.x - width/2, item.y - height/2, width, height);
+    ctx.strokeRect(item.x - width/2, item.y - height/2, width, height);
+    
+    // Draw file type icon
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.fileType.toUpperCase(), item.x, item.y - 10);
+    
+    // Draw filename
+    ctx.fillStyle = isSelected ? '#ffffff' : '#374151';
+    ctx.font = '10px system-ui';
+    const truncatedName = item.filename.length > 15 
+      ? item.filename.substring(0, 12) + '...'
+      : item.filename;
+    ctx.fillText(truncatedName, item.x, item.y + 10);
+    
+    // Draw tags
+    if (item.tags && item.tags.length > 0) {
+      ctx.fillStyle = '#10b981';
+      ctx.font = '8px system-ui';
+      ctx.fillText(`${item.tags.length} tags`, item.x, item.y + 25);
+    }
+    
+    // Draw analysis status indicator
+    if (item.analysisStatus === 'completed') {
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(item.x + 50, item.y - 30, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    } else if (item.analysisStatus === 'analyzing') {
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(item.x + 50, item.y - 30, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+  
+  function drawRelationship(relationship: Relationship) {
+    const item1 = canvasItems.find(i => i.id === relationship.evidenceId1);
+    const item2 = canvasItems.find(i => i.id === relationship.evidenceId2);
+    
+    if (!item1 || !item2) return;
+    
+    ctx.strokeStyle = relationship.isManual ? '#3b82f6' : '#10b981';
+    ctx.lineWidth = 2;
+    ctx.setLineDash(relationship.isManual ? [] : [5, 5]);
+    
+    ctx.beginPath();
+    ctx.moveTo(item1.x, item1.y);
+    ctx.lineTo(item2.x, item2.y);
+    ctx.stroke();
+    
+    // Draw relationship label
+    const midX = (item1.x + item2.x) / 2;
+    const midY = (item1.y + item2.y) / 2;
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(midX - 30, midY - 8, 60, 16);
+    ctx.strokeStyle = '#d1d5db';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(midX - 30, midY - 8, 60, 16);
+    
+    ctx.fillStyle = '#374151';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(relationship.relationshipType, midX, midY + 3);
+    
+    ctx.setLineDash([]);
+  }
+  
+  function drawConnectionLine(item: CanvasItem, targetPos: { x: number, y: number }) {
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    
+    ctx.beginPath();
+    ctx.moveTo(item.x, item.y);
+    ctx.lineTo(targetPos.x, targetPos.y);
+    ctx.stroke();
+    
+    ctx.setLineDash([]);
+  }
+  
+  function getCanvasCoordinates(event: MouseEvent) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  }
+  
+  function getItemAt(x: number, y: number): CanvasItem | null {
+    return canvasItems.find(item => {
+      const dx = x - item.x;
+      const dy = y - item.y;
+      return Math.abs(dx) < 60 && Math.abs(dy) < 40;
+    }) || null;
+  }
+  
+  function handleMouseDown(event: MouseEvent) {
+    const coords = getCanvasCoordinates(event);
+    const item = getItemAt(coords.x, coords.y);
+    
+    if (item) {
+      if (event.ctrlKey || event.metaKey) {
+        // Multi-select mode
+        if (selectedItems.includes(item)) {
+          selectedItems = selectedItems.filter(i => i !== item);
+        } else {
+          selectedItems = [...selectedItems, item];
+        }
+      } else if (event.shiftKey && selectedItems.length === 1) {
+        // Connection mode
+        isConnecting = true;
+        if (selectedItems[0] !== item) {
+          onCreateRelationship(selectedItems[0].id, item.id);
+          selectedItems = [];
+          isConnecting = false;
+        }
+      } else {
+        // Regular selection
+        selectedItems = [item];
+        draggedItem = item;
+        onSelectEvidence(item);
+      }
+    } else {
+      selectedItems = [];
+      draggedItem = null;
+    }
+  }
+  
+  function handleMouseMove(event: MouseEvent) {
+    const coords = getCanvasCoordinates(event);
+    mousePos = coords;
+    
+    if (draggedItem) {
+      draggedItem.x = coords.x;
+      draggedItem.y = coords.y;
+    }
+  }
+  
+  function handleMouseUp() {
+    draggedItem = null;
+    isConnecting = false;
+  }
+  
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
+    const coords = getCanvasCoordinates(event);
+    const evidenceId = event.dataTransfer?.getData('evidence-id');
+    
+    if (evidenceId) {
+      const evidenceItem = evidence.find(e => e.id === evidenceId);
+      if (evidenceItem) {
+        const newCanvasItem: CanvasItem = {
+          ...evidenceItem,
+          x: coords.x,
+          y: coords.y,
+          placed: true
+        };
+        canvasItems = [...canvasItems, newCanvasItem];
+      }
+    }
+  }
+  
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+</script>
+
+<canvas 
+  bind:this={canvas}
+  class="w-full h-full border border-gray-300 bg-gray-50 cursor-crosshair"
+  on:mousedown={handleMouseDown}
+  on:mousemove={handleMouseMove}
+  on:mouseup={handleMouseUp}
+  on:drop={handleDrop}
+  on:dragover={handleDragOver}
+></canvas>
+
+<div class="absolute top-4 left-4 bg-white p-2 rounded shadow text-sm text-gray-600">
+  <div>Selected: {selectedItems.length}</div>
+  <div>Total items: {canvasItems.length}</div>
+  <div class="text-xs mt-1">
+    Click: Select • Shift+Click: Connect • Ctrl+Click: Multi-select
+  </div>
+</div>
+```
+
+## 🔄 Evidence Store with Svelte 5 Runes
+
+```typescript
+// src/lib/stores/evidence-store.svelte.ts
+import type { Evidence, CanvasItem, Relationship } from '$lib/types';
+
+class EvidenceStore {
+  private _evidence = $state<Evidence[]>([]);
+  private _canvasItems = $state<CanvasItem[]>([]);
+  private _relationships = $state<Relationship[]>([]);
+  private _selectedEvidence = $state<Evidence[]>([]);
+  private _analysisQueue = $state<string[]>([]);
+  
+  // Reactive getters
+  get evidence() { return this._evidence; }
+  get canvasItems() { return this._canvasItems; }
+  get relationships() { return this._relationships; }
+  get selectedEvidence() { return this._selectedEvidence; }
+  get analysisQueue() { return this._analysisQueue; }
+  
+  // Computed properties
+  get evidenceByType() {
+    const grouped = this._evidence.reduce((acc, item) => {
+      acc[item.fileType] = acc[item.fileType] || [];
+      acc[item.fileType].push(item);
+      return acc;
+    }, {} as Record<string, Evidence[]>);
+    return grouped;
+  }
+  
+  get relationshipStats() {
+    const manual = this._relationships.filter(r => r.isManual).length;
+    const auto = this._relationships.length - manual;
+    return { manual, auto, total: this._relationships.length };
+  }
+  
+  async addEvidence(file: File, caseId: string): Promise<Evidence> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('caseId', caseId);
+    
+    const response = await fetch('/api/evidence/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const newEvidence = await response.json();
+    this._evidence.push(newEvidence);
+    
+    // Queue for analysis
+    this._analysisQueue.push(newEvidence.id);
+    this.queueAnalysis(newEvidence.id);
+    
+    return newEvidence;
+  }
+  
+  async createRelationship(evidenceId1: string, evidenceId2: string, type: string = 'related'): Promise<Relationship> {
+    const response = await fetch('/api/relationships/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        evidenceId1,
+        evidenceId2,
+        relationshipType: type,
+        isManual: true
+      })
+    });
+    
+    const relationship = await response.json();
+    this._relationships.push(relationship);
+    return relationship;
+  }
+  
+  async queueAnalysis(evidenceId: string) {
+    try {
+      await fetch('/api/analysis/queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceId })
+      });
+    } catch (error) {
+      console.error('Failed to queue analysis:', error);
+    }
+  }
+  
+  async searchSimilar(evidenceId: string): Promise<Evidence[]> {
+    const response = await fetch(`/api/evidence/search?evidenceId=${evidenceId}`, {
+      method: 'GET'
+    });
+    
+    return await response.json();
+  }
+  
+  updateTags(evidenceId: string, tags: string[]) {
+    const evidence = this._evidence.find(e => e.id === evidenceId);
+    if (evidence) {
+      evidence.tags = tags;
+    }
+  }
+  
+  selectEvidence(evidence: Evidence) {
+    const exists = this._selectedEvidence.find(e => e.id === evidence.id);
+    if (exists) {
+      this._selectedEvidence = this._selectedEvidence.filter(e => e.id !== evidence.id);
+    } else {
+      this._selectedEvidence.push(evidence);
+    }
+  }
+  
+  clearSelection() {
+    this._selectedEvidence = [];
+  }
+  
+  placeOnCanvas(evidenceId: string, x: number, y: number) {
+    const evidence = this._evidence.find(e => e.id === evidenceId);
+    if (evidence) {
+      const canvasItem: CanvasItem = {
+        ...evidence,
+        x,
+        y,
+        placed: true
+      };
+      this._canvasItems.push(canvasItem);
+    }
+  }
+}
+
+export const evidenceStore = new EvidenceStore();
+```
+
+## 📡 API Endpoints
+
+```typescript
+// src/routes/api/evidence/upload/+server.ts
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { db } from '$lib/services/database';
+import { evidence } from '$lib/services/database/schema';
+import { generateEmbedding } from '$lib/services/vector/embedding-generator';
+import { queueAnalysisJob } from '$lib/services/queue/rabbitmq-producer';
+
+export const POST: RequestHandler = async ({ request }) => {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const caseId = formData.get('caseId') as string;
+    
+    if (!file) {
+      return json({ error: 'No file provided' }, { status: 400 });
+    }
+    
+    // Save file to storage
+    const filePath = await saveFile(file);
+    
+    // Extract text content
+    const extractedText = await extractText(file);
+    
+    // Generate embeddings
+    const embedding = await generateEmbedding(extractedText);
+    
+    // Save to database
+    const [newEvidence] = await db.insert(evidence).values({
+      caseId,
+      filename: file.name,
+      fileType: file.type,
+      filePath,
+      fileSize: file.size,
+      extractedText,
+      embedding,
+      tags: [],
+      analysisStatus: 'pending'
+    }).returning();
+    
+    // Queue for AI analysis
+    await queueAnalysisJob({
+      evidenceId: newEvidence.id,
+      analysisType: 'comprehensive'
+    });
+    
+    return json(newEvidence);
+  } catch (error) {
+    console.error('Upload error:', error);
+    return json({ error: 'Upload failed' }, { status: 500 });
+  }
+};
+
+async function saveFile(file: File): Promise<string> {
+  // Implement file storage logic (local, S3, etc.)
+  // Return file path
+}
+
+async function extractText(file: File): Promise<string> {
+  // Implement text extraction based on file type
+  if (file.type === 'application/pdf') {
+    // Use PDF parser
+    return await extractPdfText(file);
+  } else if (file.type.startsWith('image/')) {
+    // Use OCR
+    return await extractImageText(file);
+  } else if (file.type.startsWith('text/')) {
+    // Direct text extraction
+    return await file.text();
+  }
+  return '';
+}
+```
+
+## 🔍 Vector Search Service
+
+```typescript
+// src/lib/services/vector/qdrant-client.ts
+import { QdrantClient } from '@qdrant/js-client-rest';
+
+class QdrantService {
+  private client: QdrantClient;
+  private collectionName = 'evidence_embeddings';
+
+  constructor() {
+    this.client = new QdrantClient({
+      url: process.env.QDRANT_URL || 'http://localhost:6333'
+    });
+    this.initializeCollection();
+  }
+
+  async initializeCollection() {
+    try {
+      await this.client.createCollection(this.collectionName, {
+        vectors: {
+          size: 1536, // OpenAI embedding dimension
+          distance: 'Cosine'
+        }
+      });
+    } catch (error) {
+      // Collection might already exist
+      console.log('Collection already exists or other error:', error);
+    }
+  }
+
+  async indexEvidence(evidenceId: string, embedding: number[], metadata: any) {
+    await this.client.upsert(this.collectionName, {
+      wait: true,
+      points: [
+        {
+          id: evidenceId,
+          vector: embedding,
+          payload: {
+            evidenceId,
+            filename: metadata.filename,
+            fileType: metadata.fileType,
+            tags: metadata.tags,
+            extractedText: metadata.extractedText?.substring(0, 1000), // Limit payload size
+            createdAt: metadata.createdAt
+          }
+        }
+      ]
+    });
+  }
+
+  async searchSimilar(evidenceId: string, limit: number = 10) {
+    // Get the vector for the given evidence
+    const result = await this.client.retrieve(this.collectionName, {
+      ids: [evidenceId],
+      with_vector: true
+    });
+
+    if (!result.length) {
+      throw new Error('Evidence not found in vector database');
+    }
+
+    const vector = result[0].vector as number[];
+
+    // Search for similar vectors
+    const searchResult = await this.client.search(this.collectionName, {
+      vector,
+      limit: limit + 1, // +1 to exclude self
+      with_payload: true,
+      score_threshold: 0.7 // Minimum similarity threshold
+    });
+
+    // Filter out the original evidence and return results
+    return searchResult
+      .filter(hit => hit.id !== evidenceId)
+      .map(hit => ({
+        evidenceId: hit.id,
+        similarity: hit.score,
+        metadata: hit.payload
+      }));
+  }
+
+  async searchByText(queryText: string, limit: number = 10) {
+    // Generate embedding for query text
+    const queryEmbedding = await generateEmbedding(queryText);
+
+    const searchResult = await this.client.search(this.collectionName, {
+      vector: queryEmbedding,
+      limit,
+      with_payload: true,
+      score_threshold: 0.6
+    });
+
+    return searchResult.map(hit => ({
+      evidenceId: hit.id,
+      similarity: hit.score,
+      metadata: hit.payload
+    }));
+  }
+
+  async suggestTags(evidenceId: string): Promise<string[]> {
+    const similarEvidence = await this.searchSimilar(evidenceId, 5);
+    
+    // Collect tags from similar evidence
+    const tagCounts: Record<string, number> = {};
+    similarEvidence.forEach(evidence => {
+      const tags = evidence.metadata.tags || [];
+      tags.forEach((tag: string) => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+
+    // Return most common tags
+    return Object.entries(tagCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([tag]) => tag);
+  }
+}
+
+export const qdrantService = new QdrantService();
+```
+
+## 🤖 AI Analysis Service
+
+```typescript
+// src/lib/services/ai/langchain-analyzer.ts
+import { ChatOllama } from '@langchain/community/chat_models/ollama';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { RunnableSequence } from '@langchain/core/runnables';
+import { StringOutputParser } from '@langchain/core/output_parsers';
+import type { Evidence, AnalysisResult } from '$lib/types';
+
+class AIAnalyzer {
+  private llm: ChatOllama;
+
+  constructor() {
+    this.llm = new ChatOllama({
+      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      model: process.env.OLLAMA_MODEL || 'llama3.1',
+      temperature: 0.3
+    });
+  }
+
+  async analyzeEvidence(evidence: Evidence): Promise<AnalysisResult> {
+    const analysisPrompt = PromptTemplate.fromTemplate(`
+      You are a detective AI analyzing evidence for a legal case. 
+      
+      Evidence Details:
+      - Filename: {filename}
+      - File Type: {fileType}
+      - Extracted Text: {extractedText}
+      - Current Tags: {currentTags}
+      
+      Provide a comprehensive analysis including:
+      1. Key insights and findings
+      2. Suggested additional tags (max 10)
+      3. Potential relationships to look for
+      4. Legal relevance score (1-10)
+      5. Summary for case timeline
+      
+      Respond in JSON format:
+      {{
+        "insights": ["insight1", "insight2", ...],
+        "suggestedTags": ["tag1", "tag2", ...],
+        "potentialRelationships": ["relationship1", "relationship2", ...],
+        "legalRelevance": 8,
+        "timelineSummary": "Brief summary for timeline",
+        "keyEntities": ["person1", "location1", "organization1", ...],
+        "confidence": 0.85
+      }}
+    `);
+
+    const chain = RunnableSequence.from([
+      analysisPrompt,
+      this.llm,
+      new StringOutputParser()
+    ]);
+
+    try {
+      const result = await chain.invoke({
+        filename: evidence.filename,
+        fileType: evidence.fileType,
+        extractedText: evidence.extractedText || 'No text extracted',
+        currentTags: evidence.tags?.join(', ') || 'No tags'
+      });
+
+      return JSON.parse(result);
+    } catch (error) {
+      console.error('AI analysis failed:', error);
+      return {
+        insights: ['Analysis failed - manual review required'],
+        suggestedTags: [],
+        potentialRelationships: [],
+        legalRelevance: 1,
+        timelineSummary: 'Failed to analyze',
+        keyEntities: [],
+        confidence: 0
+      };
+    }
+  }
+
+  async findRelationships(evidence1: Evidence, evidence2: Evidence): Promise<any> {
+    const relationshipPrompt = PromptTemplate.fromTemplate(`
+      Analyze the relationship between these two pieces of evidence:
+      
+      Evidence 1:
+      - Filename: {filename1}
+      - Type: {fileType1}
+      - Text: {text1}
+      - Tags: {tags1}
+      
+      Evidence 2:
+      - Filename: {filename2}
+      - Type: {fileType2}
+      - Text: {text2}
+      - Tags: {tags2}
+      
+      Determine if there's a meaningful relationship and provide:
+      {{
+        "hasRelationship": true/false,
+        "relationshipType": "temporal|spatial|thematic|causal|contradictory|corroborative",
+        "confidence": 0.0-1.0,
+        "description": "Brief description of relationship",
+        "keyConnections": ["connection1", "connection2", ...],
+        "timeline": "temporal relationship if any"
+      }}
+    `);
+
+    const chain = RunnableSequence.from([
+      relationshipPrompt,
+      this.llm,
+      new StringOutputParser()
+    ]);
+
+    try {
+      const result = await chain.invoke({
+        filename1: evidence1.filename,
+        fileType1: evidence1.fileType,
+        text1: evidence1.extractedText?.substring(0, 1000) || '',
+        tags1: evidence1.tags?.join(', ') || '',
+        filename2: evidence2.filename,
+        fileType2: evidence2.fileType,
+        text2: evidence2.extractedText?.substring(0, 1000) || '',
+        tags2: evidence2.tags?.join(', ') || ''
+      });
+
+      return JSON.parse(result);
+    } catch (error) {
+      console.error('Relationship analysis failed:', error);
+      return {
+        hasRelationship: false,
+        relationshipType: 'unknown',
+        confidence: 0,
+        description: 'Analysis failed',
+        keyConnections: [],
+        timeline: null
+      };
+    }
+  }
+
+  async generateCaseSummary(evidence: Evidence[], relationships: any[]): Promise<string> {
+    const summaryPrompt = PromptTemplate.fromTemplate(`
+      Generate a comprehensive case summary based on the following evidence and relationships:
+      
+      Evidence Count: {evidenceCount}
+      Evidence Types: {evidenceTypes}
+      Key Tags: {keyTags}
+      Relationships: {relationshipCount}
+      
+      Evidence Details:
+      {evidenceDetails}
+      
+      Provide a professional case summary including:
+      1. Case overview
+      2. Key evidence highlights
+      3. Timeline of events
+      4. Potential legal implications
+      5. Recommended next steps
+      
+      Keep it concise but comprehensive (max 500 words).
+    `);
+
+    const evidenceDetails = evidence.map(e => 
+      `- ${e.filename} (${e.fileType}): ${e.extractedText?.substring(0, 200) || 'No text'}...`
+    ).join('\n');
+
+    const allTags = evidence.flatMap(e => e.tags || []);
+    const keyTags = [...new Set(allTags)].slice(0, 10).join(', ');
+
+    const chain = RunnableSequence.from([
+      summaryPrompt,
+      this.llm,
+      new StringOutputParser()
+    ]);
+
+    try {
+      return await chain.invoke({
+        evidenceCount: evidence.length,
+        evidenceTypes: [...new Set(evidence.map(e => e.fileType))].join(', '),
+        keyTags,
+        relationshipCount: relationships.length,
+        evidenceDetails
+      });
+    } catch (error) {
+      console.error('Summary generation failed:', error);
+      return 'Failed to generate case summary. Please review evidence manually.';
+    }
+  }
+}
+
+export const aiAnalyzer = new AIAnalyzer();
+```
+
+## 🗄️ Redis Caching Service
+
+```typescript
+// src/lib/services/cache/redis-client.ts
+import { createClient } from 'redis';
+
+class RedisCache {
+  private client;
+  private connected = false;
+
+  constructor() {
+    this.client = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379'
+    });
+
+    this.client.on('error', (err) => {
+      console.error('Redis Client Error:', err);
+      this.connected = false;
+    });
+
+    this.client.on('connect', () => {
+      console.log('Redis Client Connected');
+      this.connected = true;
+    });
+
+    this.connect();
+  }
+
+  async connect() {
+    try {
+      await this.client.connect();
+    } catch (error) {
+      console.error('Failed to connect to Redis:', error);
+    }
+  }
+
+  async cacheAnalysis(evidenceId: string, analysis: any, ttl: number = 3600) {
+    if (!this.connected) return;
+
+    try {
+      await this.client.setEx(
+        `analysis:${evidenceId}`,
+        ttl,
+        JSON.stringify(analysis)
+      );
+    } catch (error) {
+      console.error('Cache write failed:', error);
+    }
+  }
+
+  async getCachedAnalysis(evidenceId: string): Promise<any | null> {
+    if (!this.connected) return null;
+
+    try {
+      const cached = await this.client.get(`analysis:${evidenceId}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      console.error('Cache read failed:', error);
+      return null;
+    }
+  }
+
+  async cacheSearchResults(query: string, results: any[], ttl: number = 1800) {
+    if (!this.connected) return;
+
+    try {
+      const key = `search:${Buffer.from(query).toString('base64')}`;
+      await this.client.setEx(key, ttl, JSON.stringify(results));
+    } catch (error) {
+      console.error('Search cache write failed:', error);
+    }
+  }
+
+  async getCachedSearchResults(query: string): Promise<any[] | null> {
+    if (!this.connected) return null;
+
+    try {
+      const key = `search:${Buffer.from(query).toString('base64')}`;
+      const cached = await this.client.get(key);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      console.error('Search cache read failed:', error);
+      return null;
+    }
+  }
+
+  async invalidateEvidenceCache(evidenceId: string) {
+    if (!this.connected) return;
+
+    try {
+      await this.client.del(`analysis:${evidenceId}`);
+    } catch (error) {
+      console.error('Cache invalidation failed:', error);
+    }
+  }
+}
+
+export const redisCache = new RedisCache();
+```
+
+## 📨 RabbitMQ Queue Service
+
+```typescript
+// src/lib/services/queue/rabbitmq-producer.ts
+import amqp from 'amqplib';
+
+class RabbitMQService {
+  private connection: amqp.Connection | null = null;
+  private channel: amqp.Channel | null = null;
+  private readonly exchangeName = 'evidence_analysis';
+  private readonly queueName = 'analysis_jobs';
+
+  async connect() {
+    try {
+      this.connection = await amqp.connect(
+        process.env.RABBITMQ_URL || 'amqp://localhost'
+      );
+      this.channel = await this.connection.createChannel();
+
+      // Setup exchange and queue
+      await this.channel.assertExchange(this.exchangeName, 'direct', {
+        durable: true
+      });
+
+      await this.channel.assertQueue(this.queueName, {
+        durable: true
+      });
+
+      await this.channel.bindQueue(
+        this.queueName,
+        this.exchangeName,
+        'analysis'
+      );
+
+      console.log('RabbitMQ connected and configured');
+    } catch (error) {
+      console.error('RabbitMQ connection failed:', error);
+    }
+  }
+
+  async queueAnalysisJob(job: {
+    evidenceId: string;
+    analysisType: string;
+    priority?: number;
+  }) {
+    if (!this.channel) {
+      await this.connect();
+    }
+
+    if (!this.channel) {
+      throw new Error('RabbitMQ not connected');
+    }
+
+    const message = {
+      ...job,
+      timestamp: new Date().toISOString(),
+      priority: job.priority || 1
+    };
+
+    await this.channel.publish(
+      this.exchangeName,
+      'analysis',
+      Buffer.from(JSON.stringify(message)),
+      {
+        persistent: true,
+        priority: job.priority || 1
+      }
+    );
+
+    console.log(`Queued analysis job for evidence: ${job.evidenceId}`);
+  }
+
+  async queueRelationshipAnalysis(evidenceId1: string, evidenceId2: string) {
+    await this.queueAnalysisJob({
+      evidenceId: `${evidenceId1}:${evidenceId2}`,
+      analysisType: 'relationship',
+      priority: 2
+    });
+  }
+
+  async close() {
+    if (this.channel) {
+      await this.channel.close();
+    }
+    if (this.connection) {
+      await this.connection.close();
+    }
+  }
+}
+
+export const rabbitMQService = new RabbitMQService();
+```
+
+## 🎯 Main Detective Interface
+
+```svelte
+<!-- src/routes/detective/+page.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { evidenceStore } from '$lib/stores/evidence-store.svelte.js';
+  import { evidenceMachine } from '$lib/stores/evidence-machine.js';
+  import { useMachine } from '@xstate/svelte';
+  import DetectiveCanvas from '$lib/components/DetectiveCanvas.svelte';
+  import EvidenceUploader from '$lib/components/EvidenceUploader.svelte';
+  import AIAnalysisPanel from '$lib/components/AIAnalysisPanel.svelte';
+  import TagEditor from '$lib/components/TagEditor.svelte';
+  import { Upload, Search, Link2, Tag, FileText, Zap } from 'lucide-react';
+
+  const [state, send] = useMachine(evidenceMachine);
+  
+  let selectedCase = $state('case-001'); // Default case
+  let showAnalysisPanel = $state(false);
+  let showTagEditor = $state(false);
+  let searchQuery = $state('');
+  let isSearching = $state(false);
+  let searchResults = $state([]);
+
+  onMount(() => {
+    // Load existing evidence for the case
+    loadCaseEvidence();
+  });
+
+  async function loadCaseEvidence() {
+    try {
+      const response = await fetch(`/api/evidence?caseId=${selectedCase}`);
+      const evidence = await response.json();
+      evidenceStore.loadEvidence(evidence);
+    } catch (error) {
+      console.error('Failed to load evidence:', error);
+    }
+  }
+
+  async function handleFileUpload(files: FileList) {
+    for (const file of files) {
+      send({ type: 'UPLOAD_FILE', file, caseId: selectedCase });
+      try {
+        await evidenceStore.addEvidence(file, selectedCase);
+      } catch (error) {
+        console.error('Upload failed:', error);
+      }
+    }
+  }
+
+  async function handleCreateRelationship(evidenceId1: string, evidenceId2: string) {
+    send({ type: 'CREATE_RELATIONSHIP', evidenceId1, evidenceId2 });
+    try {
+      await evidenceStore.createRelationship(evidenceId1, evidenceId2, 'manual_connection');
+    } catch (error) {
+      console.error('Relationship creation failed:', error);
+    }
+  }
+
+  function handleSelectEvidence(evidence: any) {
+    evidenceStore.selectEvidence(evidence);
+    send({ type: 'SELECT_EVIDENCE', evidence });
+  }
+
+  async function handleSearch() {
+    if (!searchQuery.trim()) return;
+    
+    isSearching = true;
+    try {
+      const response = await fetch(`/api/evidence/search?q=${encodeURIComponent(searchQuery)}&caseId=${selectedCase}`);
+      searchResults = await response.json();
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      isSearching = false;
+    }
+  }
+
+  function handleAnalyzeSelected() {
+    const selected = evidenceStore.selectedEvidence;
+    if (selected.length > 0) {
+      send({ type: 'TRIGGER_ANALYSIS', evidenceIds: selected.map(e => e.id) });
+      showAnalysisPanel = true;
+    }
+  }
+
+  function openTagEditor() {
+    if (evidenceStore.selectedEvidence.length > 0) {
+      showTagEditor = true;
+    }
+  }
+</script>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-4">
+          <h1 class="text-xl font-semibold text-gray-900">Detective Evidence Synthesizer</h1>
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">Case: {selectedCase}</span>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2">
+            <input
+              bind:value={searchQuery}
+              placeholder="Search evidence..."
+              class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              on:keydown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button
+              on:click={handleSearch}
+              disabled={isSearching}
+              class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              <Search class="w-4 h-4" />
+            </button>
+          </div>
+          
+          <button
+            on:click={handleAnalyzeSelected}
+            disabled={evidenceStore.selectedEvidence.length === 0}
+            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center space-x-2"
+          >
+            <Zap class="w-4 h-4" />
+            <span>Analyze</span>
+          </button>
+          
+          <button
+            on:click={openTagEditor}
+            disabled={evidenceStore.selectedEvidence.length === 0}
+            class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 flex items-center space-x-2"
+          >
+            <Tag class="w-4 h-4" />
+            <span>Edit Tags</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Evidence Sidebar -->
+      <div class="col-span-3 space-y-4">
+        <!-- Upload Area -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <h3 class="text-sm font-medium text-gray-900 mb-3">Upload Evidence</h3>
+          <EvidenceUploader onUpload={handleFileUpload} />
+        </div>
+
+        <!-- Evidence List -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <h3 class="text-sm font-medium text-gray-900 mb-3">
+            Evidence ({evidenceStore.evidence.length})
+          </h3>
+          <div class="space-y-2 max-h-96 overflow-y-auto">
+            {#each evidenceStore.evidence as evidence}
+              <div
+                class="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 {evidenceStore.selectedEvidence.includes(evidence) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                draggable="true"
+                on:dragstart={(e) => e.dataTransfer?.setData('evidence-id', evidence.id)}
+                on:click={() => handleSelectEvidence(evidence)}
+              >
+                <div class="flex items-center space-x-2">
+                  <FileText class="w-4 h-4 text-gray-400" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      {evidence.filename}
+                    </p>
+                    <p class="text-xs text-gray-500">{evidence.fileType}</p>
+                  </div>
+                </div>
+                {#if evidence.tags && evidence.tags.length > 0}
+                  <div class="mt-2 flex flex-wrap gap-1">
+                    {#each evidence.tags.slice(0, 3) as tag}
+                      <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                        {tag}
+                      </span>
+                    {/each}
+                    {#if evidence.tags.length > 3}
+                      <span class="text-xs text-gray-400">+{evidence.tags.length - 3}</span>
+                    {/if}
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Relationship Stats -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <h3 class="text-sm font-medium text-gray-900 mb-3">Relationships</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Manual:</span>
+              <span class="font-medium">{evidenceStore.relationshipStats.manual}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Auto-detected:</span>
+              <span class="font-medium">{evidenceStore.relationshipStats.auto}</span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span class="text-gray-900 font-medium">Total:</span>
+              <span class="font-bold">{evidenceStore.relationshipStats.total}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Canvas Area -->
+      <div class="col-span-9">
+        <div class="bg-white rounded-lg shadow">
+          <div class="p-4 border-b">
+            <h3 class="text-lg font-medium text-gray-900">Evidence Canvas</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Drag evidence from the sidebar to the canvas. Shift+click to connect evidence.
+            </p>
+          </div>
+          <div class="p-4">
+            <div class="h-96 relative">
+              <DetectiveCanvas
+                evidence={evidenceStore.evidence}
+                relationships={evidenceStore.relationships}
+                onCreateRelationship={handleCreateRelationship}
+                onSelectEvidence={handleSelectEvidence}
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- State Machine Status -->
+        <div class="mt-4 bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="text-sm font-medium text-gray-900">System Status:</span>
+              <span class="px-2 py-1 text-xs rounded-full {
+                $state.value === 'idle' ? 'bg-green-100 text-green-800' :
+                $state.value === 'uploading' ? 'bg-yellow-100 text-yellow-800' :
+                $state.value === 'analyzing' ? 'bg-blue-100 text-blue-800' :
+                'bg-gray-100 text-gray-800'
+              }">
+                {$state.value}
+              </span>
+            </div>
+            <div class="text-sm text-gray-600">
+              Selected: {evidenceStore.selectedEvidence.length} | 
+              Queue: {evidenceStore.analysisQueue.length}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analysis Panel Modal -->
+{#if showAnalysisPanel}
+  <AIAnalysisPanel
+    evidence={evidenceStore.selectedEvidence}
+    onClose={() => showAnalysisPanel = false}
+  />
+{/if}
+
+<!-- Tag Editor Modal -->
+{#if showTagEditor}
+  <TagEditor
+    evidence={evidenceStore.selectedEvidence}
+    onClose={() => showTagEditor = false}
+    onUpdateTags={(evidenceId, tags) => evidenceStore.updateTags(evidenceId, tags)}
+  />
+{/if}
+```
+
+## 🏗️ Production Best Practices
+
+### Performance Optimization
+- **Canvas Rendering**: Use `requestAnimationFrame` for smooth animations
+- **Vector Search**: Implement pagination and result limiting
+- **Caching Strategy**: Multi-layer caching (Redis + browser + CDN)
+- **Database Indexing**: Proper indexes on foreign keys and search columns
+
+### Security Considerations
+- **File Upload Validation**: Strict file type and size limits
+- **SQL Injection Prevention**: Use Drizzle ORM parameterized queries
+- **XSS Protection**: Sanitize all user inputs
+- **CSRF Protection**: Implement SvelteKit CSRF protection
+- **File Storage**: Secure file storage with access controls
+
+### Scalability Architecture
+- **Horizontal Scaling**: Stateless services behind load balancer
+- **Message Queues**: RabbitMQ for async processing
+- **Database Sharding**: Partition by case_id for large datasets
+- **CDN Integration**: Static asset delivery optimization
+- **Monitoring**: APM tools for performance tracking
+
+### Development Workflow
+```bash
+# Database setup
+npx drizzle-kit generate:pg
+npx drizzle-kit push:pg
+
+# Development server
+npm run dev
+
+# Production build
+npm run build
+npm run preview
+
+# Database migrations
+npm run db:migrate
+
+# Type checking
+npm run check
+```
+
+This architecture provides a production-ready detective evidence synthesizer with all the requested features: native canvas interaction, XState workflow management, PostgreSQL with vector search, AI analysis pipeline, and comprehensive caching/queuing systems.

@@ -1,0 +1,945 @@
+
+> yorha-legal-ai-frontend@1.0.0 check
+> npm run check:base && npm run post-check
+
+
+> yorha-legal-ai-frontend@1.0.0 check:base
+> node check-incremental.mjs
+
+🚀 Starting incremental TypeScript checking...
+
+📋 Phase 1: SvelteKit sync
+🔄 Running: npx svelte-kit sync
+✅ SvelteKit sync completed
+
+📋 Phase 2: TypeScript files check
+🔄 Running: npx tsc --noEmit --skipLibCheck --incremental
+src/lib/forms/superforms-xstate-integration.ts(53,30): error TS2344: Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(55,33): error TS2344: Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(63,21): error TS2345: Argument of type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; documentType: ZodEnum<{ evidence: "evidence"; contract: "contract"; correspondence: "correspondence"; ... 5 more ...; regulation: "regulation"; }>; jurisdiction: ZodOptional<...>; tags: ZodDefault<...>; file: ZodAny; aiProcessing: ZodDefault<...>; },...' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/lib/forms/superforms-xstate-integration.ts(174,30): error TS2344: Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(176,33): error TS2344: Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(182,21): error TS2345: Argument of type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ title: ZodString; description: ZodString; caseNumber: ZodOptional<ZodString>; priority: ZodDefault<ZodEnum<{ medium: "medium"; low: "low"; high: "high"; urgent: "urgent"; }>>; ... 5 more ...; budget: ZodOptional<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/lib/forms/superforms-xstate-integration.ts(273,30): error TS2344: Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(275,33): error TS2344: Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(281,21): error TS2345: Argument of type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ query: ZodString; filters: ZodDefault<ZodObject<{ documentTypes: ZodDefault<ZodArray<ZodString>>; jurisdictions: ZodDefault<ZodArray<ZodString>>; dateRange: ZodOptional<...>; tags: ZodDefault<...>; similarityThreshold: ZodDefault<...>; maxResults: ZodDefault<...>; }, $strip>>; useAI: ZodDefault<...>; cac...' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/lib/forms/superforms-xstate-integration.ts(288,21): error TS2339: Property 'query' does not exist on type '{}'.
+src/lib/forms/superforms-xstate-integration.ts(288,40): error TS2339: Property 'query' does not exist on type '{}'.
+src/lib/forms/superforms-xstate-integration.ts(377,30): error TS2344: Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(379,33): error TS2344: Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' does not satisfy the constraint 'Schema'.
+  Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is not assignable to type 'TSchema | Schema<any, any, any, "">'.
+    Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is missing the following properties from type 'TSchema': params, static, [Kind]
+src/lib/forms/superforms-xstate-integration.ts(385,21): error TS2345: Argument of type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ documentId: ZodString; analysisType: ZodEnum<{ summary: "summary"; recommendations: "recommendations"; compliance: "compliance"; entities: "entities"; risk: "risk"; precedents: "precedents"; }>; options: ZodDefault<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/lib/schemas.ts(19,14): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(value: readonly Literal[], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodLiteral<Literal>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'readonly Literal[]'.
+  Overload 2 of 2, '(value: "on", params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodLiteral<"on">', gave the following error.
+    Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }'.
+src/lib/schemas/file-upload.ts(141,15): error TS2554: Expected 2-3 arguments, but got 1.
+src/lib/schemas/forms.ts(22,15): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: readonly ["low", "medium", "high"], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }'.
+  Overload 2 of 2, '(entries: Readonly<Record<string, EnumValue>>, params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type 'Readonly<Record<string, EnumValue>>'.
+      Index signature for type 'string' is missing in type 'string[]'.
+src/lib/schemas/forms.ts(27,6): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: readonly ["draft", "active", "pending", "closed"], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }'.
+  Overload 2 of 2, '(entries: Readonly<Record<string, EnumValue>>, params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type 'Readonly<Record<string, EnumValue>>'.
+      Index signature for type 'string' is missing in type 'string[]'.
+src/lib/schemas/forms.ts(58,19): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: readonly ["document", "image", "video", "audio", "digital"], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }'.
+  Overload 2 of 2, '(entries: Readonly<Record<string, EnumValue>>, params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type 'Readonly<Record<string, EnumValue>>'.
+      Index signature for type 'string' is missing in type 'string[]'.
+src/lib/schemas/forms.ts(138,13): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: readonly ["prosecutor", "investigator", "legal_assistant", "admin"], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Object literal may only specify known properties, and 'errorMap' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }'.
+  Overload 2 of 2, '(entries: Readonly<Record<string, EnumValue>>, params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>>; message?: string; }): ZodEnum<...>', gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type 'Readonly<Record<string, EnumValue>>'.
+      Index signature for type 'string' is missing in type 'string[]'.
+src/lib/server/db/unified-schema.ts(26,18): error TS2554: Expected 2-3 arguments, but got 1.
+src/lib/services/aiPipeline.ts(42,5): error TS2740: Type '{}' is missing the following properties from type '{ extractText: boolean; generateEmbeddings: boolean; generateSummary: boolean; extractEntities: boolean; analyzeSentiment: boolean; classifyDocument: boolean; chunkSize: number; chunkOverlap: number; }': extractText, generateEmbeddings, generateSummary, extractEntities, and 4 more.
+src/lib/services/comprehensive-caching-service.ts(539,40): error TS2554: Expected 2-3 arguments, but got 4.
+src/lib/services/comprehensive-caching-service.ts(556,40): error TS2554: Expected 2-3 arguments, but got 4.
+src/lib/services/comprehensive-caching-service.ts(562,40): error TS2554: Expected 2-3 arguments, but got 4.
+src/lib/services/ollama-cuda-service.ts(234,51): error TS2345: Argument of type '{ model?: string; temperature?: number; maxTokens?: number; streaming?: StreamingOptions; }' is not assignable to parameter of type '{ streaming: StreamingOptions; temperature?: number; }'.
+  Property 'streaming' is optional in type '{ model?: string; temperature?: number; maxTokens?: number; streaming?: StreamingOptions; }' but required in type '{ streaming: StreamingOptions; temperature?: number; }'.
+src/lib/services/ollama-cuda-service.ts(238,9): error TS2353: Object literal may only specify known properties, and 'temperature' does not exist in type 'ChatOllamaCallOptions'.
+src/lib/services/ollama-cuda-service.ts(240,11): error TS2352: Conversion of type '{ handleLLMStart: () => Promise<void>; handleLLMEnd: () => Promise<void>; handleLLMError: (error: Error) => Promise<void>; }' to type 'CallbackManagerForLLMRun' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ handleLLMStart: () => Promise<void>; handleLLMEnd: () => Promise<void>; handleLLMError: (error: Error) => Promise<void>; }' is missing the following properties from type 'CallbackManagerForLLMRun': handleLLMNewToken, runId, handlers, inheritableHandlers, and 7 more.
+src/lib/services/ollama-cuda-service.ts(246,80): error TS2339: Property 'length' does not exist on type 'AIMessageChunk'.
+src/lib/services/ollama-cuda-service.ts(275,9): error TS2353: Object literal may only specify known properties, and 'temperature' does not exist in type 'Partial<ChatOllamaCallOptions>'.
+src/lib/services/ollama-cuda-service.ts(529,3): error TS2484: Export declaration conflicts with exported declaration of 'CudaConfig'.
+src/lib/services/ollama-cuda-service.ts(530,3): error TS2484: Export declaration conflicts with exported declaration of 'OllamaModelConfig'.
+src/lib/services/ollama-cuda-service.ts(531,3): error TS2484: Export declaration conflicts with exported declaration of 'ModelMetrics'.
+src/lib/services/ollama-cuda-service.ts(532,3): error TS2484: Export declaration conflicts with exported declaration of 'StreamingOptions'.
+src/lib/services/ollamaService.ts(1,21): error TS2307: Cannot find module '$env/dynamic/private' or its corresponding type declarations.
+src/lib/services/performance-optimization-service.ts(712,3): error TS2484: Export declaration conflicts with exported declaration of 'PerformanceMetrics'.
+src/lib/services/performance-optimization-service.ts(713,3): error TS2484: Export declaration conflicts with exported declaration of 'OptimizationConfig'.
+src/lib/services/performance-optimization-service.ts(714,3): error TS2484: Export declaration conflicts with exported declaration of 'BatchRequest'.
+src/lib/services/performance-optimization-service.ts(715,3): error TS2484: Export declaration conflicts with exported declaration of 'ConnectionPool'.
+src/lib/services/qdrantService.ts(377,71): error TS2345: Argument of type 'Omit<LegalDocumentVector, "id" | "timestamp">' is not assignable to parameter of type 'LegalDocumentVector'.
+  Type 'Omit<LegalDocumentVector, "id" | "timestamp">' is missing the following properties from type 'LegalDocumentVector': id, timestamp
+src/lib/services/queue-service.ts(168,3): error TS2322: Type 'string[]' is not assignable to type 'number'.
+src/lib/services/selfPromptingSystem.ts(205,12): error TS2339: Property 'handleIdleUser' does not exist on type 'SelfPromptingSystem'.
+src/lib/services/selfPromptingSystem.ts(212,10): error TS2551: Property 'generateContextualPrompts' does not exist on type 'SelfPromptingSystem'. Did you mean 'triggerContextualPrompts'?
+src/lib/services/selfPromptingSystem.ts(569,31): error TS2339: Property 'split' does not exist on type 'MessageContent'.
+  Property 'split' does not exist on type 'MessageContentComplex[]'.
+src/lib/services/vector-search-service.ts(244,23): error TS2339: Property 'where' does not exist on type 'Omit<PgSelectBase<"evidence", { id: PgColumn<{ name: "id"; tableName: "evidence"; dataType: "string"; columnType: "PgUUID"; data: string; driverParam: string; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; similarity: Al...'.
+src/lib/services/vector-search-service.ts(551,23): error TS2339: Property 'where' does not exist on type 'Omit<PgSelectBase<"evidence", { id: PgColumn<{ name: "id"; tableName: "evidence"; dataType: "string"; columnType: "PgUUID"; data: string; driverParam: string; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 13 more ...; similarity: Al...'.
+src/lib/services/vector-search-service.ts(587,58): error TS2554: Expected 1 arguments, but got 2.
+src/lib/services/vector-search-service.ts(822,11): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'BaseMessage'.
+src/lib/services/vector-search-service.ts(823,11): error TS2353: Object literal may only specify known properties, and 'role' does not exist in type 'BaseMessage'.
+src/lib/services/vector-search-service.ts(896,34): error TS2339: Property 'getIndex' does not exist on type 'Fuse<any>'.
+src/lib/services/vectorRankingService.ts(1,20): error TS2307: Cannot find module '$lib/db' or its corresponding type declarations.
+src/lib/state/app-machine.ts(380,7): error TS2322: Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+  Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+    Types of property '_out_TEvent' are incompatible.
+      Type 'EventObject' is not assignable to type 'AppEvents'.
+        Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+          Types of property 'type' are incompatible.
+            Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(383,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, DoneActorEvent<any, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'AppEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(396,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, ErrorActorEvent<unknown, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'Actions<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'readonly Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Types of property '_out_TEvent' are incompatible.
+              Type 'EventObject' is not assignable to type 'AppEvents'.
+                Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(409,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, DoneActorEvent<any, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(421,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "LOGIN"; credentials: { email: string; password: string; }; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "LOGIN"; credentials: { email: string; password: string; }; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "LOGIN"; credentials: { email: string; password: string; }; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(431,53): error TS2339: Property 'credentials' does not exist on type 'AppEvents'.
+  Property 'credentials' does not exist on type '{ type: "LOGOUT"; }'.
+src/lib/state/app-machine.ts(432,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, DoneActorEvent<any, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'AppEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(440,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, ErrorActorEvent<unknown, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'AppEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(453,9): error TS2322: Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+  Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+    Types of property '_out_TEvent' are incompatible.
+      Type 'EventObject' is not assignable to type 'AppEvents'.
+        Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+          Types of property 'type' are incompatible.
+            Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(454,9): error TS2322: Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+  Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, AppEvents, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+    Types of property '_out_TEvent' are incompatible.
+      Type 'EventObject' is not assignable to type 'AppEvents'.
+        Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+          Types of property 'type' are incompatible.
+            Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(462,13): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "NAVIGATE"; path: string; title?: string; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "NAVIGATE"; path: string; title?: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "NAVIGATE"; path: string; title?: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(465,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "GLOBAL_LOADING"; message?: string; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "GLOBAL_LOADING"; message?: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "GLOBAL_LOADING"; message?: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(474,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "GLOBAL_LOADING_COMPLETE"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "GLOBAL_LOADING_COMPLETE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "GLOBAL_LOADING_COMPLETE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(483,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "LOGOUT"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "LOGOUT"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "LOGOUT"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(488,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "SESSION_EXPIRED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'AppEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(506,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, DoneActorEvent<any, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(510,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, ErrorActorEvent<unknown, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(520,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, DoneActorEvent<any, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, DoneActorEvent<any, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'AppEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(530,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<AppContext, ErrorActorEvent<unknown, string>, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'Actions<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'readonly Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, ErrorActorEvent<unknown, string>, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Types of property '_out_TEvent' are incompatible.
+              Type 'EventObject' is not assignable to type 'AppEvents'.
+                Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(542,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "RETRY_FAILED_ACTION"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "RETRY_FAILED_ACTION"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "RETRY_FAILED_ACTION"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(546,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(556,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "SET_THEME"; theme: "auto" | "light" | "dark"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "SET_THEME"; theme: "auto" | "light" | "dark"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "SET_THEME"; theme: "auto" | "light" | "dark"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(566,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "SET_LAYOUT"; layout: "desktop" | "mobile" | "tablet"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "SET_LAYOUT"; layout: "desktop" | "mobile" | "tablet"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "SET_LAYOUT"; layout: "desktop" | "mobile" | "tablet"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(570,5): error TS2322: Type '{ actions: ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "ADD_NOTIFICATION"; notification: Omit<{ id: string; type: "error" | "success" | "warning" | "info"; title: string; message: string; timestamp: Date; persistent?: boolean; actions?: { ...; }[]; }, "id" | "timestamp">; }, ... 6 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "ADD_NOTIFICATION"; notification: Omit<{ id: string; type: "error" | "success" | "warning" | "info"; title: string; message: string; timestamp: Date; persistent?: boolean; actions?: { ...; }[]; }, "id" | "timestamp">; }, ... 6 more ..., EventObject>'.
+      Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "ADD_NOTIFICATION"; notification: Omit<{ id: string; type: "error" | "success" | "warning" | "info"; title: string; message: string; timestamp: Date; persistent?: boolean; actions?: { ...; }[]; }, "id" | "timestamp">; }, ... 6 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(574,5): error TS2322: Type '{ actions: ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "DISMISS_NOTIFICATION"; id: string; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "DISMISS_NOTIFICATION"; id: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "DISMISS_NOTIFICATION"; id: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(578,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "CLEAR_NOTIFICATIONS"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "CLEAR_NOTIFICATIONS"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "CLEAR_NOTIFICATIONS"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(582,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "SET_ERROR"; error: { code: string; message: string; details?: any; recoverable: boolean; }; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "SET_ERROR"; error: { code: string; message: string; details?: any; recoverable: boolean; }; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "SET_ERROR"; error: { code: string; message: string; details?: any; recoverable: boolean; }; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(586,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "CLEAR_ERROR"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(590,5): error TS2322: Type '{ actions: ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "UPDATE_SETTINGS"; settings: Partial<{ autoSave: boolean; autoSaveInterval: number; enableAnalytics: boolean; enableNotifications: boolean; enableOfflineMode: boolean; maxFileUploadSize: number; defaultPageSize: number; }>; }, ... 6 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "UPDATE_SETTINGS"; settings: Partial<{ autoSave: boolean; autoSaveInterval: number; enableAnalytics: boolean; enableNotifications: boolean; enableOfflineMode: boolean; maxFileUploadSize: number; defaultPageSize: number; }>; }, ... 6 more ..., EventObject>'.
+      Type 'ActionFunction<AppContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "UPDATE_SETTINGS"; settings: Partial<{ autoSave: boolean; autoSaveInterval: number; enableAnalytics: boolean; enableNotifications: boolean; enableOfflineMode: boolean; maxFileUploadSize: number; defaultPageSize: number; }>; }, ... 6 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(594,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "ONLINE"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "ONLINE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "ONLINE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(598,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "OFFLINE"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "OFFLINE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "OFFLINE"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(602,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "WEBSOCKET_CONNECTED"; connectionId: string; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "WEBSOCKET_CONNECTED"; connectionId: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "WEBSOCKET_CONNECTED"; connectionId: string; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(606,5): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "WEBSOCKET_DISCONNECTED"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<AppContext, { type: "WEBSOCKET_DISCONNECTED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "WEBSOCKET_DISCONNECTED"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'AppEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/app-machine.ts(610,5): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]; }' is not assignable to type 'TransitionConfigOrTarget<AppContext, { type: "SHUTDOWN_APP"; }, AppEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'Actions<AppContext, { type: "SHUTDOWN_APP"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>[]' is not assignable to type 'readonly Action<AppContext, { type: "SHUTDOWN_APP"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<AppContext, { type: "SHUTDOWN_APP"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<AppContext, { type: "SHUTDOWN_APP"; }, AppEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Types of property '_out_TEvent' are incompatible.
+              Type 'EventObject' is not assignable to type 'AppEvents'.
+                Type 'EventObject' is not assignable to type '{ type: "SHUTDOWN_APP"; }'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type '"SHUTDOWN_APP"'.
+src/lib/state/evidenceCustodyMachine.ts(9,20): error TS2307: Cannot find module '$lib/db' or its corresponding type declarations.
+src/lib/state/evidenceProcessingMachine.ts(79,7): error TS2353: Object literal may only specify known properties, and 'performAnalysis' does not exist in type '{ extractText: boolean; generateEmbeddings: boolean; generateSummary: boolean; extractEntities: boolean; analyzeSentiment: boolean; classifyDocument: boolean; chunkSize: number; chunkOverlap: number; }'.
+src/lib/state/legal-case-machine.ts(289,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "LOAD_CASE"; caseId: string; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "LOAD_CASE"; caseId: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "LOAD_CASE"; caseId: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(293,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; guard: ({ context }: { context: LegalCaseContext; }) => boolean; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "CREATE_CASE"; caseData: { userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }; }, ... 6 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "CREATE_CASE"; caseData: { userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }; }, ... 6 more ..., EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "CREATE_CASE"; caseData: { userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }; }, ... 6 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(298,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "SEARCH"; query: string; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "SEARCH"; query: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "SEARCH"; query: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(302,9): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, ProvidedActor, ... 4 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(311,48): error TS2339: Property 'caseId' does not exist on type 'LegalCaseEvents'.
+  Property 'caseId' does not exist on type '{ type: "CREATE_CASE"; caseData: { userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; updatedAt?: Date; jurisdiction?: string; ... 12 more ...; contentEmbedding?: any; }; }'.
+src/lib/state/legal-case-machine.ts(312,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(316,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(327,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'readonly Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(334,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(351,13): error TS2322: Type '{ target: string; actions: ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(355,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(364,13): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'Actions<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]' is not assignable to type 'readonly Action<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>' is not assignable to type 'Action<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "ADD_EVIDENCE"; files: File[]; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(373,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "PROCESS_EVIDENCE"; evidenceId: string; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "PROCESS_EVIDENCE"; evidenceId: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "PROCESS_EVIDENCE"; evidenceId: string; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(377,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; guard: ({ context }: { context: LegalCaseContext; }) => boolean; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "START_AI_ANALYSIS"; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "START_AI_ANALYSIS"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "START_AI_ANALYSIS"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(382,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "FIND_SIMILAR_CASES"; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "FIND_SIMILAR_CASES"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "FIND_SIMILAR_CASES"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(386,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "UPDATE_CASE"; updates: Partial<{ id: string; createdAt: Date; updatedAt: Date; userId: string; title: string; jurisdiction: string; caseNumber: string; ... 14 more ...; contentEmbedding: any; }>; }, ... 6 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "UPDATE_CASE"; updates: Partial<{ id: string; createdAt: Date; updatedAt: Date; userId: string; title: string; jurisdiction: string; caseNumber: string; ... 14 more ...; contentEmbedding: any; }>; }, ... 6 more ..., EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "UPDATE_CASE"; updates: Partial<{ id: string; createdAt: Date; updatedAt: Date; userId: string; title: string; jurisdiction: string; caseNumber: string; ... 14 more ...; contentEmbedding: any; }>; }, ... 6 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(390,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "DELETE_CASE"; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "DELETE_CASE"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "DELETE_CASE"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(430,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(455,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(471,17): error TS2322: Type '{ target: string; actions: ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(475,17): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(481,17): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "AI_ANALYSIS_PROGRESS"; progress: number; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "AI_ANALYSIS_PROGRESS"; progress: number; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "AI_ANALYSIS_PROGRESS"; progress: number; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(514,13): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'readonly Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(521,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(541,30): error TS2339: Property 'updates' does not exist on type 'LegalCaseEvents'.
+  Property 'updates' does not exist on type '{ type: "LOAD_CASE"; caseId: string; }'.
+src/lib/state/legal-case-machine.ts(543,13): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'readonly Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(550,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(581,13): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(590,9): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, ProvidedActor, ... 4 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "SWITCH_TAB"; tab: "search" | "evidence" | "analysis" | "overview"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(593,9): error TS2322: Type '{ actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "SET_WORKFLOW_STAGE"; stage: "closed" | "analysis" | "review" | "investigation" | "preparation"; }, LegalCaseEvents, ... 5 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "SET_WORKFLOW_STAGE"; stage: "closed" | "analysis" | "review" | "investigation" | "preparation"; }, LegalCaseEvents, ... 5 more ..., EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "SET_WORKFLOW_STAGE"; stage: "closed" | "analysis" | "review" | "investigation" | "preparation"; }, LegalCaseEvents, ... 5 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(596,9): error TS2322: Type '{ actions: ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "UPDATE_CASE_FORM"; data: Partial<{ userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }>; }, ... 6 more ..., MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "UPDATE_CASE_FORM"; data: Partial<{ userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }>; }, ... 6 more ..., EventObject>'.
+      Type 'ActionFunction<LegalCaseContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "UPDATE_CASE_FORM"; data: Partial<{ userId: string; title: string; caseNumber: string; description: string; category: string; id?: string; createdAt?: Date; ... 14 more ...; contentEmbedding?: any; }>; }, ... 6 more ..., EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(619,24): error TS2339: Property 'query' does not exist on type 'LegalCaseEvents'.
+  Property 'query' does not exist on type '{ type: "LOAD_CASE"; caseId: string; }'.
+src/lib/state/legal-case-machine.ts(622,9): error TS2322: Type '{ target: string; actions: (ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<...>)[]; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'Actions<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type '(ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>)[]' is not assignable to type 'readonly Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>[]'.
+        Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never> | ActionFunction<LegalCaseContext, ... 7 more ..., never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+          Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Action<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+            Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, DoneActorEvent<any, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+              Types of property '_out_TEvent' are incompatible.
+                Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+                  Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+                    Types of property 'type' are incompatible.
+                      Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(629,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'SingleOrArray<TransitionConfigOrTarget<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, any, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, ErrorActorEvent<unknown, string>, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(639,9): error TS2322: Type '{ target: string; actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "RETRY"; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "RETRY"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "RETRY"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-case-machine.ts(643,9): error TS2322: Type '{ actions: ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>; }' is not assignable to type 'TransitionConfigOrTarget<LegalCaseContext, { type: "DISMISS_ERROR"; }, LegalCaseEvents, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject, MetaObject>'.
+  Types of property 'actions' are incompatible.
+    Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'Actions<LegalCaseContext, { type: "DISMISS_ERROR"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+      Type 'ActionFunction<MachineContext, AnyEventObject, EventObject, {}, ProvidedActor, never, never, never, never>' is not assignable to type 'ActionFunction<LegalCaseContext, { type: "DISMISS_ERROR"; }, LegalCaseEvents, undefined, ProvidedActor, ParameterizedObject, ParameterizedObject, string, EventObject>'.
+        Types of property '_out_TEvent' are incompatible.
+          Type 'EventObject' is not assignable to type 'LegalCaseEvents'.
+            Type 'EventObject' is not assignable to type '{ type: "RESET"; }'.
+              Types of property 'type' are incompatible.
+                Type 'string' is not assignable to type '"RESET"'.
+src/lib/state/legal-form-machines.ts(11,14): error TS2323: Cannot redeclare exported variable 'DocumentUploadSchema'.
+src/lib/state/legal-form-machines.ts(23,14): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: { generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }): ZodDefault<ZodObject<{ generateSummary: ZodDefault<ZodBoolean>; extractEntities: ZodDefault<...>; riskAssessment: ZodDefault<...>; generateRecommendations: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '{ generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }'.
+      Type '{}' is missing the following properties from type '{ generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }': generateSummary, extractEntities, riskAssessment, generateRecommendations
+  Overload 2 of 2, '(def: () => { generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }): ZodDefault<ZodObject<{ generateSummary: ZodDefault<ZodBoolean>; extractEntities: ZodDefault<...>; riskAssessment: ZodDefault<...>; generateRecommendations: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '() => { generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }'.
+      Type '{}' provides no match for the signature '(): { generateSummary: boolean; extractEntities: boolean; riskAssessment: boolean; generateRecommendations: boolean; }'.
+src/lib/state/legal-form-machines.ts(26,14): error TS2323: Cannot redeclare exported variable 'CaseCreationSchema'.
+src/lib/state/legal-form-machines.ts(39,14): error TS2323: Cannot redeclare exported variable 'SearchQuerySchema'.
+src/lib/state/legal-form-machines.ts(51,14): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: { documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }): ZodDefault<ZodObject<{ documentTypes: ZodDefault<...>; ... 4 more ...; maxResults: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '{ documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }'.
+      Type '{}' is missing the following properties from type '{ documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }': documentTypes, jurisdictions, tags, similarityThreshold, maxResults
+  Overload 2 of 2, '(def: () => { documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }): ZodDefault<ZodObject<{ documentTypes: ZodDefault<...>; ... 4 more ...; maxResults: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '() => { documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }'.
+      Type '{}' provides no match for the signature '(): { documentTypes: string[]; jurisdictions: string[]; tags: string[]; similarityThreshold: number; maxResults: number; dateRange?: { from?: Date; to?: Date; }; }'.
+src/lib/state/legal-form-machines.ts(56,14): error TS2323: Cannot redeclare exported variable 'AIAnalysisSchema'.
+src/lib/state/legal-form-machines.ts(65,14): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: { model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }): ZodDefault<ZodObject<{ model: ZodDefault<ZodString>; temperature: ZodDefault<...>; maxTokens: ZodDefault<...>; includeConfidence: ZodDefault<...>; generateCitations: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '{ model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }'.
+      Type '{}' is missing the following properties from type '{ model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }': model, temperature, maxTokens, includeConfidence, generateCitations
+  Overload 2 of 2, '(def: () => { model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }): ZodDefault<ZodObject<{ model: ZodDefault<ZodString>; temperature: ZodDefault<...>; maxTokens: ZodDefault<...>; includeConfidence: ZodDefault<...>; generateCitations: ZodDefault<...>; }, $strip>>', gave the following error.
+    Argument of type '{}' is not assignable to parameter of type '() => { model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }'.
+      Type '{}' provides no match for the signature '(): { model: string; temperature: number; maxTokens: number; includeConfidence: boolean; generateCitations: boolean; }'.
+src/lib/state/legal-form-machines.ts(171,13): error TS2322: Type '({ event }: AssignArgs<DocumentUploadContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'Record<string, string[]> | PartialAssigner<DocumentUploadContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+  Type '({ event }: AssignArgs<DocumentUploadContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'PartialAssigner<DocumentUploadContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+    Type 'unknown' is not assignable to type 'Record<string, string[]>'.
+      Index signature for type 'string' is missing in type '{}'.
+src/lib/state/legal-form-machines.ts(213,47): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/state/legal-form-machines.ts(254,47): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/state/legal-form-machines.ts(313,5): error TS2322: Type '({ input }: { input: any; }) => Promise<boolean>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(324,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(329,35): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'Blob'.
+      Type '{}' is missing the following properties from type 'Blob': size, type, arrayBuffer, bytes, and 3 more.
+src/lib/state/legal-form-machines.ts(348,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(457,13): error TS2322: Type '({ event }: AssignArgs<CaseCreationContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'Record<string, string[]> | PartialAssigner<CaseCreationContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+  Type '({ event }: AssignArgs<CaseCreationContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'PartialAssigner<CaseCreationContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+    Type 'unknown' is not assignable to type 'Record<string, string[]>'.
+      Index signature for type 'string' is missing in type '{}'.
+src/lib/state/legal-form-machines.ts(476,47): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/state/legal-form-machines.ts(490,5): error TS2322: Type '() => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(495,5): error TS2322: Type '({ input }: { input: any; }) => Promise<boolean>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(500,5): error TS2322: Type '({ input }: { input: any; }) => Promise<boolean>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(511,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(578,13): error TS2322: Type '({ event }: AssignArgs<SearchContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'Record<string, string[]> | PartialAssigner<SearchContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+  Type '({ event }: AssignArgs<SearchContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'PartialAssigner<SearchContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+    Type 'unknown' is not assignable to type 'Record<string, string[]>'.
+      Index signature for type 'string' is missing in type '{}'.
+src/lib/state/legal-form-machines.ts(603,47): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/state/legal-form-machines.ts(655,5): error TS2322: Type '() => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(659,5): error TS2322: Type '({ input }: { input: any; }) => Promise<boolean>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(670,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(690,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(743,13): error TS2322: Type '({ event }: AssignArgs<AIAnalysisContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'Record<string, string[]> | PartialAssigner<AIAnalysisContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+  Type '({ event }: AssignArgs<AIAnalysisContext, ErrorActorEvent<unknown, string>, AnyEventObject, ProvidedActor>) => unknown' is not assignable to type 'PartialAssigner<AIAnalysisContext, ErrorActorEvent<unknown, string>, undefined, AnyEventObject, ProvidedActor, "validationErrors">'.
+    Type 'unknown' is not assignable to type 'Record<string, string[]>'.
+      Index signature for type 'string' is missing in type '{}'.
+src/lib/state/legal-form-machines.ts(765,47): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/state/legal-form-machines.ts(793,5): error TS2322: Type '({ input }: { input: any; }) => Promise<boolean>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(804,5): error TS2322: Type '({ input }: { input: any; }) => Promise<any>' is not assignable to type 'UnknownActorLogic'.
+src/lib/state/legal-form-machines.ts(843,3): error TS2323: Cannot redeclare exported variable 'DocumentUploadSchema'.
+src/lib/state/legal-form-machines.ts(843,3): error TS2484: Export declaration conflicts with exported declaration of 'DocumentUploadSchema'.
+src/lib/state/legal-form-machines.ts(844,3): error TS2323: Cannot redeclare exported variable 'CaseCreationSchema'.
+src/lib/state/legal-form-machines.ts(844,3): error TS2484: Export declaration conflicts with exported declaration of 'CaseCreationSchema'.
+src/lib/state/legal-form-machines.ts(845,3): error TS2323: Cannot redeclare exported variable 'SearchQuerySchema'.
+src/lib/state/legal-form-machines.ts(845,3): error TS2484: Export declaration conflicts with exported declaration of 'SearchQuerySchema'.
+src/lib/state/legal-form-machines.ts(846,3): error TS2323: Cannot redeclare exported variable 'AIAnalysisSchema'.
+src/lib/state/legal-form-machines.ts(846,3): error TS2484: Export declaration conflicts with exported declaration of 'AIAnalysisSchema'.
+src/lib/state/legalDocumentProcessingMachine.ts(238,9): error TS2322: Type '(context: LegalDocumentContext) => Promise<{ content: string; title: string; }>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(264,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<{ keyFindings: string[]; complianceStatus: { gdpr: string; contractLaw: string; }; recommendedActions: string[]; legalPrecedents: any[]; }>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(296,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<LegalEntities>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(329,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<string>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(362,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<number[]>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(395,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<{ riskScore: number; confidenceScore: number; }>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(429,17): error TS2322: Type '(context: LegalDocumentContext) => Promise<{ mcpAnalysis: { stackAnalysis: string; legalSpecificRecommendations: string[]; performanceOptimizations: string[]; }; recommendations: string[]; }>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(465,9): error TS2322: Type '(context: LegalDocumentContext) => Promise<{ documentId: string; }>' is not assignable to type 'string | AnyActorLogic'.
+src/lib/state/legalDocumentProcessingMachine.ts(544,6): error TS2339: Property 'withContext' does not exist on type 'StateMachine<LegalDocumentContext, LegalDocumentEvent, Record<string, AnyActorRef>, ProvidedActor, ... 9 more ..., any>'.
+src/lib/state/legalDocumentProcessingMachine.ts(545,39): error TS2339: Property 'context' does not exist on type 'StateMachine<LegalDocumentContext, LegalDocumentEvent, Record<string, AnyActorRef>, ProvidedActor, ... 9 more ..., any>'.
+src/lib/state/xstate-store.ts(31,21): error TS2707: Generic type 'ActorRef<TSnapshot, TEvent, TEmitted>' requires between 2 and 3 type arguments.
+src/lib/state/xstate-store.ts(32,27): error TS2707: Generic type 'ActorRef<TSnapshot, TEvent, TEmitted>' requires between 2 and 3 type arguments.
+src/lib/state/xstate-store.ts(109,15): error TS2707: Generic type 'ActorRef<TSnapshot, TEvent, TEmitted>' requires between 2 and 3 type arguments.
+src/lib/state/xstate-store.ts(176,21): error TS2707: Generic type 'ActorRef<TSnapshot, TEvent, TEmitted>' requires between 2 and 3 type arguments.
+src/lib/stores/enhanced-rag-store.ts(11,3): error TS2305: Module '"$lib/types/rag"' has no exported member 'RAGSystemStatus'.
+src/lib/stores/enhanced-rag-store.ts(12,3): error TS2305: Module '"$lib/types/rag"' has no exported member 'MLCachingMetrics'.
+src/lib/stores/enhanced-rag-store.ts(186,13): error TS2322: Type '{ id: string; document: { id: string; title: string; content: string; metadata: { source: string; type: any; jurisdiction: string; practiceArea: string[]; confidentialityLevel: number; lastModified: Date; fileSize: number; language: string; tags: any[]; }; version: string; }; ... 7 more ...; snippet: string; }[]' is not assignable to type 'SearchResult[]'.
+  Type '{ id: string; document: { id: string; title: string; content: string; metadata: { source: string; type: any; jurisdiction: string; practiceArea: string[]; confidentialityLevel: number; lastModified: Date; fileSize: number; language: string; tags: any[]; }; version: string; }; ... 7 more ...; snippet: string; }' is missing the following properties from type 'SearchResult': content, type, metadata
+src/lib/stores/index.ts(88,3): error TS2305: Module '"./types"' has no exported member 'StoreState'.
+src/lib/stores/index.ts(89,3): error TS2305: Module '"./types"' has no exported member 'StoreAction'.
+src/lib/stores/index.ts(90,3): error TS2305: Module '"./types"' has no exported member 'StoreContext'.
+src/lib/stores/index.ts(91,3): error TS2305: Module '"./types"' has no exported member 'AsyncStoreState'.
+src/lib/stores/machines/aiProcessingMachine.ts(12,3): error TS2322: Type '{ context: AIProcessingContext; events: {} | { task: AITask; } | { progress: number; } | { result: AITaskResult; } | { error: string; }; }' is not assignable to type 'MachineTypes<AIProcessingContext, AnyEventObject, ProvidedActor, ParameterizedObject, ParameterizedObject, ... 5 more ..., MetaObject>'.
+  Types of property 'events' are incompatible.
+    Type '{} | { task: AITask; } | { progress: number; } | { result: AITaskResult; } | { error: string; }' is not assignable to type 'AnyEventObject'.
+      Property 'type' is missing in type '{}' but required in type 'AnyEventObject'.
+src/lib/stores/machines/aiProcessingMachine.ts(85,51): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/stores/machines/goMicroserviceMachine.ts(19,3): error TS2322: Type '{ context: GoMicroserviceContext; events: {} | { endpoint: string; } | { error: string; } | { status: any; } | { error: string; } | { request: GoServiceRequest; } | { ...; } | { ...; }; }' is not assignable to type 'MachineTypes<GoMicroserviceContext, AnyEventObject, ProvidedActor, ParameterizedObject, ParameterizedObject, ... 5 more ..., MetaObject>'.
+  Types of property 'events' are incompatible.
+    Type '{} | { endpoint: string; } | { error: string; } | { status: any; } | { error: string; } | { request: GoServiceRequest; } | { response: GoServiceResponse; } | { ...; }' is not assignable to type 'AnyEventObject'.
+      Property 'type' is missing in type '{}' but required in type 'AnyEventObject'.
+src/lib/stores/machines/goMicroserviceMachine.ts(67,13): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 2 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+src/lib/stores/machines/goMicroserviceMachine.ts(85,50): error TS2339: Property 'data' does not exist on type 'DoneActorEvent<any, string>'.
+src/lib/stores/machines/goMicroserviceMachine.ts(96,49): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/stores/machines/goMicroserviceMachine.ts(136,17): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 2 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+src/lib/stores/machines/goMicroserviceMachine.ts(171,53): error TS2339: Property 'message' does not exist on type 'unknown'.
+src/lib/stores/machines/goMicroserviceMachine.ts(187,17): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(input: string | URL | Request, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 2 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+  Overload 3 of 3, '(input: URL | RequestInfo, init?: RequestInit): Promise<Response>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'RequestInit'.
+src/lib/stores/machines/index.ts(7,1): error TS2308: Module './aiProcessingMachine' has already exported a member named 'getProcessingProgress'. Consider explicitly re-exporting to resolve the ambiguity.
+src/lib/stores/machines/index.ts(10,1): error TS2308: Module './documentMachine' has already exported a member named 'DocumentContext'. Consider explicitly re-exporting to resolve the ambiguity.
+src/lib/stores/machines/index.ts(10,1): error TS2308: Module './userWorkflowMachine' has already exported a member named 'UserWorkflowContext'. Consider explicitly re-exporting to resolve the ambiguity.
+src/lib/stores/multiStepFormMachine.ts(30,15): error TS2554: Expected 2-3 arguments, but got 1.
+src/lib/stores/multiStepFormMachine.ts(68,17): error TS2554: Expected 2-3 arguments, but got 1.
+src/lib/stores/multiStepFormMachine.ts(115,15): error TS2554: Expected 2-3 arguments, but got 1.
+src/lib/stores/multiStepFormMachine.ts(461,23): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/lib/stores/multiStepFormMachine.ts(510,23): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/lib/utils/loki-evidence.ts(60,8): error TS2352: Conversion of type 'Collection<any>' to type 'Collection<LokiEvidence, any>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'binaryIndices' are incompatible.
+    Type '{ [x: string]: BinaryIndex; }' is missing the following properties from type '{ $loki?: BinaryIndex; meta?: BinaryIndex; id: BinaryIndex; title: BinaryIndex; description: BinaryIndex; type: BinaryIndex; ... 7 more ...; analysis?: BinaryIndex; }': id, title, description, type, caseId
+src/lib/utils/loki-evidence.ts(61,8): error TS2352: Conversion of type 'Collection<any>' to type 'Collection<LokiEvidence, any>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'binaryIndices' are incompatible.
+    Type '{ [x: string]: BinaryIndex; }' is missing the following properties from type '{ $loki?: BinaryIndex; meta?: BinaryIndex; id: BinaryIndex; title: BinaryIndex; description: BinaryIndex; type: BinaryIndex; ... 7 more ...; analysis?: BinaryIndex; }': id, title, description, type, caseId
+src/lib/utils/loki-evidence.ts(68,8): error TS2352: Conversion of type 'Collection<any>' to type 'Collection<SyncOperation, any>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'binaryIndices' are incompatible.
+    Type '{ [x: string]: BinaryIndex; }' is missing the following properties from type '{ id: BinaryIndex; type: BinaryIndex; collectionName: BinaryIndex; recordId: BinaryIndex; data?: BinaryIndex; timestamp: BinaryIndex; synced: BinaryIndex; retryCount: BinaryIndex; }': id, type, collectionName, recordId, and 3 more.
+src/lib/utils/loki-evidence.ts(69,8): error TS2352: Conversion of type 'Collection<any>' to type 'Collection<SyncOperation, any>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'binaryIndices' are incompatible.
+    Type '{ [x: string]: BinaryIndex; }' is missing the following properties from type '{ id: BinaryIndex; type: BinaryIndex; collectionName: BinaryIndex; recordId: BinaryIndex; data?: BinaryIndex; timestamp: BinaryIndex; synced: BinaryIndex; retryCount: BinaryIndex; }': id, type, collectionName, recordId, and 3 more.
+src/lib/workers/legal-ai-worker.ts(118,15): error TS2339: Property 'aiExtractedEntities' does not exist on type 'Partial<{ title: string; evidenceType: string; id?: string; updatedAt?: Date; summary?: string; description?: string; location?: string; tags?: unknown; aiSummary?: string; aiTags?: unknown; caseId?: string; criminalId?: string; ... 16 more ...; uploadedAt?: Date; }>'.
+src/lib/workers/legal-ai-worker.ts(123,15): error TS2339: Property 'aiRiskScore' does not exist on type 'Partial<{ title: string; evidenceType: string; id?: string; updatedAt?: Date; summary?: string; description?: string; location?: string; tags?: unknown; aiSummary?: string; aiTags?: unknown; caseId?: string; criminalId?: string; ... 16 more ...; uploadedAt?: Date; }>'.
+src/lib/workers/legal-ai-worker.ts(124,15): error TS2339: Property 'aiRiskFactors' does not exist on type 'Partial<{ title: string; evidenceType: string; id?: string; updatedAt?: Date; summary?: string; description?: string; location?: string; tags?: unknown; aiSummary?: string; aiTags?: unknown; caseId?: string; criminalId?: string; ... 16 more ...; uploadedAt?: Date; }>'.
+src/lib/workers/legal-ai-worker.ts(128,14): error TS2339: Property 'aiProcessingMetadata' does not exist on type 'Partial<{ title: string; evidenceType: string; id?: string; updatedAt?: Date; summary?: string; description?: string; location?: string; tags?: unknown; aiSummary?: string; aiTags?: unknown; caseId?: string; criminalId?: string; ... 16 more ...; uploadedAt?: Date; }>'.
+src/routes/+layout.server.ts(7,45): error TS2345: Argument of type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/+layout.server.ts(8,48): error TS2345: Argument of type 'ZodObject<{ name: ZodString; email: ZodString; password: ZodString; confirmPassword: ZodString; role: ZodEnum<{ prosecutor: "prosecutor"; investigator: "investigator"; admin: "admin"; analyst: "analyst"; }>; terms: ZodLiteral<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ name: ZodString; email: ZodString; password: ZodString; confirmPassword: ZodString; role: ZodEnum<{ prosecutor: "prosecutor"; investigator: "investigator"; admin: "admin"; analyst: "analyst"; }>; terms: ZodLiteral<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/api/ai-boilerplate/+server.ts(132,29): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/ai/analyze-evidence/+server.ts(112,26): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/ai/process-document/+server.ts(315,41): error TS2552: Cannot find name 'request'. Did you mean 'Request'?
+src/routes/api/ai/query/+server.ts(54,26): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/ai/search/+server.ts(65,26): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/auth/login/+server.ts(7,10): error TS2305: Module '"$lib/server/auth"' has no exported member 'lucia'.
+src/routes/api/autocomplete/+server.ts(163,29): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/evidence-enhancement/+server.ts(191,29): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/evidence/save-node/+server.ts(161,26): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/evidence/save-node/+server.ts(208,26): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/api/evidence/upload/+server.ts(343,11): error TS2741: Property 'entities' is missing in type '{ summary: any; keyPoints: any; categories: any; confidence: any; processingTime: number; model: string; }' but required in type '{ keyPoints: string[]; entities: { name: string; type: string; confidence: number; }[]; categories: string[]; confidence: number; summary?: string; sentiment?: { score: number; label: "positive" | "negative" | "neutral"; }; processingTime?: number; model?: string; embedding?: number[]; }'.
+src/routes/api/evidence/upload/+server.ts(353,11): error TS2741: Property 'entities' is missing in type '{ summary: string; keyPoints: undefined[]; categories: undefined[]; confidence: number; processingTime: number; model: string; }' but required in type '{ keyPoints: string[]; entities: { name: string; type: string; confidence: number; }[]; categories: string[]; confidence: number; summary?: string; sentiment?: { score: number; label: "positive" | "negative" | "neutral"; }; processingTime?: number; model?: string; embedding?: number[]; }'.
+src/routes/api/log/+server.ts(2,26): error TS2307: Cannot find module '../../../../lib/server/queues/logQueue' or its corresponding type declarations.
+src/routes/api/simd/+server.ts(22,59): error TS2339: Property 'errors' does not exist on type 'ZodError<{ data: any; operation: "cache" | "parse" | "benchmark"; cache_key?: string; iterations?: number; }>'.
+src/routes/api/vector/+server.ts(19,15): error TS2554: Expected 2-3 arguments, but got 1.
+src/routes/api/vector/+server.ts(117,69): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/evidence/+page.server.ts(22,15): error TS2554: Expected 2-3 arguments, but got 1.
+src/routes/evidence/+page.server.ts(91,51): error TS2345: Argument of type 'ZodObject<{ id: ZodOptional<ZodString>; caseId: ZodString; title: ZodString; description: ZodOptional<ZodString>; ... 5 more ...; metadata: ZodOptional<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ id: ZodOptional<ZodString>; caseId: ZodString; title: ZodString; description: ZodOptional<ZodString>; ... 5 more ...; metadata: ZodOptional<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/evidence/upload/+page.server.ts(18,40): error TS2345: Argument of type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; type: ZodEnum<{ image: "image"; video: "video"; audio: "audio"; document: "document"; digital: "digital"; physical: "physical"; }>; ... 4 more ...; aiAnalysis: ZodDefault<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; type: ZodEnum<{ image: "image"; video: "video"; audio: "audio"; document: "document"; digital: "digital"; physical: "physical"; }>; ... 4 more ...; aiAnalysis: ZodDefault<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/evidence/upload/+page.server.ts(25,52): error TS2345: Argument of type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; type: ZodEnum<{ image: "image"; video: "video"; audio: "audio"; document: "document"; digital: "digital"; physical: "physical"; }>; ... 4 more ...; aiAnalysis: ZodDefault<...>; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ title: ZodString; description: ZodOptional<ZodString>; type: ZodEnum<{ image: "image"; video: "video"; audio: "audio"; document: "document"; digital: "digital"; physical: "physical"; }>; ... 4 more ...; aiAnalysis: ZodDefault<...>; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/evidence/upload/+page.server.ts(43,58): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/routes/evidence/upload/+page.server.ts(61,9): error TS2769: No overload matches this call.
+  Overload 2 of 2, '(values: { title: string | SQL<unknown> | Placeholder<string, any>; evidenceType: string | SQL<unknown> | Placeholder<string, any>; summary?: string | SQL<unknown> | Placeholder<...>; ... 25 more ...; updatedAt?: Date | ... 1 more ... | Placeholder<...>; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'caseId' does not exist in type '{ title: string | SQL<unknown> | Placeholder<string, any>; evidenceType: string | SQL<unknown> | Placeholder<string, any>; summary?: string | SQL<unknown> | Placeholder<...>; ... 25 more ...; updatedAt?: Date | ... 1 more ... | Placeholder<...>; }[]'.
+src/routes/login/+page.server.ts(2,10): error TS2305: Module '"$lib/server/auth"' has no exported member 'lucia'.
+src/routes/login/+page.server.ts(16,40): error TS2345: Argument of type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/login/+page.server.ts(22,51): error TS2345: Argument of type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is not assignable to parameter of type 'ZodObjectType'.
+  Type 'ZodObject<{ email: ZodString; password: ZodString; }, $strip>' is missing the following properties from type 'ZodType<Record<string, unknown>, ZodTypeDef, Record<string, unknown>>': _type, _parse, _getType, _getOrReturnCtx, and 7 more.
+src/routes/login/+page.server.ts(26,14): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(left: PgColumn<{ name: "email"; tableName: "users"; dataType: "string"; columnType: "PgVarchar"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, { ...; }>, right: string | SQLWrapper): SQL<...>', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'string | SQLWrapper'.
+  Overload 2 of 3, '(left: Aliased<unknown>, right: unknown): SQL<unknown>', gave the following error.
+    Argument of type 'PgColumn<{ name: "email"; tableName: "users"; dataType: "string"; columnType: "PgVarchar"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, { ...; }>' is not assignable to parameter of type 'Aliased<unknown>'.
+      Type 'PgColumn<{ name: "email"; tableName: "users"; dataType: "string"; columnType: "PgVarchar"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, { ...; }>' is missing the following properties from type 'Aliased<unknown>': sql, fieldAlias
+  Overload 3 of 3, '(left: never, right: unknown): SQL<unknown>', gave the following error.
+    Argument of type 'PgColumn<{ name: "email"; tableName: "users"; dataType: "string"; columnType: "PgVarchar"; data: string; driverParam: string; notNull: true; hasDefault: false; isPrimaryKey: false; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, { ...; }>' is not assignable to parameter of type 'never'.
+src/routes/login/+page.server.ts(33,7): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Uint8Array<ArrayBufferLike>'.
+❌ Check failed: Command failed with code 2: 

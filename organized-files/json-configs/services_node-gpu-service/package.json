@@ -1,0 +1,65 @@
+{
+  "name": "node-gpu-service",
+  "version": "1.0.0",
+  "description": "High-performance GPU-accelerated embedding processing service using WebGPU",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "docker:build": "docker build -t node-gpu-service .",
+    "docker:run": "docker run -p 50052:50052 --gpus all node-gpu-service",
+    "proto:generate": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./proto --grpc_out=grpc_js:./proto --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` ../proto/gpu_service.proto"
+  },
+  "keywords": [
+    "webgpu",
+    "gpu",
+    "embeddings",
+    "grpc",
+    "microservice",
+    "ai",
+    "machine-learning"
+  ],
+  "author": "Legal AI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.9.14",
+    "@grpc/proto-loader": "^0.7.10",
+    "gpu": "github:kmamal/gpu",
+    "ws": "^8.16.0",
+    "node-fetch": "^3.3.2",
+    "uuid": "^9.0.1",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "rimraf": "^5.0.5",
+    "grpc-tools": "^1.12.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/legal-ai/node-gpu-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/legal-ai/node-gpu-service/issues"
+  },
+  "homepage": "https://github.com/legal-ai/node-gpu-service#readme"
+}

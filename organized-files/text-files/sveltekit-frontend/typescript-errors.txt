@@ -1,0 +1,2205 @@
+
+> yorha-legal-ai-frontend@1.0.0 check:ultra-fast
+> npx tsc --noEmit --skipLibCheck --incremental && echo '✅ Ultra-fast check completed'
+
+.svelte-kit/types/src/routes/context7-demo.disabled/proxy+page.server.ts(12,7): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo.disabled/proxy+page.server.ts(12,16): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo.disabled/proxy+page.server.ts(12,34): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo.disabled/proxy+page.server.ts(12,77): error TS1005: '=>' expected.
+.svelte-kit/types/src/routes/context7-demo/proxy+page.server.ts(12,7): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo/proxy+page.server.ts(12,16): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo/proxy+page.server.ts(12,34): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/context7-demo/proxy+page.server.ts(12,77): error TS1005: '=>' expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(17,1): error TS1003: Identifier expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,1): error TS1003: Identifier expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,3): error TS1003: Identifier expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,9): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,24): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,27): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(18,34): error TS1005: ',' expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(19,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(20,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(21,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(22,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(23,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(24,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(25,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(26,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(27,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(28,1): error TS1136: Property assignment expected.
+.svelte-kit/types/src/routes/evidence/proxy+page.server.ts(28,51): error TS1005: ')' expected.
+src/lib/ai/enhanced-ingestion-pipeline.ts(31,6): error TS2457: Type alias name cannot be 'type'.
+src/lib/ai/enhanced-ingestion-pipeline.ts(31,27): error TS1128: Declaration or statement expected.
+src/lib/ai/enhanced-ingestion-pipeline.ts(32,24): error TS1434: Unexpected keyword or identifier.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,54): error TS1003: Identifier expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,56): error TS1003: Identifier expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,63): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,73): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,90): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,91): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,114): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,115): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,134): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,135): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,162): error TS1011: An element access expression should take an argument.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,163): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,164): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,193): error TS1011: An element access expression should take an argument.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,194): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,195): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,240): error TS1011: An element access expression should take an argument.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,241): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,242): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,281): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,282): error TS1136: Property assignment expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,310): error TS1011: An element access expression should take an argument.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,311): error TS1005: ',' expected.
+src/lib/ai/enhanced-neo4j-reranker.ts(6,315): error TS1005: ';' expected.
+src/lib/ai/frontend-rag-pipeline.ts(4,1): error TS1434: Unexpected keyword or identifier.
+src/lib/ai/frontend-rag-pipeline.ts(4,6): error TS1434: Unexpected keyword or identifier.
+src/lib/ai/frontend-rag-pipeline.ts(10,1): error TS1003: Identifier expected.
+src/lib/ai/frontend-rag-pipeline.ts(11,1): error TS1003: Identifier expected.
+src/lib/ai/frontend-rag-pipeline.ts(11,3): error TS1003: Identifier expected.
+src/lib/ai/frontend-rag-pipeline.ts(11,6): error TS1005: ',' expected.
+src/lib/ai/frontend-rag-pipeline.ts(11,16): error TS1005: '=>' expected.
+src/lib/ai/frontend-rag-pipeline.ts(12,1): error TS1128: Declaration or statement expected.
+src/lib/ai/frontend-rag-pipeline.ts(13,1): error TS1128: Declaration or statement expected.
+src/lib/ai/frontend-rag-pipeline.ts(14,1): error TS1128: Declaration or statement expected.
+src/lib/ai/frontend-rag-pipeline.ts(14,35): error TS1005: ';' expected.
+src/lib/ai/langchain-ollama-service.ts(5,15): error TS1128: Declaration or statement expected.
+src/lib/ai/langchain-ollama-service.ts(6,20): error TS1434: Unexpected keyword or identifier.
+src/lib/ai/langchain-rag.ts(17,1): error TS1109: Expression expected.
+src/lib/ai/synthesis-todo.ts(19,1): error TS1109: Expression expected.
+src/lib/components/ui/enhanced/index.ts(1,1): error TS1434: Unexpected keyword or identifier.
+src/lib/components/ui/enhanced/index.ts(1,8): error TS1434: Unexpected keyword or identifier.
+src/lib/components/ui/enhanced/index.ts(7,1): error TS1005: ',' expected.
+src/lib/components/ui/enhanced/index.ts(7,8): error TS1005: ',' expected.
+src/lib/components/ui/enhanced/index.ts(7,10): error TS1128: Declaration or statement expected.
+src/lib/components/ui/enhanced/index.ts(7,18): error TS1434: Unexpected keyword or identifier.
+src/lib/components/ui/enhanced/index.ts(7,28): error TS1434: Unexpected keyword or identifier.
+src/lib/database/enhanced-schema.ts(10,15): error TS1005: 'from' expected.
+src/lib/database/enhanced-schema.ts(11,13): error TS1005: ';' expected.
+src/lib/engines/neural-sprite-engine.ts(11,14): error TS1005: ',' expected.
+src/lib/engines/neural-sprite-engine.ts(11,27): error TS1005: ';' expected.
+src/lib/engines/neural-sprite-engine.ts(13,25): error TS1005: ';' expected.
+src/lib/engines/neural-sprite-engine.ts(14,6): error TS1005: ';' expected.
+src/lib/engines/neural-sprite-engine.ts(14,13): error TS1434: Unexpected keyword or identifier.
+src/lib/forms/superforms-xstate-integration.ts(10,3): error TS1003: Identifier expected.
+src/lib/forms/superforms-xstate-integration.ts(11,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(12,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(13,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(14,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(15,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(16,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(17,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(18,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(19,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(19,10): error TS1005: ',' expected.
+src/lib/forms/superforms-xstate-integration.ts(20,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(20,10): error TS1005: ',' expected.
+src/lib/forms/superforms-xstate-integration.ts(21,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(21,10): error TS1005: ',' expected.
+src/lib/forms/superforms-xstate-integration.ts(22,1): error TS1136: Property assignment expected.
+src/lib/forms/superforms-xstate-integration.ts(22,10): error TS1005: ',' expected.
+src/lib/forms/superforms-xstate-integration.ts(22,28): error TS1005: ';' expected.
+src/lib/integrations/flashattention-multicore-bridge.ts(10,30): error TS1005: ';' expected.
+src/lib/integrations/flashattention-multicore-bridge.ts(10,52): error TS1005: ';' expected.
+src/lib/integrations/full-stack-workflow.ts(10,37): error TS1005: ';' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,34): error TS1003: Identifier expected.
+src/lib/integrations/full-system-orchestrator.ts(9,36): error TS1003: Identifier expected.
+src/lib/integrations/full-system-orchestrator.ts(9,43): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,53): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,79): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,80): error TS1136: Property assignment expected.
+src/lib/integrations/full-system-orchestrator.ts(9,113): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,114): error TS1136: Property assignment expected.
+src/lib/integrations/full-system-orchestrator.ts(9,151): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,152): error TS1136: Property assignment expected.
+src/lib/integrations/full-system-orchestrator.ts(9,184): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,185): error TS1136: Property assignment expected.
+src/lib/integrations/full-system-orchestrator.ts(9,219): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,220): error TS1136: Property assignment expected.
+src/lib/integrations/full-system-orchestrator.ts(9,279): error TS1005: ',' expected.
+src/lib/integrations/full-system-orchestrator.ts(9,283): error TS1005: ';' expected.
+src/lib/logic/Report.ts(6,1): error TS1003: Identifier expected.
+src/lib/logic/Report.ts(7,1): error TS1003: Identifier expected.
+src/lib/logic/Report.ts(7,3): error TS1003: Identifier expected.
+src/lib/logic/Report.ts(7,10): error TS1005: ',' expected.
+src/lib/logic/Report.ts(7,20): error TS1005: ',' expected.
+src/lib/logic/Report.ts(7,32): error TS1005: ',' expected.
+src/lib/logic/Report.ts(8,1): error TS1136: Property assignment expected.
+src/lib/logic/Report.ts(8,17): error TS1005: ',' expected.
+src/lib/logic/Report.ts(9,1): error TS1136: Property assignment expected.
+src/lib/logic/Report.ts(9,18): error TS1005: ',' expected.
+src/lib/logic/Report.ts(10,1): error TS1136: Property assignment expected.
+src/lib/logic/Report.ts(10,28): error TS1011: An element access expression should take an argument.
+src/lib/logic/Report.ts(10,29): error TS1005: ',' expected.
+src/lib/logic/Report.ts(11,1): error TS1136: Property assignment expected.
+src/lib/logic/Report.ts(11,9): error TS1005: ']' expected.
+src/lib/logic/Report.ts(11,17): error TS1005: ',' expected.
+src/lib/logic/Report.ts(11,18): error TS1136: Property assignment expected.
+src/lib/logic/Report.ts(11,23): error TS1005: ',' expected.
+src/lib/logic/Report.ts(11,27): error TS1005: ';' expected.
+src/lib/machines/agentShellMachine.ts(4,23): error TS1005: ';' expected.
+src/lib/machines/agentShellMachine.ts(4,41): error TS1005: ';' expected.
+src/lib/machines/canvasSystem.ts(8,11): error TS1005: ';' expected.
+src/lib/machines/canvasSystem.ts(9,21): error TS1011: An element access expression should take an argument.
+src/lib/machines/canvasSystem.ts(10,33): error TS1011: An element access expression should take an argument.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(10,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(11,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(12,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(12,3): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(13,1): error TS1136: Property assignment expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(14,1): error TS1136: Property assignment expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(14,10): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(14,28): error TS1005: ';' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(22,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(22,8): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(22,18): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(22,43): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(23,22): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(24,31): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(25,36): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(26,29): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(27,36): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(28,64): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(29,24): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.backup.ts(30,28): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(10,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.ts(11,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.ts(12,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.ts(12,3): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.ts(13,1): error TS1136: Property assignment expected.
+src/lib/optimization/comprehensive-orchestrator.ts(14,1): error TS1136: Property assignment expected.
+src/lib/optimization/comprehensive-orchestrator.ts(14,10): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(14,28): error TS1005: ';' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(22,1): error TS1003: Identifier expected.
+src/lib/optimization/comprehensive-orchestrator.ts(22,8): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(22,18): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(22,43): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(23,22): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(24,31): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(25,36): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(26,29): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(27,36): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(28,64): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(29,24): error TS1005: ',' expected.
+src/lib/optimization/comprehensive-orchestrator.ts(30,28): error TS1005: ',' expected.
+src/lib/optimization/context7-mcp-integration.ts(8,54): error TS1005: 'from' expected.
+src/lib/optimization/context7-mcp-integration.ts(9,27): error TS1005: ';' expected.
+src/lib/optimization/copilot-index-optimizer.ts(9,28): error TS1003: Identifier expected.
+src/lib/optimization/copilot-index-optimizer.ts(12,11): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(12,30): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(13,31): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(14,36): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(15,36): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(16,41): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(17,32): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(18,23): error TS1005: ',' expected.
+src/lib/optimization/copilot-index-optimizer.ts(19,27): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(19,1): error TS1003: Identifier expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(20,1): error TS1003: Identifier expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(21,1): error TS1003: Identifier expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(22,1): error TS1003: Identifier expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(22,3): error TS1003: Identifier expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(22,10): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(22,20): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(22,35): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(23,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(23,22): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(24,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(24,26): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(25,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(25,23): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(26,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(26,22): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(27,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(27,21): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(28,1): error TS1136: Property assignment expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(28,55): error TS1005: ',' expected.
+src/lib/optimization/enhanced-vscode-extension-manager.ts(28,59): error TS1005: ';' expected.
+src/lib/optimization/index.ts(45,1): error TS1109: Expression expected.
+src/lib/optimization/index.ts(60,8): error TS1005: ',' expected.
+src/lib/optimization/index.ts(62,8): error TS1005: ';' expected.
+src/lib/optimization/index.ts(63,8): error TS1005: ';' expected.
+src/lib/optimization/index.ts(64,8): error TS1005: ';' expected.
+src/lib/optimization/index.ts(65,1): error TS1109: Expression expected.
+src/lib/optimization/index.ts(65,3): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(8,23): error TS1003: Identifier expected.
+src/lib/optimization/memory-efficient-extension.ts(10,1): error TS1003: Identifier expected.
+src/lib/optimization/memory-efficient-extension.ts(10,7): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(10,26): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(10,30): error TS1109: Expression expected.
+src/lib/optimization/memory-efficient-extension.ts(10,38): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(11,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(12,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(13,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(14,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(15,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(15,27): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(15,29): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(16,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(17,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(18,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(20,65): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(28,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(28,26): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(28,35): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(28,37): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(28,39): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(36,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(36,32): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(36,47): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(36,51): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(36,53): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(45,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(45,25): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(45,34): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(45,36): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(55,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(55,29): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(55,33): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(55,35): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(61,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(61,27): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(61,36): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(61,38): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(61,40): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(75,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(75,30): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(75,39): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(75,43): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(75,52): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(75,54): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(75,56): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(79,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(79,29): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(79,38): error TS1011: An element access expression should take an argument.
+src/lib/optimization/memory-efficient-extension.ts(79,44): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(79,53): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(80,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(80,50): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(81,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(81,38): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(82,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(82,50): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,14): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,19): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,23): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,29): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,44): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,47): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(84,49): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(100,3): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(100,16): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(100,31): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(100,35): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(100,49): error TS1109: Expression expected.
+src/lib/optimization/memory-efficient-extension.ts(101,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(101,42): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(102,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(102,56): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(103,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(109,6): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(111,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(111,43): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(112,9): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(112,38): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(115,13): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(115,47): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(115,49): error TS1136: Property assignment expected.
+src/lib/optimization/memory-efficient-extension.ts(132,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(134,3): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(134,16): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(134,25): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(135,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(135,37): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(136,9): error TS1003: Identifier expected.
+src/lib/optimization/memory-efficient-extension.ts(136,16): error TS1005: '{' expected.
+src/lib/optimization/memory-efficient-extension.ts(136,23): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(136,32): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(139,13): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(139,47): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(139,49): error TS1136: Property assignment expected.
+src/lib/optimization/memory-efficient-extension.ts(151,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(153,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(153,11): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(153,41): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(153,50): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(153,64): error TS1109: Expression expected.
+src/lib/optimization/memory-efficient-extension.ts(154,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(154,50): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(157,10): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(157,50): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(159,9): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(159,22): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(160,11): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(160,18): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(160,26): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(160,27): error TS1109: Expression expected.
+src/lib/optimization/memory-efficient-extension.ts(160,29): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(160,33): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(162,10): error TS1359: Identifier expected. 'const' is a reserved word that cannot be used here.
+src/lib/optimization/memory-efficient-extension.ts(162,16): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(162,21): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(162,24): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(168,5): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(168,10): error TS1359: Identifier expected. 'const' is a reserved word that cannot be used here.
+src/lib/optimization/memory-efficient-extension.ts(168,16): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(168,20): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(168,23): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(172,5): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(172,9): error TS1005: ':' expected.
+src/lib/optimization/memory-efficient-extension.ts(172,53): error TS1005: ',' expected.
+src/lib/optimization/memory-efficient-extension.ts(175,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(175,21): error TS1005: ')' expected.
+src/lib/optimization/memory-efficient-extension.ts(175,23): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(175,29): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(175,30): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(175,32): error TS1434: Unexpected keyword or identifier.
+src/lib/optimization/memory-efficient-extension.ts(186,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(186,30): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(187,17): error TS1138: Parameter declaration expected.
+src/lib/optimization/memory-efficient-extension.ts(187,20): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(191,6): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(191,13): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(192,3): error TS1128: Declaration or statement expected.
+src/lib/optimization/memory-efficient-extension.ts(194,14): error TS1005: ';' expected.
+src/lib/optimization/memory-efficient-extension.ts(204,1): error TS1128: Declaration or statement expected.
+src/lib/optimization/optimization-test-suite.ts(8,6): error TS2457: Type alias name cannot be 'type'.
+src/lib/optimization/optimization-test-suite.ts(8,47): error TS1128: Declaration or statement expected.
+src/lib/optimization/optimization-test-suite.ts(9,51): error TS1434: Unexpected keyword or identifier.
+src/lib/phase14/server/queues/logWorker.ts(3,20): error TS1003: Identifier expected.
+src/lib/phase14/server/queues/logWorker.ts(7,1): error TS1003: Identifier expected.
+src/lib/phase14/server/queues/logWorker.ts(7,7): error TS1005: ',' expected.
+src/lib/phase14/server/queues/logWorker.ts(7,17): error TS1005: ',' expected.
+src/lib/phase14/server/queues/logWorker.ts(7,19): error TS1003: Identifier expected.
+src/lib/phase14/server/queues/logWorker.ts(7,23): error TS1005: ',' expected.
+src/lib/phase14/server/queues/logWorker.ts(7,29): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(4,1): error TS1003: Identifier expected.
+src/lib/rag/query-helpers.ts(4,3): error TS1003: Identifier expected.
+src/lib/rag/query-helpers.ts(4,10): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(4,20): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(4,32): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(5,1): error TS1136: Property assignment expected.
+src/lib/rag/query-helpers.ts(5,15): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(6,1): error TS1136: Property assignment expected.
+src/lib/rag/query-helpers.ts(6,17): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(7,1): error TS1136: Property assignment expected.
+src/lib/rag/query-helpers.ts(7,18): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(8,1): error TS1136: Property assignment expected.
+src/lib/rag/query-helpers.ts(8,24): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(9,1): error TS1136: Property assignment expected.
+src/lib/rag/query-helpers.ts(9,23): error TS1005: ',' expected.
+src/lib/rag/query-helpers.ts(9,27): error TS1005: ';' expected.
+src/lib/server/ai/ai-assistant-input-synthesizer.ts(7,17): error TS1005: ';' expected.
+src/lib/server/ai/caching-layer.ts(8,17): error TS1003: Identifier expected.
+src/lib/server/ai/caching-layer.ts(8,29): error TS1005: ',' expected.
+src/lib/server/ai/caching-layer.ts(8,42): error TS1005: ',' expected.
+src/lib/server/ai/caching-layer.ts(8,43): error TS1136: Property assignment expected.
+src/lib/server/ai/caching-layer.ts(8,59): error TS1005: ',' expected.
+src/lib/server/ai/caching-layer.ts(10,11): error TS1005: ',' expected.
+src/lib/server/ai/caching-layer.ts(10,22): error TS1005: ',' expected.
+src/lib/server/ai/config.ts(13,1): error TS1003: Identifier expected.
+src/lib/server/ai/config.ts(13,7): error TS1005: ',' expected.
+src/lib/server/ai/config.ts(13,17): error TS1005: ',' expected.
+src/lib/server/ai/config.ts(13,20): error TS1005: ',' expected.
+src/lib/server/ai/config.ts(13,27): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,45): error TS1003: Identifier expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,57): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,82): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,83): error TS1136: Property assignment expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,151): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,152): error TS1136: Property assignment expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,171): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,172): error TS1136: Property assignment expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,194): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,195): error TS1136: Property assignment expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,220): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,221): error TS1136: Property assignment expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,243): error TS1005: ',' expected.
+src/lib/server/ai/embeddings-enhanced.ts(6,247): error TS1005: ';' expected.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(8,1): error TS1434: Unexpected keyword or identifier.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(8,10): error TS1434: Unexpected keyword or identifier.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(23,1): error TS1005: ',' expected.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(23,8): error TS1005: ',' expected.
+src/lib/server/ai/enhanced-ai-synthesis-orchestrator.ts(24,13): error TS1005: ';' expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,19): error TS1003: Identifier expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,20): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,32): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,41): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,52): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,66): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,76): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,85): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,97): error TS1136: Property assignment expected.
+src/lib/server/ai/enhanced-orchestrator.ts(6,112): error TS1005: ';' expected.
+src/lib/server/ai/enhanced-orchestrator.ts(8,1): error TS1434: Unexpected keyword or identifier.
+src/lib/server/ai/enhanced-orchestrator.ts(8,10): error TS1434: Unexpected keyword or identifier.
+src/lib/server/ai/enhanced-orchestrator.ts(23,1): error TS1005: ',' expected.
+src/lib/server/ai/enhanced-orchestrator.ts(23,8): error TS1005: ',' expected.
+src/lib/server/ai/enhanced-orchestrator.ts(24,13): error TS1005: ';' expected.
+src/lib/server/ai/feedback-loop.ts(6,18): error TS1003: Identifier expected.
+src/lib/server/ai/feedback-loop.ts(6,30): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(6,43): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(6,44): error TS1136: Property assignment expected.
+src/lib/server/ai/feedback-loop.ts(6,65): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(6,66): error TS1136: Property assignment expected.
+src/lib/server/ai/feedback-loop.ts(6,84): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(6,85): error TS1136: Property assignment expected.
+src/lib/server/ai/feedback-loop.ts(6,103): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(8,11): error TS1005: ',' expected.
+src/lib/server/ai/feedback-loop.ts(8,27): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,24): error TS1003: Identifier expected.
+src/lib/server/ai/monitoring-service.ts(6,36): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,47): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,48): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,69): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,70): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,96): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,97): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,119): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,120): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,143): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,144): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,167): error TS1011: An element access expression should take an argument.
+src/lib/server/ai/monitoring-service.ts(6,168): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,169): error TS1136: Property assignment expected.
+src/lib/server/ai/monitoring-service.ts(6,193): error TS1005: ',' expected.
+src/lib/server/ai/monitoring-service.ts(6,197): error TS1005: ';' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,28): error TS1003: Identifier expected.
+src/lib/server/ai/ollama-local-llm.ts(6,40): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,52): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,53): error TS1136: Property assignment expected.
+src/lib/server/ai/ollama-local-llm.ts(6,69): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,70): error TS1136: Property assignment expected.
+src/lib/server/ai/ollama-local-llm.ts(6,86): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,87): error TS1136: Property assignment expected.
+src/lib/server/ai/ollama-local-llm.ts(6,105): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,106): error TS1136: Property assignment expected.
+src/lib/server/ai/ollama-local-llm.ts(6,126): error TS1005: ',' expected.
+src/lib/server/ai/ollama-local-llm.ts(6,130): error TS1005: ';' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(20,1): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(20,8): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(20,18): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(20,21): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(20,51): error TS1005: ';' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,1): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,7): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,23): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,25): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,31): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,36): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,40): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline-enhanced.ts(25,64): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(24,1): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline.ts(24,7): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(24,23): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(24,25): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline.ts(24,50): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(25,1): error TS1003: Identifier expected.
+src/lib/server/ai/rag-pipeline.ts(25,7): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(25,28): error TS1005: ',' expected.
+src/lib/server/ai/rag-pipeline.ts(25,30): error TS1003: Identifier expected.
+src/lib/server/ai/streaming-service.ts(7,34): error TS1003: Identifier expected.
+src/lib/server/ai/streaming-service.ts(7,46): error TS1005: ',' expected.
+src/lib/server/ai/streaming-service.ts(7,58): error TS1005: ',' expected.
+src/lib/server/ai/streaming-service.ts(7,59): error TS1136: Property assignment expected.
+src/lib/server/ai/streaming-service.ts(7,148): error TS1005: ',' expected.
+src/lib/server/ai/streaming-service.ts(7,149): error TS1136: Property assignment expected.
+src/lib/server/ai/streaming-service.ts(7,162): error TS1005: ',' expected.
+src/lib/server/ai/streaming-service.ts(7,166): error TS1005: ';' expected.
+src/lib/server/database.ts(8,1): error TS1005: ',' expected.
+src/lib/server/database.ts(8,7): error TS1005: ',' expected.
+src/lib/server/database.ts(8,24): error TS1005: ',' expected.
+src/lib/server/database.ts(8,26): error TS1003: Identifier expected.
+src/lib/server/database.ts(8,32): error TS1005: ',' expected.
+src/lib/server/database.ts(8,37): error TS1005: ',' expected.
+src/lib/server/database.ts(8,41): error TS1005: ',' expected.
+src/lib/server/database.ts(8,55): error TS1005: ',' expected.
+src/lib/server/database/vector-schema.ts(15,1): error TS1109: Expression expected.
+src/lib/server/db/drizzle.ts(6,1): error TS1109: Expression expected.
+src/lib/server/db/drizzle.ts(6,6): error TS1005: ';' expected.
+src/lib/server/db/drizzle.ts(6,13): error TS1434: Unexpected keyword or identifier.
+src/lib/server/db/enhanced-legal-schema.ts(19,1): error TS1109: Expression expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,35): error TS1003: Identifier expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,37): error TS1003: Identifier expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,44): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,54): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,73): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,74): error TS1136: Property assignment expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,88): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,89): error TS1136: Property assignment expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,108): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,109): error TS1136: Property assignment expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,131): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,132): error TS1136: Property assignment expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,149): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,150): error TS1136: Property assignment expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,173): error TS1011: An element access expression should take an argument.
+src/lib/server/db/enhanced-vector-operations.ts(10,174): error TS1005: ',' expected.
+src/lib/server/db/enhanced-vector-operations.ts(10,178): error TS1005: ';' expected.
+src/lib/server/db/index-clean.ts(8,1): error TS1005: ',' expected.
+src/lib/server/db/index-clean.ts(8,5): error TS1005: ',' expected.
+src/lib/server/db/index-clean.ts(8,8): error TS1005: ',' expected.
+src/lib/server/db/index-clean.ts(8,24): error TS1005: ',' expected.
+src/lib/server/db/index-clean.ts(8,40): error TS1109: Expression expected.
+src/lib/server/db/index-clean.ts(8,47): error TS1005: ';' expected.
+src/lib/server/db/index-new.ts(6,8): error TS1005: ',' expected.
+src/lib/server/db/index-new.ts(8,15): error TS1005: ';' expected.
+src/lib/server/db/index.ts(9,1): error TS1005: ',' expected.
+src/lib/server/db/index.ts(9,8): error TS1005: ',' expected.
+src/lib/server/db/index.ts(9,14): error TS1005: ',' expected.
+src/lib/server/db/index.ts(9,27): error TS1005: ',' expected.
+src/lib/server/db/index.ts(9,33): error TS1005: ',' expected.
+src/lib/server/db/index.ts(12,8): error TS1005: ',' expected.
+src/lib/server/db/index.ts(12,14): error TS1005: ',' expected.
+src/lib/server/db/index.ts(12,25): error TS1005: ',' expected.
+src/lib/server/db/index.ts(12,27): error TS1003: Identifier expected.
+src/lib/server/db/index.ts(13,3): error TS1128: Declaration or statement expected.
+src/lib/server/db/index.ts(14,3): error TS1109: Expression expected.
+src/lib/server/db/index.ts(15,1): error TS1109: Expression expected.
+src/lib/server/db/pg.ts(7,5): error TS1005: ',' expected.
+src/lib/server/db/pg.ts(7,8): error TS1005: ',' expected.
+src/lib/server/db/pg.ts(7,20): error TS1005: ',' expected.
+src/lib/server/db/pg.ts(7,37): error TS1109: Expression expected.
+src/lib/server/db/pg.ts(7,44): error TS1005: ';' expected.
+src/lib/server/db/schema-types.ts(4,17): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,31): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,44): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,55): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,69): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,91): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,110): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(4,121): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(6,1): error TS1003: Identifier expected.
+src/lib/server/db/schema-types.ts(6,8): error TS1005: ',' expected.
+src/lib/server/db/schema-types.ts(6,35): error TS1005: ',' expected.
+src/lib/server/db/schema-types.ts(6,46): error TS1005: ',' expected.
+src/lib/server/db/schema-types.ts(7,14): error TS1005: ',' expected.
+src/lib/server/db/schema-types.ts(8,20): error TS1005: ',' expected.
+src/lib/server/db/unified-schema.ts(5,3): error TS1003: Identifier expected.
+src/lib/server/db/unified-schema.ts(6,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(7,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(8,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(9,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(10,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(11,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(12,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(13,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(14,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(15,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(16,1): error TS1136: Property assignment expected.
+src/lib/server/db/unified-schema.ts(16,16): error TS1005: ';' expected.
+src/lib/server/logging/production-logger.ts(8,1): error TS1003: Identifier expected.
+src/lib/server/logging/production-logger.ts(8,8): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(8,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(8,27): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(9,13): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(10,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(11,45): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(12,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(13,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(14,13): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(15,16): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(16,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(17,18): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(18,22): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(20,21): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(21,24): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(22,22): error TS1005: ',' expected.
+src/lib/server/logging/production-logger.ts(23,4): error TS1005: ',' expected.
+src/lib/server/lucia.ts(4,27): error TS1005: ',' expected.
+src/lib/server/lucia.ts(4,43): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(4,1): error TS1003: Identifier expected.
+src/lib/server/minio/client.ts(4,3): error TS1003: Identifier expected.
+src/lib/server/minio/client.ts(4,9): error TS1005: ',' expected.
+src/lib/server/minio/client.ts(4,24): error TS1005: ',' expected.
+src/lib/server/minio/client.ts(4,29): error TS1005: ',' expected.
+src/lib/server/minio/client.ts(4,45): error TS1005: ',' expected.
+src/lib/server/minio/client.ts(5,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(6,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(7,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(8,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(9,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(10,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(11,1): error TS1136: Property assignment expected.
+src/lib/server/minio/client.ts(11,13): error TS1005: ',' expected.
+src/lib/server/minio/client.ts(12,1): error TS1135: Argument expression expected.
+src/lib/server/minio/client.ts(13,1): error TS1128: Declaration or statement expected.
+src/lib/server/minio/client.ts(14,1): error TS1109: Expression expected.
+src/lib/server/minio/client.ts(14,14): error TS1005: ';' expected.
+src/lib/server/minio/client.ts(15,1): error TS1109: Expression expected.
+src/lib/server/minio/client.ts(15,14): error TS1005: ';' expected.
+src/lib/server/minio/client.ts(15,34): error TS1109: Expression expected.
+src/lib/server/monitoring/security.ts(14,1): error TS1003: Identifier expected.
+src/lib/server/monitoring/security.ts(14,13): error TS1005: ',' expected.
+src/lib/server/monitoring/security.ts(14,28): error TS1005: ',' expected.
+src/lib/server/monitoring/security.ts(15,1): error TS1136: Property assignment expected.
+src/lib/server/monitoring/security.ts(15,18): error TS1005: ',' expected.
+src/lib/server/monitoring/security.ts(16,1): error TS1136: Property assignment expected.
+src/lib/server/monitoring/security.ts(16,22): error TS1005: ',' expected.
+src/lib/server/monitoring/security.ts(17,1): error TS1136: Property assignment expected.
+src/lib/server/monitoring/security.ts(17,21): error TS1005: ',' expected.
+src/lib/server/monitoring/security.ts(17,25): error TS1005: ';' expected.
+src/lib/server/rabbitmq.ts(2,1): error TS1109: Expression expected.
+src/lib/server/rabbitmq.ts(2,6): error TS1005: ';' expected.
+src/lib/server/rabbitmq.ts(2,11): error TS1434: Unexpected keyword or identifier.
+src/lib/server/redis.ts(3,17): error TS1003: Identifier expected.
+src/lib/server/redis.ts(3,23): error TS1005: ',' expected.
+src/lib/server/redis.ts(3,34): error TS1005: ',' expected.
+src/lib/server/redis.ts(3,40): error TS1005: ',' expected.
+src/lib/server/redis.ts(3,42): error TS1003: Identifier expected.
+src/lib/server/redis.ts(3,46): error TS1005: ',' expected.
+src/lib/server/redis.ts(3,47): error TS1003: Identifier expected.
+src/lib/server/redis.ts(3,49): error TS1003: Identifier expected.
+src/lib/server/redis.ts(5,1): error TS1003: Identifier expected.
+src/lib/server/redis.ts(5,8): error TS1005: ',' expected.
+src/lib/server/redis.ts(5,14): error TS1005: ',' expected.
+src/lib/server/redis.ts(5,23): error TS1005: ',' expected.
+src/lib/server/redis.ts(5,40): error TS1005: ',' expected.
+src/lib/server/redis.ts(5,43): error TS1005: '=>' expected.
+src/lib/server/services/advanced-search.ts(10,20): error TS1005: 'from' expected.
+src/lib/server/services/advanced-search.ts(11,32): error TS1005: ';' expected.
+src/lib/server/services/ai-service.ts(10,3): error TS1003: Identifier expected.
+src/lib/server/services/ai-service.ts(10,10): error TS1005: ',' expected.
+src/lib/server/services/ai-service.ts(10,17): error TS1005: ',' expected.
+src/lib/server/services/ai-service.ts(11,1): error TS1128: Declaration or statement expected.
+src/lib/server/services/ai-service.ts(12,1): error TS1128: Declaration or statement expected.
+src/lib/server/services/ai-service.ts(13,1): error TS1131: Property or signature expected.
+src/lib/server/services/ai-service.ts(14,1): error TS1131: Property or signature expected.
+src/lib/server/services/ai-service.ts(15,1): error TS1131: Property or signature expected.
+src/lib/server/services/ai-service.ts(16,1): error TS1131: Property or signature expected.
+src/lib/server/services/ai-service.ts(17,1): error TS1131: Property or signature expected.
+src/lib/server/services/ai-service.ts(18,1): error TS1131: Property or signature expected.
+src/lib/server/services/CaseScoringService.ts(17,1): error TS1109: Expression expected.
+src/lib/server/session.ts(4,30): error TS1003: Identifier expected.
+src/lib/server/session.ts(5,1): error TS1003: Identifier expected.
+src/lib/server/session.ts(5,8): error TS1005: ',' expected.
+src/lib/server/session.ts(5,18): error TS1005: ',' expected.
+src/lib/server/session.ts(5,23): error TS1005: ',' expected.
+src/lib/server/session.ts(6,13): error TS1005: ',' expected.
+src/lib/server/session.ts(7,16): error TS1005: ',' expected.
+src/lib/server/session.ts(8,15): error TS1005: ',' expected.
+src/lib/server/session.ts(9,16): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,16): error TS1003: Identifier expected.
+src/lib/server/utils/avatar-upload.ts(4,18): error TS1003: Identifier expected.
+src/lib/server/utils/avatar-upload.ts(4,25): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,35): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,48): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,49): error TS1136: Property assignment expected.
+src/lib/server/utils/avatar-upload.ts(4,70): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,71): error TS1136: Property assignment expected.
+src/lib/server/utils/avatar-upload.ts(4,94): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,95): error TS1136: Property assignment expected.
+src/lib/server/utils/avatar-upload.ts(4,120): error TS1011: An element access expression should take an argument.
+src/lib/server/utils/avatar-upload.ts(4,121): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,122): error TS1136: Property assignment expected.
+src/lib/server/utils/avatar-upload.ts(4,152): error TS1011: An element access expression should take an argument.
+src/lib/server/utils/avatar-upload.ts(4,153): error TS1005: ',' expected.
+src/lib/server/utils/avatar-upload.ts(4,157): error TS1005: ';' expected.
+src/lib/server/vector/EnhancedVectorService.ts(10,1): error TS1003: Identifier expected.
+src/lib/server/vector/EnhancedVectorService.ts(13,3): error TS1005: ';' expected.
+src/lib/server/vector/vectorService.ts(7,1): error TS1003: Identifier expected.
+src/lib/server/vector/vectorService.ts(7,8): error TS1005: ',' expected.
+src/lib/server/vector/vectorService.ts(13,3): error TS1005: ';' expected.
+src/lib/server/websocket/socket-server.ts(5,24): error TS1003: Identifier expected.
+src/lib/server/websocket/socket-server.ts(5,36): error TS1005: ',' expected.
+src/lib/server/websocket/socket-server.ts(5,53): error TS1005: ',' expected.
+src/lib/server/websocket/socket-server.ts(5,54): error TS1136: Property assignment expected.
+src/lib/server/websocket/socket-server.ts(5,71): error TS1005: ',' expected.
+src/lib/server/websocket/socket-server.ts(5,72): error TS1136: Property assignment expected.
+src/lib/server/websocket/socket-server.ts(5,91): error TS1005: ',' expected.
+src/lib/server/websocket/socket-server.ts(5,92): error TS1136: Property assignment expected.
+src/lib/server/websocket/socket-server.ts(5,122): error TS1005: ',' expected.
+src/lib/server/websocket/socket-server.ts(5,126): error TS1005: ';' expected.
+src/lib/server/wsBroker.ts(2,1): error TS1434: Unexpected keyword or identifier.
+src/lib/server/wsBroker.ts(2,11): error TS1434: Unexpected keyword or identifier.
+src/lib/server/wsBroker.ts(7,1): error TS1005: ',' expected.
+src/lib/server/wsBroker.ts(7,7): error TS1005: ',' expected.
+src/lib/server/wsBroker.ts(7,16): error TS1005: ',' expected.
+src/lib/server/wsBroker.ts(7,18): error TS1003: Identifier expected.
+src/lib/server/wsBroker.ts(7,22): error TS1005: ',' expected.
+src/lib/server/wsBroker.ts(7,25): error TS1005: ',' expected.
+src/lib/server/wsBroker.ts(7,32): error TS1005: '>' expected.
+src/lib/server/wsBroker.ts(7,50): error TS1109: Expression expected.
+src/lib/services/advanced-cache-manager.ts(5,1): error TS1003: Identifier expected.
+src/lib/services/advanced-cache-manager.ts(5,3): error TS1003: Identifier expected.
+src/lib/services/advanced-cache-manager.ts(5,10): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(5,20): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(5,29): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(5,32): error TS1005: '>' expected.
+src/lib/services/advanced-cache-manager.ts(6,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(6,12): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(7,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(7,22): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(8,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(8,16): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(9,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(9,53): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(10,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(10,25): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(11,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(11,26): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(12,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(12,18): error TS1011: An element access expression should take an argument.
+src/lib/services/advanced-cache-manager.ts(12,19): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(13,1): error TS1136: Property assignment expected.
+src/lib/services/advanced-cache-manager.ts(13,17): error TS1005: ',' expected.
+src/lib/services/advanced-cache-manager.ts(13,21): error TS1005: ';' expected.
+src/lib/services/ai-pipeline.ts(16,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/ai-pipeline.ts(16,10): error TS1434: Unexpected keyword or identifier.
+src/lib/services/ai-recommendation-engine.ts(3,25): error TS1003: Identifier expected.
+src/lib/services/ai-recommendation-engine.ts(3,27): error TS1003: Identifier expected.
+src/lib/services/ai-recommendation-engine.ts(3,34): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,44): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,66): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,67): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,88): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,89): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,199): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,200): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,283): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,284): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,305): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,306): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,331): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,332): error TS1136: Property assignment expected.
+src/lib/services/ai-recommendation-engine.ts(3,382): error TS1005: ',' expected.
+src/lib/services/ai-recommendation-engine.ts(3,386): error TS1005: ';' expected.
+src/lib/services/ai-summarization-service.ts(8,3): error TS1003: Identifier expected.
+src/lib/services/ai-summarization-service.ts(9,1): error TS1136: Property assignment expected.
+src/lib/services/ai-summarization-service.ts(10,1): error TS1136: Property assignment expected.
+src/lib/services/ai-summarization-service.ts(11,1): error TS1136: Property assignment expected.
+src/lib/services/ai-summarization-service.ts(11,14): error TS1005: ';' expected.
+src/lib/services/ai-worker-manager.ts(19,1): error TS1109: Expression expected.
+src/lib/services/ai-worker-manager.ts(19,3): error TS1434: Unexpected keyword or identifier.
+src/lib/services/aiSummarizationService.ts(10,1): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(10,11): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(10,20): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(11,13): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(12,16): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(13,29): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(14,26): error TS1011: An element access expression should take an argument.
+src/lib/services/aiSummarizationService.ts(14,27): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(15,28): error TS1011: An element access expression should take an argument.
+src/lib/services/aiSummarizationService.ts(15,29): error TS1005: ',' expected.
+src/lib/services/aiSummarizationService.ts(16,32): error TS1005: ',' expected.
+src/lib/services/alert-center.ts(4,3): error TS1003: Identifier expected.
+src/lib/services/alert-center.ts(4,10): error TS1005: ',' expected.
+src/lib/services/alert-center.ts(4,13): error TS1005: ',' expected.
+src/lib/services/alert-center.ts(5,1): error TS1128: Declaration or statement expected.
+src/lib/services/alert-center.ts(6,1): error TS1128: Declaration or statement expected.
+src/lib/services/alert-center.ts(7,1): error TS1128: Declaration or statement expected.
+src/lib/services/alert-center.ts(8,1): error TS1128: Declaration or statement expected.
+src/lib/services/alert-center.ts(9,1): error TS1128: Declaration or statement expected.
+src/lib/services/alert-center.ts(10,1): error TS1131: Property or signature expected.
+src/lib/services/alert-center.ts(11,1): error TS1131: Property or signature expected.
+src/lib/services/alert-center.ts(12,1): error TS1131: Property or signature expected.
+src/lib/services/alert-center.ts(13,1): error TS1131: Property or signature expected.
+src/lib/services/alert-center.ts(14,1): error TS1131: Property or signature expected.
+src/lib/services/alert-center.ts(15,1): error TS1131: Property or signature expected.
+src/lib/services/caching-service.ts(5,25): error TS1005: 'from' expected.
+src/lib/services/caching-service.ts(6,12): error TS1005: ';' expected.
+src/lib/services/caseService.ts(4,25): error TS1005: 'from' expected.
+src/lib/services/caseService.ts(5,17): error TS1005: ';' expected.
+src/lib/services/comprehensive-caching-architecture.ts(10,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-architecture.ts(10,6): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-architecture.ts(14,1): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(14,7): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(15,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-architecture.ts(15,6): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-architecture.ts(21,1): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(21,8): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(21,18): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(21,28): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(21,31): error TS1005: '>' expected.
+src/lib/services/comprehensive-caching-architecture.ts(22,13): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(23,10): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(24,20): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(25,14): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(26,15): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(27,61): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(28,16): error TS1011: An element access expression should take an argument.
+src/lib/services/comprehensive-caching-architecture.ts(28,17): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-architecture.ts(29,27): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(8,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-service.ts(8,6): error TS1434: Unexpected keyword or identifier.
+src/lib/services/comprehensive-caching-service.ts(15,1): error TS1109: Expression expected.
+src/lib/services/comprehensive-caching-service.ts(17,16): error TS1005: ';' expected.
+src/lib/services/comprehensive-caching-service.ts(21,1): error TS1003: Identifier expected.
+src/lib/services/comprehensive-caching-service.ts(21,3): error TS1003: Identifier expected.
+src/lib/services/comprehensive-caching-service.ts(21,10): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(21,20): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(21,32): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(22,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(22,32): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(23,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(23,29): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(24,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(24,26): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(25,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(25,25): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(26,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(26,30): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(27,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(27,24): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(28,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(28,31): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(29,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(29,23): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(30,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(30,27): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(31,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(31,51): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(32,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(32,32): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(33,1): error TS1136: Property assignment expected.
+src/lib/services/comprehensive-caching-service.ts(33,31): error TS1005: ',' expected.
+src/lib/services/comprehensive-caching-service.ts(33,35): error TS1005: ';' expected.
+src/lib/services/context7-mcp-integration.ts(4,25): error TS1003: Identifier expected.
+src/lib/services/context7-mcp-integration.ts(4,27): error TS1003: Identifier expected.
+src/lib/services/context7-mcp-integration.ts(4,34): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,44): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,65): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,66): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,80): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,81): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,160): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,161): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,178): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,179): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,202): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,203): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,229): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,230): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,254): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,255): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,307): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,308): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,335): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,336): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,361): error TS1011: An element access expression should take an argument.
+src/lib/services/context7-mcp-integration.ts(4,362): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,363): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,380): error TS1011: An element access expression should take an argument.
+src/lib/services/context7-mcp-integration.ts(4,381): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,382): error TS1136: Property assignment expected.
+src/lib/services/context7-mcp-integration.ts(4,408): error TS1005: ',' expected.
+src/lib/services/context7-mcp-integration.ts(4,412): error TS1005: ';' expected.
+src/lib/services/context7-phase13-integration.ts(9,19): error TS1003: Identifier expected.
+src/lib/services/context7-phase13-integration.ts(9,21): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,46): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,69): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,88): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,110): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,133): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,154): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,163): error TS1005: ',' expected.
+src/lib/services/context7-phase13-integration.ts(9,184): error TS1136: Property assignment expected.
+src/lib/services/context7-phase13-integration.ts(9,193): error TS1005: ',' expected.
+src/lib/services/context7-phase13-integration.ts(9,210): error TS1005: ';' expected.
+src/lib/services/context7Service.ts(10,1): error TS1003: Identifier expected.
+src/lib/services/context7Service.ts(10,3): error TS1003: Identifier expected.
+src/lib/services/context7Service.ts(10,10): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(10,20): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(10,33): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(11,1): error TS1136: Property assignment expected.
+src/lib/services/context7Service.ts(11,17): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(12,1): error TS1136: Property assignment expected.
+src/lib/services/context7Service.ts(12,24): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(13,1): error TS1136: Property assignment expected.
+src/lib/services/context7Service.ts(13,16): error TS1005: ',' expected.
+src/lib/services/context7Service.ts(13,20): error TS1005: ';' expected.
+src/lib/services/enhanced-ai-pipeline.ts(15,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/enhanced-ai-pipeline.ts(15,7): error TS1434: Unexpected keyword or identifier.
+src/lib/services/enhanced-ai-pipeline.ts(23,1): error TS1003: Identifier expected.
+src/lib/services/enhanced-ai-pipeline.ts(23,8): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(23,18): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(23,39): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(24,18): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(25,19): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(26,18): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(27,24): error TS1005: ',' expected.
+src/lib/services/enhanced-ai-pipeline.ts(28,27): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(15,1): error TS1003: Identifier expected.
+src/lib/services/enhanced-ocr-processor.ts(15,8): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(15,18): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(15,28): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(16,15): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(17,21): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(18,16): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(19,25): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(21,21): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(22,21): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(23,21): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(24,23): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(25,22): error TS1005: ',' expected.
+src/lib/services/enhanced-ocr-processor.ts(26,4): error TS1005: ',' expected.
+src/lib/services/enhancedRAG.ts(10,8): error TS1005: ';' expected.
+src/lib/services/enhancedRAG.ts(11,8): error TS1005: ';' expected.
+src/lib/services/enhancedRAG.ts(12,1): error TS1109: Expression expected.
+src/lib/services/enhancedRAGPipeline.ts(16,1): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(16,8): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(16,18): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(16,33): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(17,17): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(18,22): error TS1011: An element access expression should take an argument.
+src/lib/services/enhancedRAGPipeline.ts(18,23): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(19,21): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(20,20): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(21,28): error TS1011: An element access expression should take an argument.
+src/lib/services/enhancedRAGPipeline.ts(21,29): error TS1005: ',' expected.
+src/lib/services/enhancedRAGPipeline.ts(22,21): error TS1011: An element access expression should take an argument.
+src/lib/services/enhancedRAGPipeline.ts(22,22): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(11,1): error TS1003: Identifier expected.
+src/lib/services/gguf-runtime.ts(12,1): error TS1003: Identifier expected.
+src/lib/services/gguf-runtime.ts(12,3): error TS1003: Identifier expected.
+src/lib/services/gguf-runtime.ts(12,10): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(12,20): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(12,38): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(13,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(13,22): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(14,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(14,26): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(15,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(15,22): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(16,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(16,20): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(17,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(17,22): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(18,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(18,28): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(19,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(19,23): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(20,1): error TS1136: Property assignment expected.
+src/lib/services/gguf-runtime.ts(20,19): error TS1005: ',' expected.
+src/lib/services/gguf-runtime.ts(20,23): error TS1005: ';' expected.
+src/lib/services/gpu-cluster-acceleration.ts(19,1): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(19,8): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(19,18): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(19,29): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(20,13): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(21,19): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(22,45): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(23,35): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(24,60): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(25,21): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(26,19): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(27,20): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(28,19): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(29,22): error TS1005: ',' expected.
+src/lib/services/gpu-cluster-acceleration.ts(30,22): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(7,1): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(7,11): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(7,26): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(8,13): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(9,16): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(10,18): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(11,22): error TS1011: An element access expression should take an argument.
+src/lib/services/indexeddb.ts(11,23): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(12,32): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(13,41): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(14,22): error TS1005: ',' expected.
+src/lib/services/indexeddb.ts(15,45): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(13,1): error TS1003: Identifier expected.
+src/lib/services/inlineSuggestionService.ts(13,3): error TS1003: Identifier expected.
+src/lib/services/inlineSuggestionService.ts(13,10): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(13,20): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(13,38): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(14,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(14,17): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(15,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(15,27): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(16,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(16,26): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(17,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(17,25): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(18,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(18,62): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(19,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(19,20): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(20,1): error TS1136: Property assignment expected.
+src/lib/services/inlineSuggestionService.ts(20,20): error TS1005: ',' expected.
+src/lib/services/inlineSuggestionService.ts(20,24): error TS1005: ';' expected.
+src/lib/services/langchain-config-service.ts(9,15): error TS1128: Declaration or statement expected.
+src/lib/services/langchain-config-service.ts(10,20): error TS1434: Unexpected keyword or identifier.
+src/lib/services/llamacpp-ollama-integration.ts(11,1): error TS1003: Identifier expected.
+src/lib/services/llamacpp-ollama-integration.ts(12,1): error TS1003: Identifier expected.
+src/lib/services/llamacpp-ollama-integration.ts(13,1): error TS1003: Identifier expected.
+src/lib/services/llamacpp-ollama-integration.ts(13,3): error TS1003: Identifier expected.
+src/lib/services/llamacpp-ollama-integration.ts(13,10): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(13,20): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(13,35): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(14,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(14,22): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(15,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(15,24): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(16,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(16,22): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(17,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(17,20): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(18,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(18,22): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(19,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(19,28): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(20,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(20,19): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(21,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(21,18): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(22,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(22,17): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(23,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(23,24): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(24,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(24,17): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(25,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(25,17): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(26,1): error TS1136: Property assignment expected.
+src/lib/services/llamacpp-ollama-integration.ts(26,26): error TS1005: ',' expected.
+src/lib/services/llamacpp-ollama-integration.ts(26,30): error TS1005: ';' expected.
+src/lib/services/multiLayerCache.ts(3,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/multiLayerCache.ts(3,6): error TS1434: Unexpected keyword or identifier.
+src/lib/services/multiLayerCache.ts(7,1): error TS1003: Identifier expected.
+src/lib/services/multiLayerCache.ts(7,8): error TS1005: ',' expected.
+src/lib/services/multiLayerCache.ts(7,13): error TS1005: ',' expected.
+src/lib/services/multiLayerCache.ts(7,30): error TS1005: ';' expected.
+src/lib/services/neo4jGraphService.ts(7,35): error TS1003: Identifier expected.
+src/lib/services/neo4jGraphService.ts(7,37): error TS1003: Identifier expected.
+src/lib/services/neo4jGraphService.ts(7,44): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,54): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,64): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,65): error TS1136: Property assignment expected.
+src/lib/services/neo4jGraphService.ts(7,79): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,80): error TS1136: Property assignment expected.
+src/lib/services/neo4jGraphService.ts(7,99): error TS1011: An element access expression should take an argument.
+src/lib/services/neo4jGraphService.ts(7,100): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,101): error TS1136: Property assignment expected.
+src/lib/services/neo4jGraphService.ts(7,136): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,137): error TS1136: Property assignment expected.
+src/lib/services/neo4jGraphService.ts(7,160): error TS1011: An element access expression should take an argument.
+src/lib/services/neo4jGraphService.ts(7,161): error TS1005: ',' expected.
+src/lib/services/neo4jGraphService.ts(7,165): error TS1005: ';' expected.
+src/lib/services/nodejs-cluster-architecture.ts(7,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/nodejs-cluster-architecture.ts(7,9): error TS1434: Unexpected keyword or identifier.
+src/lib/services/nodejs-cluster-architecture.ts(19,1): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(19,8): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(19,18): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(19,32): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(20,18): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(21,15): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(22,15): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(23,34): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(24,30): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(25,25): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(26,31): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(27,75): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(28,31): error TS1005: ',' expected.
+src/lib/services/nodejs-cluster-architecture.ts(29,20): error TS1005: ',' expected.
+src/lib/services/nodejs-orchestrator.ts(11,1): error TS1003: Identifier expected.
+src/lib/services/nodejs-orchestrator.ts(12,1): error TS1003: Identifier expected.
+src/lib/services/nodejs-orchestrator.ts(12,3): error TS1003: Identifier expected.
+src/lib/services/nodejs-orchestrator.ts(12,10): error TS1005: ',' expected.
+src/lib/services/nodejs-orchestrator.ts(12,26): error TS1005: ',' expected.
+src/lib/services/nodejs-orchestrator.ts(12,28): error TS1003: Identifier expected.
+src/lib/services/nodejs-orchestrator.ts(12,45): error TS1005: ',' expected.
+src/lib/services/nodejs-orchestrator.ts(13,1): error TS1128: Declaration or statement expected.
+src/lib/services/nodejs-orchestrator.ts(14,1): error TS1128: Declaration or statement expected.
+src/lib/services/nodejs-orchestrator.ts(15,1): error TS1128: Declaration or statement expected.
+src/lib/services/nodejs-orchestrator.ts(16,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(17,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(18,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(19,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(20,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(21,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(22,1): error TS1131: Property or signature expected.
+src/lib/services/nodejs-orchestrator.ts(23,1): error TS1131: Property or signature expected.
+src/lib/services/nomic-embedding-service.ts(17,1): error TS1005: ',' expected.
+src/lib/services/nomic-embedding-service.ts(17,8): error TS1005: ',' expected.
+src/lib/services/nomic-embedding-service.ts(18,19): error TS1005: ',' expected.
+src/lib/services/nomic-embedding-service.ts(18,36): error TS1005: ';' expected.
+src/lib/services/nvidiaLlamaService.ts(8,48): error TS1003: Identifier expected.
+src/lib/services/nvidiaLlamaService.ts(8,50): error TS1003: Identifier expected.
+src/lib/services/nvidiaLlamaService.ts(8,57): error TS1005: ',' expected.
+src/lib/services/nvidiaLlamaService.ts(8,67): error TS1005: ',' expected.
+src/lib/services/nvidiaLlamaService.ts(8,85): error TS1005: ',' expected.
+src/lib/services/nvidiaLlamaService.ts(8,86): error TS1136: Property assignment expected.
+src/lib/services/nvidiaLlamaService.ts(10,18): error TS1005: ',' expected.
+src/lib/services/nvidiaLlamaService.ts(10,35): error TS1005: ',' expected.
+src/lib/services/nvidiaLlamaService.ts(17,27): error TS1011: An element access expression should take an argument.
+src/lib/services/nvidiaLlamaService.ts(18,27): error TS1011: An element access expression should take an argument.
+src/lib/services/nvidiaLlamaService.ts(19,27): error TS1011: An element access expression should take an argument.
+src/lib/services/ocr-processor.ts(6,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/ocr-processor.ts(6,13): error TS1434: Unexpected keyword or identifier.
+src/lib/services/ocr-processor.ts(10,1): error TS1003: Identifier expected.
+src/lib/services/ocr-processor.ts(10,8): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(10,18): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(10,28): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(11,15): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(12,21): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(13,21): error TS1011: An element access expression should take an argument.
+src/lib/services/ocr-processor.ts(13,22): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(14,29): error TS1005: ',' expected.
+src/lib/services/ocr-processor.ts(15,26): error TS1005: ',' expected.
+src/lib/services/ocrService.ts(9,20): error TS1005: ';' expected.
+src/lib/services/ollama-cuda-service.ts(9,11): error TS1128: Declaration or statement expected.
+src/lib/services/ollama-cuda-service.ts(10,14): error TS1434: Unexpected keyword or identifier.
+src/lib/services/ollamaChatStream.ts(9,1): error TS1109: Expression expected.
+src/lib/services/ollamaChatStream.ts(17,1): error TS1109: Expression expected.
+src/lib/services/redis-vector-service.ts(6,1): error TS1434: Unexpected keyword or identifier.
+src/lib/services/redis-vector-service.ts(6,7): error TS1434: Unexpected keyword or identifier.
+src/lib/services/redis-vector-service.ts(9,1): error TS1003: Identifier expected.
+src/lib/services/redis-vector-service.ts(9,3): error TS1003: Identifier expected.
+src/lib/services/redis-vector-service.ts(9,10): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(9,20): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(9,39): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(10,1): error TS1136: Property assignment expected.
+src/lib/services/redis-vector-service.ts(10,15): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(11,1): error TS1136: Property assignment expected.
+src/lib/services/redis-vector-service.ts(11,18): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(12,1): error TS1136: Property assignment expected.
+src/lib/services/redis-vector-service.ts(12,17): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(13,1): error TS1136: Property assignment expected.
+src/lib/services/redis-vector-service.ts(13,21): error TS1011: An element access expression should take an argument.
+src/lib/services/redis-vector-service.ts(13,22): error TS1005: ',' expected.
+src/lib/services/redis-vector-service.ts(13,26): error TS1005: ';' expected.
+src/lib/services/selfPromptingSystem.ts(9,30): error TS1003: Identifier expected.
+src/lib/services/selfPromptingSystem.ts(11,1): error TS1003: Identifier expected.
+src/lib/services/selfPromptingSystem.ts(11,8): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(11,18): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(11,29): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(12,13): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(13,92): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(14,18): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(15,49): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(21,5): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(22,23): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(23,25): error TS1005: ',' expected.
+src/lib/services/selfPromptingSystem.ts(24,41): error TS1005: ',' expected.
+src/lib/services/sentence-transformer.ts(8,1): error TS1005: ',' expected.
+src/lib/services/sentence-transformer.ts(8,11): error TS1005: ',' expected.
+src/lib/services/sentence-transformer.ts(8,22): error TS1005: ',' expected.
+src/lib/services/sentence-transformer.ts(10,3): error TS1005: ',' expected.
+src/lib/services/sentence-transformer.ts(11,3): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,28): error TS1003: Identifier expected.
+src/lib/services/unified-document-processor.ts(14,30): error TS1003: Identifier expected.
+src/lib/services/unified-document-processor.ts(14,37): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,47): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,72): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,73): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,95): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,96): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,124): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,125): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,154): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,155): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,187): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,188): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,219): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,220): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,280): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,281): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,302): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,303): error TS1136: Property assignment expected.
+src/lib/services/unified-document-processor.ts(14,325): error TS1005: ',' expected.
+src/lib/services/unified-document-processor.ts(14,329): error TS1005: ';' expected.
+src/lib/services/vector-search.ts(6,1): error TS1109: Expression expected.
+src/lib/state/crewAIOrchestrationMachine.ts(7,26): error TS1005: ';' expected.
+src/lib/state/crewAIOrchestrationMachine.ts(7,51): error TS1005: ';' expected.
+src/lib/state/evidenceCustodyMachine.ts(17,1): error TS1109: Expression expected.
+src/lib/state/evidenceProcessingMachine.ts(20,1): error TS1109: Expression expected.
+src/lib/state/phase13StateMachine.ts(10,25): error TS1005: ';' expected.
+src/lib/state/xstate-store.ts(8,19): error TS1005: ';' expected.
+src/lib/state/xstate-store.ts(8,34): error TS1005: ';' expected.
+src/lib/state/xstate-store.ts(8,53): error TS1005: ';' expected.
+src/lib/state/xstate-store.ts(11,32): error TS1005: ';' expected.
+src/lib/state/xstate-store.ts(11,49): error TS1005: ';' expected.
+src/lib/stores/ai.ts(7,1): error TS1003: Identifier expected.
+src/lib/stores/ai.ts(8,1): error TS1003: Identifier expected.
+src/lib/stores/ai.ts(8,3): error TS1003: Identifier expected.
+src/lib/stores/ai.ts(8,9): error TS1005: ',' expected.
+src/lib/stores/ai.ts(8,22): error TS1005: ',' expected.
+src/lib/stores/ai.ts(8,24): error TS1003: Identifier expected.
+src/lib/stores/ai.ts(8,28): error TS1005: ',' expected.
+src/lib/stores/ai.ts(8,31): error TS1005: ',' expected.
+src/lib/stores/ai.ts(8,38): error TS1005: '>' expected.
+src/lib/stores/ai.ts(8,48): error TS1109: Expression expected.
+src/lib/stores/ai.ts(9,1): error TS1128: Declaration or statement expected.
+src/lib/stores/ai.ts(10,1): error TS1128: Declaration or statement expected.
+src/lib/stores/ai.ts(11,1): error TS1128: Declaration or statement expected.
+src/lib/stores/ai.ts(12,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(13,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(14,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(15,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(16,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(17,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(18,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(19,1): error TS1131: Property or signature expected.
+src/lib/stores/ai.ts(20,1): error TS1131: Property or signature expected.
+src/lib/stores/auth-store.svelte.ts(11,16): error TS1003: Identifier expected.
+src/lib/stores/auth-store.svelte.ts(14,17): error TS1005: ',' expected.
+src/lib/stores/auth-store.svelte.ts(15,3): error TS1003: Identifier expected.
+src/lib/stores/auth-store.svelte.ts(15,20): error TS1005: ',' expected.
+src/lib/stores/auth-store.svelte.ts(15,35): error TS1005: ',' expected.
+src/lib/stores/auth-store.svelte.ts(16,23): error TS1005: ',' expected.
+src/lib/stores/auth-store.svelte.ts(20,27): error TS1005: ',' expected.
+src/lib/stores/auth-store.svelte.ts(21,28): error TS1005: ',' expected.
+src/lib/stores/auth.ts(4,16): error TS1005: ';' expected.
+src/lib/stores/avatarStore.ts(5,1): error TS1003: Identifier expected.
+src/lib/stores/avatarStore.ts(5,13): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(5,25): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(6,1): error TS1136: Property assignment expected.
+src/lib/stores/avatarStore.ts(6,23): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(7,1): error TS1136: Property assignment expected.
+src/lib/stores/avatarStore.ts(7,25): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(8,1): error TS1136: Property assignment expected.
+src/lib/stores/avatarStore.ts(8,25): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(9,1): error TS1136: Property assignment expected.
+src/lib/stores/avatarStore.ts(9,31): error TS1005: ',' expected.
+src/lib/stores/avatarStore.ts(9,35): error TS1005: ';' expected.
+src/lib/stores/chat-store.ts(15,3): error TS1003: Identifier expected.
+src/lib/stores/chat-store.ts(15,10): error TS1005: ',' expected.
+src/lib/stores/chat-store.ts(15,15): error TS1005: ',' expected.
+src/lib/stores/chat-store.ts(16,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(17,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(18,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(19,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(20,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(21,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(22,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(23,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(24,1): error TS1136: Property assignment expected.
+src/lib/stores/chat-store.ts(24,24): error TS1005: ';' expected.
+src/lib/stores/chatStore.ts(16,1): error TS1003: Identifier expected.
+src/lib/stores/chatStore.ts(16,8): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(16,18): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(16,30): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(17,25): error TS1011: An element access expression should take an argument.
+src/lib/stores/chatStore.ts(17,26): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(18,31): error TS1011: An element access expression should take an argument.
+src/lib/stores/chatStore.ts(18,32): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(19,43): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(20,22): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(21,25): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(22,21): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(23,20): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(24,23): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(25,57): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(27,21): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(28,23): error TS1011: An element access expression should take an argument.
+src/lib/stores/chatStore.ts(28,24): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(29,24): error TS1011: An element access expression should take an argument.
+src/lib/stores/chatStore.ts(29,25): error TS1005: ',' expected.
+src/lib/stores/chatStore.ts(30,4): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(14,1): error TS1109: Expression expected.
+src/lib/stores/enhanced-rag-store.ts(21,1): error TS1003: Identifier expected.
+src/lib/stores/enhanced-rag-store.ts(21,8): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(21,18): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(21,32): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(22,26): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(22,27): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(23,31): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(23,32): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(24,39): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(25,23): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(26,29): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(26,30): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(27,26): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(28,33): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(29,27): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(29,28): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(30,22): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(30,23): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(31,21): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(32,23): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(35,20): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(35,21): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(36,26): error TS1011: An element access expression should take an argument.
+src/lib/stores/enhanced-rag-store.ts(36,27): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(37,37): error TS1005: ',' expected.
+src/lib/stores/enhanced-rag-store.ts(38,28): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,20): error TS1003: Identifier expected.
+src/lib/stores/error-handler.ts(3,22): error TS1003: Identifier expected.
+src/lib/stores/error-handler.ts(3,29): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,39): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,52): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,53): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,70): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,71): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,90): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,91): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,111): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,112): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,131): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,132): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,165): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,166): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,184): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,185): error TS1136: Property assignment expected.
+src/lib/stores/error-handler.ts(3,216): error TS1005: ',' expected.
+src/lib/stores/error-handler.ts(3,220): error TS1005: ';' expected.
+src/lib/stores/evidence-store.ts(4,25): error TS1005: 'from' expected.
+src/lib/stores/evidence-store.ts(5,21): error TS1005: ';' expected.
+src/lib/stores/evidence-unified-fixed.ts(10,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified-fixed.ts(11,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified-fixed.ts(11,7): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(11,19): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(11,24): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(12,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified-fixed.ts(12,3): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified-fixed.ts(12,7): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(13,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence-unified-fixed.ts(13,11): error TS1005: ':' expected.
+src/lib/stores/evidence-unified-fixed.ts(13,48): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(14,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence-unified-fixed.ts(14,62): error TS1005: ',' expected.
+src/lib/stores/evidence-unified-fixed.ts(14,66): error TS1005: ';' expected.
+src/lib/stores/evidence-unified-fixed.ts(17,1): error TS1128: Declaration or statement expected.
+src/lib/stores/evidence-unified.ts(10,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified.ts(11,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified.ts(11,7): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(11,19): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(11,24): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(12,1): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified.ts(12,3): error TS1003: Identifier expected.
+src/lib/stores/evidence-unified.ts(12,7): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(13,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence-unified.ts(13,11): error TS1005: ':' expected.
+src/lib/stores/evidence-unified.ts(13,48): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(14,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence-unified.ts(14,62): error TS1005: ',' expected.
+src/lib/stores/evidence-unified.ts(14,66): error TS1005: ';' expected.
+src/lib/stores/evidence-unified.ts(17,1): error TS1128: Declaration or statement expected.
+src/lib/stores/evidence.ts(5,1): error TS1003: Identifier expected.
+src/lib/stores/evidence.ts(6,1): error TS1003: Identifier expected.
+src/lib/stores/evidence.ts(6,3): error TS1003: Identifier expected.
+src/lib/stores/evidence.ts(6,10): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(6,20): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(6,29): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(7,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(7,15): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(8,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(8,19): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(9,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(9,18): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(10,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(10,50): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(11,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(11,20): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(12,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(12,14): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(13,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(13,14): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(14,1): error TS1136: Property assignment expected.
+src/lib/stores/evidence.ts(14,24): error TS1011: An element access expression should take an argument.
+src/lib/stores/evidence.ts(14,25): error TS1005: ',' expected.
+src/lib/stores/evidence.ts(14,29): error TS1005: ';' expected.
+src/lib/stores/keyboardShortcuts.ts(4,25): error TS1003: Identifier expected.
+src/lib/stores/keyboardShortcuts.ts(4,27): error TS1003: Identifier expected.
+src/lib/stores/keyboardShortcuts.ts(4,34): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,44): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,53): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,54): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,69): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,70): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,93): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,94): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,116): error TS1109: Expression expected.
+src/lib/stores/keyboardShortcuts.ts(4,117): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,137): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,138): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,159): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(4,160): error TS1136: Property assignment expected.
+src/lib/stores/keyboardShortcuts.ts(4,180): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(7,7): error TS1005: ':' expected.
+src/lib/stores/keyboardShortcuts.ts(7,22): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(7,32): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(7,33): error TS1109: Expression expected.
+src/lib/stores/keyboardShortcuts.ts(7,35): error TS1005: ':' expected.
+src/lib/stores/keyboardShortcuts.ts(16,2): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(18,14): error TS1005: ':' expected.
+src/lib/stores/keyboardShortcuts.ts(18,76): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(21,17): error TS1005: ':' expected.
+src/lib/stores/keyboardShortcuts.ts(21,42): error TS1005: ',' expected.
+src/lib/stores/keyboardShortcuts.ts(21,54): error TS1005: ',' expected.
+src/lib/stores/machines/aiProcessingMachine.ts(13,1): error TS1109: Expression expected.
+src/lib/stores/machines/goMicroserviceMachine.ts(14,1): error TS1109: Expression expected.
+src/lib/stores/phase2-demo.js(19,1): error TS1109: Expression expected.
+src/lib/stores/realtime.ts(5,1): error TS1003: Identifier expected.
+src/lib/stores/realtime.ts(6,1): error TS1003: Identifier expected.
+src/lib/stores/realtime.ts(6,3): error TS1003: Identifier expected.
+src/lib/stores/realtime.ts(6,10): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(6,20): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(6,32): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(7,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(7,14): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(8,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(8,17): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(9,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(9,18): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(10,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(10,23): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(11,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(11,23): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(12,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(12,17): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(13,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(13,19): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(14,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(14,23): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(15,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(15,24): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(16,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(16,60): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(17,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(18,1): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(18,8): error TS1005: ']' expected.
+src/lib/stores/realtime.ts(18,16): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(18,17): error TS1136: Property assignment expected.
+src/lib/stores/realtime.ts(18,22): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(20,18): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(20,35): error TS1005: ',' expected.
+src/lib/stores/realtime.ts(22,12): error TS1109: Expression expected.
+src/lib/stores/realtime.ts(23,10): error TS1109: Expression expected.
+src/lib/stores/saved-notes.ts(6,1): error TS1005: ',' expected.
+src/lib/stores/saved-notes.ts(6,8): error TS1005: ',' expected.
+src/lib/stores/saved-notes.ts(6,30): error TS1005: ';' expected.
+src/lib/stores/ui.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/lib/stores/ui.ts(4,18): error TS1128: Declaration or statement expected.
+src/lib/stores/ui.ts(5,21): error TS1434: Unexpected keyword or identifier.
+src/lib/tracking/telemetry.ts(4,1): error TS1003: Identifier expected.
+src/lib/tracking/telemetry.ts(4,25): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(4,27): error TS1003: Identifier expected.
+src/lib/tracking/telemetry.ts(5,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(5,23): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(6,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(6,21): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(7,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(7,24): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(8,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(8,22): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(9,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(9,24): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(10,1): error TS1136: Property assignment expected.
+src/lib/tracking/telemetry.ts(10,20): error TS1011: An element access expression should take an argument.
+src/lib/tracking/telemetry.ts(10,21): error TS1005: ',' expected.
+src/lib/tracking/telemetry.ts(10,25): error TS1005: ';' expected.
+src/lib/types/state.ts(25,9): error TS1005: ';' expected.
+src/lib/utils.ts(2,19): error TS1003: Identifier expected.
+src/lib/utils.ts(2,80): error TS1003: Identifier expected.
+src/lib/utils.ts(2,82): error TS1003: Identifier expected.
+src/lib/utils.ts(2,89): error TS1005: ',' expected.
+src/lib/utils.ts(2,98): error TS1005: ',' expected.
+src/lib/utils.ts(2,100): error TS1005: ',' expected.
+src/lib/utils.ts(2,126): error TS1005: '=>' expected.
+src/lib/utils.ts(2,127): error TS1128: Declaration or statement expected.
+src/lib/utils.ts(2,163): error TS1005: ';' expected.
+src/lib/utils/cn.ts(4,1): error TS1003: Identifier expected.
+src/lib/utils/cn.ts(8,1): error TS1003: Identifier expected.
+src/lib/utils/cn.ts(8,3): error TS1003: Identifier expected.
+src/lib/utils/cn.ts(8,10): error TS1005: ',' expected.
+src/lib/utils/cn.ts(8,19): error TS1005: ',' expected.
+src/lib/utils/cn.ts(8,21): error TS1005: ',' expected.
+src/lib/utils/cn.ts(8,47): error TS1005: '=>' expected.
+src/lib/utils/cn.ts(9,1): error TS1128: Declaration or statement expected.
+src/lib/utils/cn.ts(9,36): error TS1005: ';' expected.
+src/lib/utils/context7-phase8-integration.ts(8,1): error TS1005: '=' expected.
+src/lib/utils/context7-phase8-integration.ts(8,8): error TS1005: '(' expected.
+src/lib/utils/context7-phase8-integration.ts(8,10): error TS1131: Property or signature expected.
+src/lib/utils/context7-phase8-integration.ts(8,28): error TS1005: '=' expected.
+src/lib/utils/context7-phase8-integration.ts(8,30): error TS1434: Unexpected keyword or identifier.
+src/lib/utils/context7-phase8-integration.ts(11,1): error TS1003: Identifier expected.
+src/lib/utils/context7-phase8-integration.ts(11,3): error TS1003: Identifier expected.
+src/lib/utils/context7-phase8-integration.ts(11,10): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(11,20): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(11,40): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(12,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(12,22): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(13,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(13,54): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(14,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(14,48): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(15,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(15,21): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(16,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(16,26): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(17,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(17,37): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(18,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(18,30): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(19,1): error TS1136: Property assignment expected.
+src/lib/utils/context7-phase8-integration.ts(19,32): error TS1011: An element access expression should take an argument.
+src/lib/utils/context7-phase8-integration.ts(19,33): error TS1005: ',' expected.
+src/lib/utils/context7-phase8-integration.ts(19,37): error TS1005: ';' expected.
+src/lib/utils/index.ts(3,19): error TS1003: Identifier expected.
+src/lib/utils/index.ts(3,21): error TS1003: Identifier expected.
+src/lib/utils/index.ts(3,28): error TS1005: ',' expected.
+src/lib/utils/index.ts(3,37): error TS1005: ',' expected.
+src/lib/utils/index.ts(3,39): error TS1005: ',' expected.
+src/lib/utils/index.ts(3,73): error TS1005: '=>' expected.
+src/lib/utils/index.ts(3,74): error TS1128: Declaration or statement expected.
+src/lib/utils/index.ts(3,110): error TS1005: ';' expected.
+src/lib/utils/llm-retry-wrapper.ts(10,1): error TS1003: Identifier expected.
+src/lib/utils/llm-retry-wrapper.ts(10,3): error TS1003: Identifier expected.
+src/lib/utils/llm-retry-wrapper.ts(10,10): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(10,20): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(10,35): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(11,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(11,19): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(12,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(12,25): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(13,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(13,23): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(14,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(14,21): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(15,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(15,21): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(16,1): error TS1136: Property assignment expected.
+src/lib/utils/llm-retry-wrapper.ts(16,21): error TS1005: ',' expected.
+src/lib/utils/llm-retry-wrapper.ts(16,25): error TS1005: ';' expected.
+src/lib/utils/loki-evidence.ts(6,1): error TS1434: Unexpected keyword or identifier.
+src/lib/utils/loki-evidence.ts(6,6): error TS1434: Unexpected keyword or identifier.
+src/lib/utils/mcp-graph-reader.ts(10,1): error TS1109: Expression expected.
+src/lib/utils/security.ts(4,2): error TS1109: Expression expected.
+src/lib/utils/security.ts(4,13): error TS1005: ';' expected.
+src/lib/utils/security.ts(4,27): error TS1005: '(' expected.
+src/lib/utils/security.ts(4,31): error TS1005: ';' expected.
+src/lib/utils/security.ts(4,41): error TS1005: ';' expected.
+src/lib/utils/security.ts(4,46): error TS1005: ')' expected.
+src/lib/utils/security.ts(5,13): error TS1005: ';' expected.
+src/lib/utils/security.ts(5,49): error TS1005: ';' expected.
+src/lib/utils/security.ts(5,65): error TS1005: ';' expected.
+src/lib/utils/security.ts(6,3): error TS1161: Unterminated regular expression literal.
+src/lib/utils/security.ts(9,1): error TS1005: ',' expected.
+src/lib/utils/security.ts(9,8): error TS1005: ',' expected.
+src/lib/utils/security.ts(10,24): error TS1003: Identifier expected.
+src/lib/utils/security.ts(11,1): error TS1003: Identifier expected.
+src/lib/utils/security.ts(11,8): error TS1005: ',' expected.
+src/lib/utils/security.ts(11,14): error TS1005: ',' expected.
+src/lib/utils/security.ts(11,37): error TS1005: ',' expected.
+src/lib/utils/security.ts(11,54): error TS1005: ',' expected.
+src/lib/utils/security.ts(11,56): error TS1003: Identifier expected.
+src/lib/vite/vscode-error-logger.ts(5,14): error TS1005: '=' expected.
+src/lib/vite/vscode-error-logger.ts(5,35): error TS1005: '=' expected.
+src/lib/vite/vscode-error-logger.ts(5,36): error TS1128: Declaration or statement expected.
+src/lib/vite/vscode-error-logger.ts(6,19): error TS1005: '=' expected.
+src/lib/vite/vscode-error-logger.ts(6,21): error TS1434: Unexpected keyword or identifier.
+src/lib/vite/vscode-extension.ts(6,19): error TS1003: Identifier expected.
+src/lib/vite/vscode-extension.ts(6,31): error TS1005: ',' expected.
+src/lib/vite/vscode-extension.ts(6,45): error TS1005: ',' expected.
+src/lib/vite/vscode-extension.ts(6,46): error TS1136: Property assignment expected.
+src/lib/vite/vscode-extension.ts(6,65): error TS1005: ',' expected.
+src/lib/vite/vscode-extension.ts(6,66): error TS1136: Property assignment expected.
+src/lib/vite/vscode-extension.ts(6,81): error TS1011: An element access expression should take an argument.
+src/lib/vite/vscode-extension.ts(6,82): error TS1005: ',' expected.
+src/lib/vite/vscode-extension.ts(6,86): error TS1005: ';' expected.
+src/lib/wasm/gpu-wasm-init.ts(11,1): error TS1003: Identifier expected.
+src/lib/wasm/gpu-wasm-init.ts(12,1): error TS1003: Identifier expected.
+src/lib/wasm/gpu-wasm-init.ts(12,3): error TS1003: Identifier expected.
+src/lib/wasm/gpu-wasm-init.ts(12,10): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(12,20): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(12,34): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(13,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(14,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(14,51): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(15,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(15,54): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(16,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(16,24): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(17,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(18,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(19,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(19,28): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(20,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(20,24): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(21,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(21,27): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(22,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(22,30): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(23,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(24,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(25,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(25,25): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(26,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(26,22): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(27,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(27,28): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(28,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(28,30): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(29,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(30,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(31,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(31,36): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(32,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(32,38): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(33,1): error TS1136: Property assignment expected.
+src/lib/wasm/gpu-wasm-init.ts(33,31): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(36,18): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(36,32): error TS1005: ',' expected.
+src/lib/wasm/gpu-wasm-init.ts(45,29): error TS1011: An element access expression should take an argument.
+src/lib/workers/ai-service-worker.ts(9,1): error TS1434: Unexpected keyword or identifier.
+src/lib/workers/ai-service-worker.ts(9,8): error TS1434: Unexpected keyword or identifier.
+src/lib/workers/specialized-worker-system.ts(8,1): error TS1434: Unexpected keyword or identifier.
+src/lib/workers/specialized-worker-system.ts(8,6): error TS1434: Unexpected keyword or identifier.
+src/routes/api/activities/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/activities/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/activities/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/activities/[activityId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/activities/[activityId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/activities/[activityId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/admin/cluster/events/+server.ts(10,1): error TS1005: ',' expected.
+src/routes/api/admin/cluster/events/+server.ts(10,8): error TS1005: ',' expected.
+src/routes/api/admin/cluster/events/+server.ts(11,16): error TS1005: ';' expected.
+src/routes/api/admin/cluster/restart/+server.ts(9,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/admin/cluster/restart/+server.ts(9,9): error TS1434: Unexpected keyword or identifier.
+src/routes/api/agent-logs/+server.ts(14,1): error TS1003: Identifier expected.
+src/routes/api/agent-logs/+server.ts(14,8): error TS1005: ',' expected.
+src/routes/api/agent-logs/+server.ts(14,14): error TS1005: ',' expected.
+src/routes/api/agent-logs/+server.ts(14,17): error TS1005: ',' expected.
+src/routes/api/agent-logs/+server.ts(14,34): error TS1005: ',' expected.
+src/routes/api/agent-logs/+server.ts(14,42): error TS1005: ',' expected.
+src/routes/api/ai-synthesizer/+server.ts(13,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai-synthesizer/+server.ts(13,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai/ask/+server.ts(4,31): error TS1005: 'from' expected.
+src/routes/api/ai/ask/+server.ts(5,8): error TS1005: ';' expected.
+src/routes/api/ai/ask/+server.ts(9,15): error TS1003: Identifier expected.
+src/routes/api/ai/ask/+server.ts(10,10): error TS1005: ',' expected.
+src/routes/api/ai/ask/+server.ts(10,15): error TS1005: ',' expected.
+src/routes/api/ai/ask/+server.ts(12,1): error TS1128: Declaration or statement expected.
+src/routes/api/ai/chat-mock/+server.ts(3,31): error TS1005: 'from' expected.
+src/routes/api/ai/chat-mock/+server.ts(4,8): error TS1005: ';' expected.
+src/routes/api/ai/connect-mock/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ai/connect-mock/+server.ts(3,8): error TS1005: ';' expected.
+src/routes/api/ai/connect/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ai/connect/+server.ts(3,15): error TS1005: ';' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(21,1): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(21,11): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(21,31): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(22,16): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(24,22): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(25,20): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(26,26): error TS1011: An element access expression should take an argument.
+src/routes/api/ai/enhanced-chat/+server.ts(26,27): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(27,25): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(28,30): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(29,24): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(30,26): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(31,4): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(33,75): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(34,38): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(35,38): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(36,19): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(37,25): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(38,23): error TS1005: ',' expected.
+src/routes/api/ai/enhanced-chat/+server.ts(39,4): error TS1005: ',' expected.
+src/routes/api/ai/health-mock/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ai/health-mock/+server.ts(3,8): error TS1005: ';' expected.
+src/routes/api/ai/health/+server.ts(2,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/ai/health/+server.ts(2,24): error TS1128: Declaration or statement expected.
+src/routes/api/ai/health/+server.ts(3,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai/multi-agent/+server.ts(8,8): error TS1005: ';' expected.
+src/routes/api/ai/multi-agent/+server.ts(9,1): error TS1109: Expression expected.
+src/routes/api/ai/process-document/+server.ts(25,1): error TS1003: Identifier expected.
+src/routes/api/ai/process-document/+server.ts(25,7): error TS1005: ',' expected.
+src/routes/api/ai/process-document/+server.ts(25,27): error TS1005: ',' expected.
+src/routes/api/ai/process-document/+server.ts(25,29): error TS1003: Identifier expected.
+src/routes/api/ai/process-document/+server.ts(25,33): error TS1005: ',' expected.
+src/routes/api/ai/process-document/+server.ts(25,44): error TS1005: ',' expected.
+src/routes/api/ai/suggest/+server.ts(2,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/ai/suggest/+server.ts(2,24): error TS1128: Declaration or statement expected.
+src/routes/api/ai/suggest/+server.ts(3,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai/vector-search/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/ai/vector-search/+server.ts(4,56): error TS1128: Declaration or statement expected.
+src/routes/api/ai/vector-search/+server.ts(8,1): error TS1109: Expression expected.
+src/routes/api/ai/vector-search/+server.ts(8,3): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai/vector-search/+server.ts(11,1): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(11,8): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(12,19): error TS1005: ';' expected.
+src/routes/api/ai/vector-search/+server.ts(14,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/ai/vector-search/+server.ts(14,39): error TS1128: Declaration or statement expected.
+src/routes/api/ai/vector-search/+server.ts(15,22): error TS1434: Unexpected keyword or identifier.
+src/routes/api/ai/vector-search/+server.ts(20,1): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(20,8): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(20,14): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(20,18): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(20,35): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/+server.ts(20,43): error TS1005: ',' expected.
+src/routes/api/ai/vector-search/server-enhanced.ts(12,1): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(13,1): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(16,1): error TS1003: Identifier expected.
+src/routes/api/analyze/+server.ts(16,13): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(16,29): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(17,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(17,24): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(18,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(18,24): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(19,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(19,20): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(20,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(20,18): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(21,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(21,76): error TS1005: ',' expected.
+src/routes/api/analyze/+server.ts(22,1): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(23,1): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(23,7): error TS1136: Property assignment expected.
+src/routes/api/analyze/+server.ts(24,7): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(25,7): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(26,7): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(27,7): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(28,1): error TS1128: Declaration or statement expected.
+src/routes/api/analyze/+server.ts(28,22): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(29,1): error TS1128: Declaration or statement expected.
+src/routes/api/analyze/+server.ts(29,22): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(29,31): error TS1011: An element access expression should take an argument.
+src/routes/api/analyze/+server.ts(30,1): error TS1128: Declaration or statement expected.
+src/routes/api/analyze/+server.ts(30,12): error TS1109: Expression expected.
+src/routes/api/analyze/+server.ts(30,22): error TS1128: Declaration or statement expected.
+src/routes/api/audit/semantic/+server.ts(11,8): error TS1005: ';' expected.
+src/routes/api/audit/semantic/+server.ts(12,8): error TS1005: ';' expected.
+src/routes/api/audit/semantic/+server.ts(13,8): error TS1005: ';' expected.
+src/routes/api/audit/semantic/+server.ts(14,8): error TS1005: ';' expected.
+src/routes/api/auth/login/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/auth/login/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/auth/login/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/auth/register/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/auth/register/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/auth/register/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/canvas-states/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/canvas-states/+server.ts(3,22): error TS1128: Declaration or statement expected.
+src/routes/api/canvas-states/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/canvas/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/canvas/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/canvas/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/[caseId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/cases/[caseId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/cases/[caseId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/[caseId]/analysis/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/cases/[caseId]/analysis/+server.ts(7,24): error TS1128: Declaration or statement expected.
+src/routes/api/cases/[caseId]/analysis/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/[caseId]/canvas/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/cases/[caseId]/canvas/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/cases/[caseId]/canvas/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/[caseId]/deep-analysis/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/cases/[caseId]/deep-analysis/+server.ts(7,24): error TS1128: Declaration or statement expected.
+src/routes/api/cases/[caseId]/deep-analysis/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/[caseId]/recommendations/+server.ts(11,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/cases/[caseId]/recommendations/+server.ts(11,24): error TS1128: Declaration or statement expected.
+src/routes/api/cases/[caseId]/recommendations/+server.ts(12,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/summary/+server.ts(8,1): error TS1109: Expression expected.
+src/routes/api/cases/summary/+server.ts(14,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/summary/+server.ts(14,15): error TS1434: Unexpected keyword or identifier.
+src/routes/api/cases/summary/+server.ts(19,1): error TS1003: Identifier expected.
+src/routes/api/cases/summary/+server.ts(19,13): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(19,32): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(20,1): error TS1136: Property assignment expected.
+src/routes/api/cases/summary/+server.ts(20,19): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(21,1): error TS1136: Property assignment expected.
+src/routes/api/cases/summary/+server.ts(21,30): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(22,1): error TS1136: Property assignment expected.
+src/routes/api/cases/summary/+server.ts(22,30): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(23,1): error TS1136: Property assignment expected.
+src/routes/api/cases/summary/+server.ts(23,59): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(24,1): error TS1136: Property assignment expected.
+src/routes/api/cases/summary/+server.ts(24,25): error TS1005: ',' expected.
+src/routes/api/cases/summary/+server.ts(24,29): error TS1005: ';' expected.
+src/routes/api/citations/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/citations/+server.ts(3,22): error TS1128: Declaration or statement expected.
+src/routes/api/citations/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/comprehensive-integration/+server.ts(11,1): error TS1109: Expression expected.
+src/routes/api/comprehensive-integration/+server.ts(12,62): error TS1003: Identifier expected.
+src/routes/api/comprehensive-integration/+server.ts(15,1): error TS1003: Identifier expected.
+src/routes/api/comprehensive-integration/+server.ts(15,8): error TS1005: ',' expected.
+src/routes/api/comprehensive-integration/+server.ts(15,14): error TS1005: ',' expected.
+src/routes/api/comprehensive-integration/+server.ts(15,17): error TS1005: ',' expected.
+src/routes/api/comprehensive-integration/+server.ts(15,34): error TS1005: ',' expected.
+src/routes/api/comprehensive-integration/+server.ts(15,42): error TS1005: ',' expected.
+src/routes/api/context7/+server.ts(5,32): error TS1003: Identifier expected.
+src/routes/api/context7/+server.ts(8,1): error TS1003: Identifier expected.
+src/routes/api/context7/+server.ts(8,8): error TS1005: ',' expected.
+src/routes/api/context7/+server.ts(8,14): error TS1005: ',' expected.
+src/routes/api/context7/+server.ts(8,17): error TS1005: ',' expected.
+src/routes/api/context7/+server.ts(8,34): error TS1005: ',' expected.
+src/routes/api/context7/+server.ts(8,42): error TS1005: ',' expected.
+src/routes/api/crewai/review/+server.ts(13,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/crewai/review/+server.ts(13,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/criminals/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/criminals/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/criminals/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/criminals/[criminalId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/criminals/[criminalId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/criminals/[criminalId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/documents/[id]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/documents/[id]/+server.ts(3,22): error TS1128: Declaration or statement expected.
+src/routes/api/documents/[id]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/documents/[id]/auto-save/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/documents/[id]/auto-save/+server.ts(3,22): error TS1128: Declaration or statement expected.
+src/routes/api/documents/[id]/auto-save/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/documents/templates/+server.ts(2,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/documents/templates/+server.ts(2,22): error TS1128: Declaration or statement expected.
+src/routes/api/documents/templates/+server.ts(3,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/documents/upload-embed/+server.ts(18,1): error TS1005: ',' expected.
+src/routes/api/documents/upload-embed/+server.ts(18,8): error TS1005: ',' expected.
+src/routes/api/documents/upload-embed/+server.ts(18,17): error TS1005: ';' expected.
+src/routes/api/documents/upload-embed/+server.ts(21,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(22,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(23,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(24,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(25,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(25,3): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(25,9): error TS1005: ',' expected.
+src/routes/api/documents/upload-embed/+server.ts(25,16): error TS1005: ',' expected.
+src/routes/api/documents/upload-embed/+server.ts(25,18): error TS1003: Identifier expected.
+src/routes/api/documents/upload-embed/+server.ts(26,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(27,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(28,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(29,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(30,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(31,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(32,1): error TS1136: Property assignment expected.
+src/routes/api/documents/upload-embed/+server.ts(38,9): error TS1005: ';' expected.
+src/routes/api/documents/upload/+server.ts(9,1): error TS1005: ',' expected.
+src/routes/api/documents/upload/+server.ts(9,8): error TS1005: ',' expected.
+src/routes/api/documents/upload/+server.ts(9,23): error TS1005: ';' expected.
+src/routes/api/documents/upload/+server.ts(13,1): error TS1003: Identifier expected.
+src/routes/api/documents/upload/+server.ts(13,8): error TS1005: ',' expected.
+src/routes/api/documents/upload/+server.ts(13,29): error TS1005: ';' expected.
+src/routes/api/embed/+server.ts(5,1): error TS1005: ',' expected.
+src/routes/api/embed/+server.ts(5,8): error TS1005: ',' expected.
+src/routes/api/embed/+server.ts(6,7): error TS1005: ';' expected.
+src/routes/api/embeddings/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/embeddings/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/embeddings/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/embeddings/+server.ts(9,1): error TS1109: Expression expected.
+src/routes/api/embeddings/hybrid/+server.ts(13,1): error TS1005: ',' expected.
+src/routes/api/embeddings/hybrid/+server.ts(13,8): error TS1005: ',' expected.
+src/routes/api/embeddings/hybrid/+server.ts(14,7): error TS1005: ';' expected.
+src/routes/api/evaluation/+server.ts(14,1): error TS1003: Identifier expected.
+src/routes/api/evaluation/+server.ts(14,8): error TS1005: ',' expected.
+src/routes/api/evaluation/+server.ts(14,14): error TS1005: ',' expected.
+src/routes/api/evaluation/+server.ts(14,17): error TS1005: ',' expected.
+src/routes/api/evaluation/+server.ts(14,34): error TS1005: ',' expected.
+src/routes/api/evaluation/+server.ts(14,42): error TS1005: ',' expected.
+src/routes/api/evidence/[evidenceId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/[evidenceId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/[evidenceId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/analyze/+server.ts(9,15): error TS1003: Identifier expected.
+src/routes/api/evidence/analyze/+server.ts(9,27): error TS1005: ',' expected.
+src/routes/api/evidence/analyze/+server.ts(9,42): error TS1005: ',' expected.
+src/routes/api/evidence/analyze/+server.ts(9,43): error TS1136: Property assignment expected.
+src/routes/api/evidence/analyze/+server.ts(9,61): error TS1005: ',' expected.
+src/routes/api/evidence/analyze/+server.ts(9,62): error TS1136: Property assignment expected.
+src/routes/api/evidence/analyze/+server.ts(9,86): error TS1005: ',' expected.
+src/routes/api/evidence/analyze/+server.ts(9,87): error TS1136: Property assignment expected.
+src/routes/api/evidence/analyze/+server.ts(9,115): error TS1005: ',' expected.
+src/routes/api/evidence/analyze/+server.ts(9,119): error TS1005: ';' expected.
+src/routes/api/evidence/hash/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/hash/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/hash/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/hash/bulk/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/hash/bulk/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/hash/bulk/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/hash/history/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/hash/history/+server.ts(7,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/hash/history/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/save-node/+server.ts(10,1): error TS1003: Identifier expected.
+src/routes/api/evidence/save-node/+server.ts(10,7): error TS1005: ',' expected.
+src/routes/api/evidence/save-node/+server.ts(10,26): error TS1005: ',' expected.
+src/routes/api/evidence/save-node/+server.ts(10,29): error TS1005: ',' expected.
+src/routes/api/evidence/save-node/+server.ts(10,36): error TS1005: ',' expected.
+src/routes/api/evidence/stream/[sessionId]/+server.ts(5,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/stream/[sessionId]/+server.ts(5,11): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/synthesize/+server.ts(20,1): error TS1003: Identifier expected.
+src/routes/api/evidence/synthesize/+server.ts(20,13): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(20,30): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(21,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(21,25): error TS1011: An element access expression should take an argument.
+src/routes/api/evidence/synthesize/+server.ts(21,26): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(22,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(22,68): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(23,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(23,20): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(24,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(24,19): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(25,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(25,18): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(26,1): error TS1136: Property assignment expected.
+src/routes/api/evidence/synthesize/+server.ts(26,25): error TS1005: ',' expected.
+src/routes/api/evidence/synthesize/+server.ts(26,29): error TS1005: ';' expected.
+src/routes/api/evidence/upload.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/upload.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/upload.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/upload/+server.ts(22,1): error TS1003: Identifier expected.
+src/routes/api/evidence/upload/+server.ts(22,8): error TS1005: ',' expected.
+src/routes/api/evidence/upload/+server.ts(22,13): error TS1005: ',' expected.
+src/routes/api/evidence/upload/+server.ts(22,32): error TS1005: ';' expected.
+src/routes/api/evidence/upload/+server.ts(24,24): error TS1005: ';' expected.
+src/routes/api/evidence/upload/+server.ts(24,41): error TS1005: ';' expected.
+src/routes/api/evidence/upload/+server.ts(37,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/upload/+server.ts(37,7): error TS1434: Unexpected keyword or identifier.
+src/routes/api/evidence/upload/+server.ts(43,1): error TS1005: ',' expected.
+src/routes/api/evidence/upload/+server.ts(43,8): error TS1005: ',' expected.
+src/routes/api/evidence/upload/+server.ts(44,7): error TS1005: ';' expected.
+src/routes/api/evidence/validate/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/evidence/validate/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/evidence/validate/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/gpu-chat/+server.ts(20,1): error TS1003: Identifier expected.
+src/routes/api/gpu-chat/+server.ts(20,7): error TS1005: ',' expected.
+src/routes/api/gpu-chat/+server.ts(20,20): error TS1005: ',' expected.
+src/routes/api/gpu-chat/+server.ts(20,22): error TS1003: Identifier expected.
+src/routes/api/gpu-status/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu-status/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/cuda-status/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu/cuda-status/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/devices/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu/devices/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/memory-status/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu/memory-status/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/metrics/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu/metrics/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/temperature/+server.ts(1,31): error TS1005: 'from' expected.
+src/routes/api/gpu/temperature/+server.ts(2,8): error TS1005: ';' expected.
+src/routes/api/gpu/validate-setup/+server.ts(5,31): error TS1005: 'from' expected.
+src/routes/api/gpu/validate-setup/+server.ts(6,8): error TS1005: ';' expected.
+src/routes/api/legal/chat/+server.ts(5,3): error TS1003: Identifier expected.
+src/routes/api/legal/chat/+server.ts(6,1): error TS1136: Property assignment expected.
+src/routes/api/legal/chat/+server.ts(7,1): error TS1136: Property assignment expected.
+src/routes/api/legal/chat/+server.ts(8,1): error TS1136: Property assignment expected.
+src/routes/api/legal/chat/+server.ts(8,24): error TS1005: ';' expected.
+src/routes/api/legal/documents/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/legal/documents/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/legal/documents/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/legal/documents/[id]/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/legal/documents/[id]/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/legal/documents/[id]/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/legal/ingest/+server.ts(10,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/legal/ingest/+server.ts(10,5): error TS1434: Unexpected keyword or identifier.
+src/routes/api/legal/ingest/+server.ts(16,1): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(16,11): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(16,25): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(17,15): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(18,21): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(19,25): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(20,26): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(21,27): error TS1011: An element access expression should take an argument.
+src/routes/api/legal/ingest/+server.ts(21,28): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(22,27): error TS1011: An element access expression should take an argument.
+src/routes/api/legal/ingest/+server.ts(22,28): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(23,27): error TS1011: An element access expression should take an argument.
+src/routes/api/legal/ingest/+server.ts(23,28): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(24,29): error TS1005: ',' expected.
+src/routes/api/legal/ingest/+server.ts(25,43): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(6,20): error TS1005: '=' expected.
+src/routes/api/legal/precedents/+server.ts(10,1): error TS1003: Identifier expected.
+src/routes/api/legal/precedents/+server.ts(10,13): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(10,36): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(11,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(11,18): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(12,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(12,26): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(13,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(13,19): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(14,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(14,22): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(15,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(15,20): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(16,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(16,30): error TS1011: An element access expression should take an argument.
+src/routes/api/legal/precedents/+server.ts(16,31): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(17,1): error TS1136: Property assignment expected.
+src/routes/api/legal/precedents/+server.ts(17,19): error TS1005: ',' expected.
+src/routes/api/legal/precedents/+server.ts(17,23): error TS1005: ';' expected.
+src/routes/api/ocr/langextract/+server.ts(7,1): error TS1003: Identifier expected.
+src/routes/api/ocr/langextract/+server.ts(7,8): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(7,13): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(7,32): error TS1005: ';' expected.
+src/routes/api/ocr/langextract/+server.ts(12,1): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(12,7): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(12,13): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(12,36): error TS1005: ',' expected.
+src/routes/api/ocr/langextract/+server.ts(12,37): error TS1109: Expression expected.
+src/routes/api/ollama/gpu-config/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ollama/gpu-config/+server.ts(3,8): error TS1005: ';' expected.
+src/routes/api/ollama/gpu-status/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ollama/gpu-status/+server.ts(3,8): error TS1005: ';' expected.
+src/routes/api/ollama/pull/+server.ts(2,31): error TS1005: 'from' expected.
+src/routes/api/ollama/pull/+server.ts(3,8): error TS1005: ';' expected.
+src/routes/api/orchestrator/+server.ts(14,1): error TS1003: Identifier expected.
+src/routes/api/orchestrator/+server.ts(14,8): error TS1005: ',' expected.
+src/routes/api/orchestrator/+server.ts(14,14): error TS1005: ',' expected.
+src/routes/api/orchestrator/+server.ts(14,17): error TS1005: ',' expected.
+src/routes/api/orchestrator/+server.ts(14,34): error TS1005: ',' expected.
+src/routes/api/orchestrator/+server.ts(14,42): error TS1005: ',' expected.
+src/routes/api/pgai/summarize/+server.ts(3,33): error TS1003: Identifier expected.
+src/routes/api/pgai/summarize/+server.ts(5,1): error TS1003: Identifier expected.
+src/routes/api/pgai/summarize/+server.ts(5,8): error TS1005: ',' expected.
+src/routes/api/pgai/summarize/+server.ts(5,14): error TS1005: ',' expected.
+src/routes/api/pgai/summarize/+server.ts(5,18): error TS1005: ',' expected.
+src/routes/api/pgai/summarize/+server.ts(5,35): error TS1005: ',' expected.
+src/routes/api/pgai/summarize/+server.ts(5,43): error TS1005: ',' expected.
+src/routes/api/production-upload/+server.ts(14,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/production-upload/+server.ts(14,6): error TS1434: Unexpected keyword or identifier.
+src/routes/api/production-upload/+server.ts(18,1): error TS1003: Identifier expected.
+src/routes/api/production-upload/+server.ts(18,8): error TS1005: ',' expected.
+src/routes/api/production-upload/+server.ts(18,26): error TS1005: ';' expected.
+src/routes/api/rag/+server.ts(18,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/rag/+server.ts(18,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/rag/process/+server.ts(16,1): error TS1003: Identifier expected.
+src/routes/api/rag/process/+server.ts(16,8): error TS1005: ',' expected.
+src/routes/api/rag/process/+server.ts(16,26): error TS1005: ';' expected.
+src/routes/api/reports/+server.ts(7,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/reports/+server.ts(7,22): error TS1128: Declaration or statement expected.
+src/routes/api/reports/+server.ts(8,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/reports/[reportId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/reports/[reportId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/reports/[reportId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/reports/[reportId]/export/pdf/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/reports/[reportId]/export/pdf/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/reports/[reportId]/export/pdf/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/reports/save/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/reports/save/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/reports/save/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/search-similarity/+server.ts(8,1): error TS1003: Identifier expected.
+src/routes/api/search-similarity/+server.ts(9,1): error TS1003: Identifier expected.
+src/routes/api/search-similarity/+server.ts(9,9): error TS1005: ',' expected.
+src/routes/api/search-similarity/+server.ts(9,18): error TS1005: ',' expected.
+src/routes/api/search-similarity/+server.ts(9,30): error TS1005: ',' expected.
+src/routes/api/search-similarity/+server.ts(9,68): error TS1005: '=>' expected.
+src/routes/api/search-similarity/+server.ts(10,1): error TS1128: Declaration or statement expected.
+src/routes/api/search-similarity/+server.ts(11,1): error TS1128: Declaration or statement expected.
+src/routes/api/search-similarity/+server.ts(12,1): error TS1128: Declaration or statement expected.
+src/routes/api/search-similarity/+server.ts(13,1): error TS1128: Declaration or statement expected.
+src/routes/api/search-similarity/+server.ts(13,23): error TS1005: ';' expected.
+src/routes/api/search/advanced/+server.ts(14,1): error TS1109: Expression expected.
+src/routes/api/search/advanced/+server.ts(15,15): error TS1003: Identifier expected.
+src/routes/api/search/advanced/+server.ts(15,17): error TS1003: Identifier expected.
+src/routes/api/search/advanced/+server.ts(15,24): error TS1005: ',' expected.
+src/routes/api/search/advanced/+server.ts(15,30): error TS1005: ',' expected.
+src/routes/api/search/advanced/+server.ts(15,33): error TS1005: ',' expected.
+src/routes/api/search/advanced/+server.ts(15,50): error TS1005: ',' expected.
+src/routes/api/search/advanced/+server.ts(15,58): error TS1005: ',' expected.
+src/routes/api/search/advanced/+server.ts(15,60): error TS1136: Property assignment expected.
+src/routes/api/search/advanced/+server.ts(15,68): error TS1136: Property assignment expected.
+src/routes/api/search/advanced/+server.ts(15,79): error TS1136: Property assignment expected.
+src/routes/api/search/advanced/+server.ts(15,91): error TS1136: Property assignment expected.
+src/routes/api/search/advanced/+server.ts(15,115): error TS1005: ')' expected.
+src/routes/api/search/advanced/+server.ts(93,1): error TS1128: Declaration or statement expected.
+src/routes/api/summaries/+server.ts(13,1): error TS1003: Identifier expected.
+src/routes/api/summaries/+server.ts(13,8): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(17,3): error TS1005: ';' expected.
+src/routes/api/summaries/+server.ts(19,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/summaries/+server.ts(19,6): error TS1434: Unexpected keyword or identifier.
+src/routes/api/summaries/+server.ts(24,1): error TS1003: Identifier expected.
+src/routes/api/summaries/+server.ts(25,1): error TS1003: Identifier expected.
+src/routes/api/summaries/+server.ts(25,13): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(25,28): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(26,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(26,68): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(27,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(27,21): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(28,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(28,50): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(29,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(29,24): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(30,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(30,33): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(31,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(31,29): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(32,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(32,23): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(33,1): error TS1136: Property assignment expected.
+src/routes/api/summaries/+server.ts(33,20): error TS1005: ',' expected.
+src/routes/api/summaries/+server.ts(33,24): error TS1005: ';' expected.
+src/routes/api/upload/+server.ts(4,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/upload/+server.ts(4,24): error TS1128: Declaration or statement expected.
+src/routes/api/upload/+server.ts(5,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/upload/+server.ts(10,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/upload/+server.ts(10,6): error TS1434: Unexpected keyword or identifier.
+src/routes/api/upload/+server.ts(11,14): error TS1003: Identifier expected.
+src/routes/api/upload/+server.ts(12,10): error TS1005: ',' expected.
+src/routes/api/upload/+server.ts(12,15): error TS1005: ',' expected.
+src/routes/api/upload/+server.ts(13,1): error TS1128: Declaration or statement expected.
+src/routes/api/user/avatar/upload/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/user/avatar/upload/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/user/avatar/upload/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/user/profile/+server.ts(5,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/user/profile/+server.ts(5,24): error TS1128: Declaration or statement expected.
+src/routes/api/user/profile/+server.ts(6,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/users/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/users/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/users/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/users/[userId]/+server.ts(3,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/users/[userId]/+server.ts(3,24): error TS1128: Declaration or statement expected.
+src/routes/api/users/[userId]/+server.ts(4,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/users/create/+server.ts(6,31): error TS1005: 'from' expected.
+src/routes/api/users/create/+server.ts(7,8): error TS1005: ';' expected.
+src/routes/api/v1/cluster/+server.ts(13,1): error TS1003: Identifier expected.
+src/routes/api/v1/cluster/+server.ts(13,8): error TS1005: ',' expected.
+src/routes/api/v1/cluster/+server.ts(13,14): error TS1005: ',' expected.
+src/routes/api/v1/cluster/+server.ts(13,17): error TS1005: ',' expected.
+src/routes/api/v1/cluster/+server.ts(13,34): error TS1005: ',' expected.
+src/routes/api/v1/cluster/+server.ts(13,42): error TS1005: ',' expected.
+src/routes/api/v1/observability/baseline-diff/+server.ts(1,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/v1/observability/baseline-diff/+server.ts(1,24): error TS1128: Declaration or statement expected.
+src/routes/api/v1/observability/baseline-diff/+server.ts(2,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/v1/observability/state/+server.ts(1,6): error TS2457: Type alias name cannot be 'type'.
+src/routes/api/v1/observability/state/+server.ts(1,24): error TS1128: Declaration or statement expected.
+src/routes/api/v1/observability/state/+server.ts(2,8): error TS1434: Unexpected keyword or identifier.
+src/routes/api/vector/+server.ts(3,1): error TS1434: Unexpected keyword or identifier.
+src/routes/api/vector/+server.ts(3,15): error TS1434: Unexpected keyword or identifier.
+src/routes/api/websocket/+server.ts(9,27): error TS1003: Identifier expected.
+src/routes/api/websocket/+server.ts(11,11): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(11,27): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(12,13): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(13,10): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(14,29): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(15,17): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(17,23): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(18,20): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(19,23): error TS1005: ',' expected.
+src/routes/api/websocket/+server.ts(20,4): error TS1005: ',' expected.
+src/routes/api/yorha/legal-data/+server.ts(15,1): error TS1003: Identifier expected.
+src/routes/api/yorha/legal-data/+server.ts(15,8): error TS1005: ',' expected.
+src/routes/api/yorha/legal-data/+server.ts(15,14): error TS1005: ',' expected.
+src/routes/api/yorha/legal-data/+server.ts(15,17): error TS1005: ',' expected.
+src/routes/api/yorha/legal-data/+server.ts(15,34): error TS1005: ',' expected.
+src/routes/api/yorha/legal-data/+server.ts(15,42): error TS1005: ',' expected.
+src/routes/context7-demo.disabled/+page.server.ts(11,7): error TS1005: ',' expected.
+src/routes/context7-demo.disabled/+page.server.ts(11,16): error TS1005: ',' expected.
+src/routes/context7-demo.disabled/+page.server.ts(11,34): error TS1005: ',' expected.
+src/routes/context7-demo.disabled/+page.server.ts(11,77): error TS1005: '=>' expected.
+src/routes/context7-demo/+page.server.ts(11,7): error TS1005: ',' expected.
+src/routes/context7-demo/+page.server.ts(11,16): error TS1005: ',' expected.
+src/routes/context7-demo/+page.server.ts(11,34): error TS1005: ',' expected.
+src/routes/context7-demo/+page.server.ts(11,77): error TS1005: '=>' expected.
+src/routes/evidence/+page.server.ts(16,1): error TS1003: Identifier expected.
+src/routes/evidence/+page.server.ts(17,1): error TS1003: Identifier expected.
+src/routes/evidence/+page.server.ts(17,3): error TS1003: Identifier expected.
+src/routes/evidence/+page.server.ts(17,9): error TS1005: ',' expected.
+src/routes/evidence/+page.server.ts(17,24): error TS1005: ',' expected.
+src/routes/evidence/+page.server.ts(17,27): error TS1005: ',' expected.
+src/routes/evidence/+page.server.ts(17,34): error TS1005: ',' expected.
+src/routes/evidence/+page.server.ts(18,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(19,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(20,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(21,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(22,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(23,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(24,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(25,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(26,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(27,1): error TS1136: Property assignment expected.
+src/routes/evidence/+page.server.ts(27,51): error TS1005: ')' expected.
+src/routes/evidence/upload/+page.server.ts(8,7): error TS1128: Declaration or statement expected.
+src/routes/evidence/upload/+page.server.ts(9,12): error TS1434: Unexpected keyword or identifier.
+src/routes/evidence/upload/+page.server.ts(14,1): error TS1434: Unexpected keyword or identifier.
+src/routes/evidence/upload/+page.server.ts(14,8): error TS1434: Unexpected keyword or identifier.
+src/test-setup.ts(1,25): error TS1005: 'from' expected.
+src/test-setup.ts(1,38): error TS1005: ';' expected.
+src/workers/summarize-worker.ts(6,1): error TS1003: Identifier expected.
+src/workers/summarize-worker.ts(6,7): error TS1005: ',' expected.
+src/workers/summarize-worker.ts(6,20): error TS1005: ',' expected.
+src/workers/summarize-worker.ts(6,22): error TS1003: Identifier expected.
+src/workers/summarize-worker.ts(6,28): error TS1005: ',' expected.
+src/workers/summarize-worker.ts(6,33): error TS1005: ',' expected.
+src/workers/summarize-worker.ts(6,37): error TS1005: ',' expected.
+src/workers/summarize-worker.ts(6,51): error TS1005: ',' expected.

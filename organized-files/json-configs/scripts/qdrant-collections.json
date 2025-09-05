@@ -1,0 +1,75 @@
+{
+  "collections": [
+    {
+      "name": "legal_documents",
+      "config": {
+        "vectors": {
+          "size": 384,
+          "distance": "Cosine"
+        },
+        "payload_schema": {
+          "document_type": "keyword",
+          "case_id": "keyword", 
+          "user_id": "keyword",
+          "tags": "keyword",
+          "jurisdiction": "keyword",
+          "practice_area": "keyword",
+          "created_at": "datetime",
+          "confidence_score": "float"
+        }
+      }
+    },
+    {
+      "name": "case_law_precedents",
+      "config": {
+        "vectors": {
+          "size": 384,
+          "distance": "Cosine"
+        },
+        "payload_schema": {
+          "citation": "text",
+          "court": "keyword",
+          "decision_date": "datetime",
+          "jurisdiction": "keyword",
+          "legal_area": "keyword",
+          "outcome": "keyword",
+          "importance_score": "float"
+        }
+      }
+    },
+    {
+      "name": "evidence_analysis",
+      "config": {
+        "vectors": {
+          "size": 384,
+          "distance": "Cosine"
+        },
+        "payload_schema": {
+          "evidence_type": "keyword",
+          "case_id": "keyword",
+          "analysis_type": "keyword",
+          "confidence": "float",
+          "extracted_entities": "keyword",
+          "processing_status": "keyword"
+        }
+      }
+    },
+    {
+      "name": "user_behavior_patterns",
+      "config": {
+        "vectors": {
+          "size": 384,
+          "distance": "Cosine"
+        },
+        "payload_schema": {
+          "user_id": "keyword",
+          "behavior_type": "keyword",
+          "session_id": "keyword",
+          "interaction_context": "keyword",
+          "timestamp": "datetime",
+          "success_rate": "float"
+        }
+      }
+    }
+  ]
+}

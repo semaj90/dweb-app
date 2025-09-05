@@ -1,0 +1,249 @@
+{
+  "timestamp": "2025-08-02T21:16:31.233Z",
+  "tests": [
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/index.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.239Z"
+    },
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/neural-memory-manager.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.239Z"
+    },
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/comprehensive-orchestrator.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.239Z"
+    },
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/advanced-memory-optimizer.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.240Z"
+    },
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/json-wasm-optimizer.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.240Z"
+    },
+    {
+      "category": "file_check",
+      "test": "src/lib/optimization/ultra-json-processor.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.240Z"
+    },
+    {
+      "category": "dir_check",
+      "test": "src/lib/optimization",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.241Z"
+    },
+    {
+      "category": "dir_check",
+      "test": "src/lib/services",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.241Z"
+    },
+    {
+      "category": "dir_check",
+      "test": "src/routes/api",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:16:31.241Z"
+    },
+    {
+      "category": "typescript",
+      "test": "compilation",
+      "message": "failed",
+      "status": "fail",
+      "timestamp": "2025-08-02T21:18:03.717Z"
+    },
+    {
+      "category": "imports",
+      "test": "NeuralMemoryManager",
+      "message": "exported",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "imports",
+      "test": "ComprehensiveOptimizationOrchestrator",
+      "message": "missing",
+      "status": "fail",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "imports",
+      "test": "UltraHighPerformanceJSONProcessor",
+      "message": "exported",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "factory",
+      "test": "createOptimizationSuite",
+      "message": "available",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "factory",
+      "test": "PerformanceMonitor",
+      "message": "available",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "factory",
+      "test": "quickOptimization",
+      "message": "available",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "docker",
+      "test": "memory-optimized-compose",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:03.718Z"
+    },
+    {
+      "category": "docker_containers",
+      "test": "legal-ai-postgres-optimized",
+      "message": "not running",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.054Z"
+    },
+    {
+      "category": "docker_containers",
+      "test": "legal-ai-redis-optimized",
+      "message": "not running",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.054Z"
+    },
+    {
+      "category": "docker_containers",
+      "test": "legal-ai-qdrant-optimized",
+      "message": "not running",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.054Z"
+    },
+    {
+      "category": "docker_containers",
+      "test": "legal-ai-ollama-optimized",
+      "message": "not running",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.054Z"
+    },
+    {
+      "category": "docker_containers",
+      "test": "legal-ai-neo4j-optimized",
+      "message": "not running",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.054Z"
+    },
+    {
+      "category": "docker",
+      "test": "memory_stats",
+      "message": "unavailable",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.722Z"
+    },
+    {
+      "category": "api_routes",
+      "test": "src/routes/api/memory/neural/+server.ts",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.722Z"
+    },
+    {
+      "category": "api_routes",
+      "test": "src/routes/api/health/+server.ts",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:04.722Z"
+    },
+    {
+      "category": "dev_server",
+      "test": "http://localhost:5173/health",
+      "message": "not responding",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.767Z"
+    },
+    {
+      "category": "dev_server",
+      "test": "http://localhost:5174/health",
+      "message": "not responding",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.768Z"
+    },
+    {
+      "category": "monitoring",
+      "test": "src/lib/services/memory-monitoring.service.ts",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.769Z"
+    },
+    {
+      "category": "monitoring",
+      "test": "src/lib/services/cache-layer-manager.ts",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.769Z"
+    },
+    {
+      "category": "monitoring",
+      "test": "src/lib/components/MemoryMonitor.svelte",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.769Z"
+    },
+    {
+      "category": "testing",
+      "test": "src/lib/tests/memory-optimization.test.ts",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.769Z"
+    },
+    {
+      "category": "testing",
+      "test": "validate-memory-optimization.mjs",
+      "message": "exists",
+      "status": "pass",
+      "timestamp": "2025-08-02T21:18:04.770Z"
+    },
+    {
+      "category": "dependencies",
+      "test": "vitest",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.770Z"
+    },
+    {
+      "category": "dependencies",
+      "test": "@testing-library/svelte",
+      "message": "missing",
+      "status": "warning",
+      "timestamp": "2025-08-02T21:18:04.770Z"
+    }
+  ],
+  "summary": {
+    "passed": 17,
+    "failed": 2,
+    "warnings": 15,
+    "score": 50
+  }
+}

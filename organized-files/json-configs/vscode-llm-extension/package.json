@@ -1,0 +1,59 @@
+{
+  "name": "vscode-llm-manager",
+  "displayName": "LLM Manager & Orchestrator",
+  "description": "Manage and orchestrate LLMs, agents, and AI workflows directly in VS Code. Integrates with Context7 MCP, vLLM, and project memory graph.",
+  "version": "0.1.0",
+  "publisher": "deedsai",
+  "engines": {
+    "vscode": ">=1.80.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "llmManager.openPanel",
+        "title": "Open LLM Manager Panel"
+      },
+      {
+        "command": "llmManager.refreshModels",
+        "title": "Refresh LLM Model List"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "llmManager",
+          "title": "LLM Manager",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "llmManager": [
+        {
+          "id": "llmPanel",
+          "name": "LLM Orchestrator"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0",
+    "vsce": "^3.0.0"
+  },
+  "dependencies": {}
+}

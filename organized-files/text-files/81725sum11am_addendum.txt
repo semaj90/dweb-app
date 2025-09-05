@@ -1,0 +1,1 @@
+Addendum: Wired XState documentUploadMachine into EnhancedFileUpload.svelte creating per-file actors with progress subscription and UI state updates. Remaining duplication: legacy processFile still exists; consider removing once machine path validated. Next: adjust API endpoints to MCP /rag/process and embed generation.

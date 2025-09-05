@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "routes": {
+    "proxy": [
+      { "from": "http://localhost:5173/api/ai/vector-search", "to": "http://localhost:8093/search", "notes": "example mapping if needed" },
+      { "from": "http://localhost:5173/api/ai/summarize",     "to": "http://localhost:8091/summarize" }
+    ],
+    "mq": {
+      "topics": {
+        "legal.events": ["sveltekit-frontend", "grpc-server"],
+        "ai.summaries": ["summarizer-http", "sveltekit-frontend"],
+        "metrics": ["mcp-multi-w1", "kibana"]
+      }
+    }
+  }
+}

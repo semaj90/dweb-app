@@ -1,0 +1,66 @@
+{
+  "collections": [
+    {
+      "name": "legal_documents",
+      "vectors": {
+        "size": 384,
+        "distance": "Cosine",
+        "on_disk": false
+      },
+      "shard_number": 2,
+      "replication_factor": 1,
+      "write_consistency_factor": 1,
+      "optimizers_config": {
+        "deleted_threshold": 0.2,
+        "vacuum_min_vector_number": 1000,
+        "default_segment_number": 5,
+        "max_segment_size": 200000,
+        "memmap_threshold": 50000,
+        "indexing_threshold": 20000,
+        "flush_interval_sec": 5,
+        "max_optimization_threads": 2
+      },
+      "hnsw_config": {
+        "m": 16,
+        "ef_construct": 200,
+        "full_scan_threshold": 10000,
+        "max_indexing_threads": 4,
+        "on_disk": false,
+        "payload_m": 16
+      }
+    },
+    {
+      "name": "case_embeddings",
+      "vectors": {
+        "size": 384,
+        "distance": "Cosine",
+        "on_disk": false
+      },
+      "shard_number": 1,
+      "replication_factor": 1,
+      "optimizers_config": {
+        "indexing_threshold": 10000,
+        "max_optimization_threads": 2
+      }
+    },
+    {
+      "name": "evidence_vectors",
+      "vectors": {
+        "size": 384,
+        "distance": "Cosine",
+        "on_disk": false
+      },
+      "shard_number": 1,
+      "replication_factor": 1,
+      "optimizers_config": {
+        "indexing_threshold": 10000,
+        "max_optimization_threads": 2
+      }
+    }
+  ],
+  "init_config": {
+    "log_level": "INFO",
+    "validate_collections": true,
+    "telemetry_disabled": false
+  }
+}

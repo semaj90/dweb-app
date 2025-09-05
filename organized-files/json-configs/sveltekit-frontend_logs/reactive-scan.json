@@ -1,0 +1,318 @@
+{
+  "generatedAt": "2025-08-29T05:04:16.715Z",
+  "totalMatches": 52,
+  "matches": [
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\summarize\\+page.svelte",
+      "line": 80,
+      "snippet": "  // Reactive calculations\n  $: {\n    wordCount = reportText.trim() ? reportText.trim().split(/\\s+/).length : 0;",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\help\\+page.svelte",
+      "line": 459,
+      "snippet": "  }\n  $: {\n    filterArticles();",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\evidence\\+page.svelte",
+      "line": 117,
+      "snippet": "  // Reactive values from SSR data and store\n  $: ({ isLoading: loading, error } = $evidenceGrid);\n  let allEvidence = $derived(data.evidence || []);",
+      "pattern": "other"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\evidence\\+page.svelte",
+      "line": 565,
+      "snippet": "  // Reactive statements\n  $: if (\n    searchQuery ||",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\+page.svelte",
+      "line": 93,
+      "snippet": "  // Use a reactive statement to compute form validity instead of $derived\n  $: isFormValid = (authMode === 'login')\n    ? Boolean(formData.email && formData.password)",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\vendor\\bits-ui-fallback\\ComponentFallback.svelte",
+      "line": 33,
+      "snippet": "  // Generate fallback classes based on common patterns\n  $: fallbackClasses = [\n    class,",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 27,
+      "snippet": "  // $sidebarStore and $lokiStore provided by imports\n  $: sidebarOpen = $sidebarStore?.open || isHovered || isPinned;\n  $: evidenceItems = $lokiStore?.evidence ?? [];",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 28,
+      "snippet": "  $: sidebarOpen = $sidebarStore?.open || isHovered || isPinned;\n  $: evidenceItems = $lokiStore?.evidence ?? [];\n  $: notesItems = $lokiStore?.notes ?? [];",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 29,
+      "snippet": "  $: evidenceItems = $lokiStore?.evidence ?? [];\n  $: notesItems = $lokiStore?.notes ?? [];\n  $: canvasStates = $lokiStore?.canvasStates ?? [];",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 30,
+      "snippet": "  $: notesItems = $lokiStore?.notes ?? [];\n  $: canvasStates = $lokiStore?.canvasStates ?? [];\n",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 33,
+      "snippet": "  // Create Fuse instance when relevant items change\n  $: if (activeTab === \"evidence\" && evidenceItems.length > 0) {\n    fuse = new Fuse(evidenceItems, { keys: [\"fileName\", \"description\", \"tags\"], threshold: 0.3 });",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\Sidebar.svelte",
+      "line": 42,
+      "snippet": "  // Compute search results reactively\n  $: searchResults = (() => {\n    if (searchQuery && fuse) {",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReviewSubmitForm.svelte",
+      "line": 198,
+      "snippet": "  // Calculate quality score on component mount and when data changes\n  $: if (allFormData) calculateQualityScore();\n</script>",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\RealTimeEvidenceGrid.svelte",
+      "line": 66,
+      "snippet": "  // Reactive filtering and sorting\n  $: {\n    filteredEvidence = evidence",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\InfiniteScrollList.svelte",
+      "line": 31,
+      "snippet": "\n  $: {\n    // Reset when items change",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\EnhancedChat.svelte",
+      "line": 254,
+      "snippet": "\t// Auto-scroll when messages update\n\t$: if ($state.context.messages.length > 0) {\n\t\tscrollToBottom();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\DocumentDetailModal.svelte",
+      "line": 357,
+      "snippet": "  // Reactive loading when documentId changes\n  $: if (documentId && isOpen) {\n    loadDocumentData(documentId);",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\CanvasEditor.svelte",
+      "line": 807,
+      "snippet": "\t// Attach drop event to canvas element\n\t$: if (canvasElement) {\n\t\tcanvasElement.ondragover = (e) => { e.preventDefault(); };",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaCommandCenter.svelte",
+      "line": 65,
+      "snippet": "  // System health indicators\n  $: systemHealth = (() => {\n    const avgLoad = (systemData.systemLoad + systemData.gpuUtilization + systemData.memoryUsage) / 3;",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\webgpu\\WebGPUProcessor.svelte",
+      "line": 685,
+      "snippet": "\n\t$: if (canvas && !initialized) {\n\t\t// Canvas is ready, initialization will happen in onMount",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\visualization\\LegalDocumentGraphViewer.svelte",
+      "line": 584,
+      "snippet": "  // Update graph engine when render state changes\n  $: if (graphEngine && $canInteract) {\n    // Apply render state changes to engine",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\FileUploadForm.svelte",
+      "line": 48,
+      "snippet": "  // Initialize form with caseId if provided\n  $: if (caseId) {\n    $form.caseId = caseId;",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\GoldenLayout.svelte",
+      "line": 41,
+      "snippet": "\n  $: {\n    switch (ratio) {",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\CommandPalette.svelte",
+      "line": 114,
+      "snippet": "  \n  $: if (open && searchInput) {\n    searchInput.focus();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\CommandPalette.svelte",
+      "line": 155,
+      "snippet": "}\n  $: if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {\n    selectedIndex = 0;",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\CommandMenu.svelte",
+      "line": 207,
+      "snippet": "  // Reset when closing\n  $: if (!$open) {\n    searchQuery = \"\";",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\CaseForm.svelte",
+      "line": 71,
+      "snippet": "  // Update form state when formApi is available\n  $: if (formApi) {\n    // You can access formApi methods here if needed",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ui\\enhanced-bits\\ChatMessage.svelte",
+      "line": 49,
+      "snippet": "\n  $: if (message && message.content) {\n    analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\search\\AdvancedSearch.svelte",
+      "line": 52,
+      "snippet": "  // Initialize Fuse when items change\n  $: if (items.length > 0) {\n    fuse = new Fuse(items, fuseOptions);",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\search\\AdvancedSearch.svelte",
+      "line": 58,
+      "snippet": "  // Perform search when input changes\n  $: if (fuse && searchValue) {\n    const fuseResults = fuse.search(searchValue);",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\search\\AdvancedSearch.svelte",
+      "line": 90,
+      "snippet": "  // Update results when filters change\n  $: onResults(filteredResults);\n",
+      "pattern": "other"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\search\\AdvancedSearch.svelte",
+      "line": 93,
+      "snippet": "  // Sync input value from combobox state (reactive)\n  $: searchValue = $inputValue;\n",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\legal\\SimpleCaseManager.svelte",
+      "line": 216,
+      "snippet": "  // Reactive search\n  $: $searchQuery, handleSearch();\n</script>",
+      "pattern": "other"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\legal\\DocumentDetails.svelte",
+      "line": 154,
+      "snippet": "  // Reactive updates when documentId changes\n  $: if (documentId && isVisible) {\n    loadDocumentDetails(documentId);",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\legal\\CaseManager.svelte",
+      "line": 214,
+      "snippet": "  // Reactive search\n  $: if ($searchQuery) {\n    const debounceTimer = setTimeout(() => {",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\forms\\EnhancedFormInput.svelte",
+      "line": 140,
+      "snippet": "  // Reactive validation\n  $: if (value !== undefined) {\n    validateField();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\forms\\EnhancedDocumentUploadForm.svelte",
+      "line": 210,
+      "snippet": "  // Ensure default form shape to prevent runtime errors\n  $: if ($formData) {\n    if (!$formData.aiProcessing) {",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\forms\\EnhancedCaseFormWithZod.svelte",
+      "line": 89,
+      "snippet": "  // Enhanced form validation with real-time feedback\n  $: {\n    if (enableRealTimeValidation && $form) {",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\evidence-editor\\InspectorPanel.svelte",
+      "line": 106,
+      "snippet": "  // Watch for node changes and auto-populate form\n  $: if (selectedNode) {\n    autoPopulateForm(selectedNode);",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\evidence-editor\\InspectorPanel.svelte",
+      "line": 110,
+      "snippet": "  // Track changes for auto-save\n  $: if ($formData && selectedNode) {\n    hasUnsavedChanges = true;",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\evidence\\EvidenceManager.svelte",
+      "line": 131,
+      "snippet": "  // Filter evidence based on search and tags\n  $: filteredEvidence = evidence.filter((item) => {\n    const matchesSearch = !searchQuery ||",
+      "pattern": "simple_assignment"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\evidence\\EvidenceManager.svelte",
+      "line": 203,
+      "snippet": "\n  $: if (caseId) {\n    loadEvidence();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\LegalDocumentEditor.svelte",
+      "line": 288,
+      "snippet": "  // Reactive statement to trigger auto-save when content changes\n  $: if (content && documentId && !loadingDocument) {\n    scheduleAutoSave();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\demo\\EnhancedSemanticIntegration.svelte",
+      "line": 354,
+      "snippet": "\t// Reactive statements for automatic updates\n\t$: if ($todos.length > 0 && showPageRankGraph) {\n\t\tdispatch('pagerank-updated', generatePageRankGraph($todos));",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\demo\\EnhancedSemanticIntegration.svelte",
+      "line": 358,
+      "snippet": "\n\t$: if ($semanticAnalysis && showSOMVisualization) {\n\t\tdispatch('som-updated', generateSOMVisualization($semanticAnalysis));",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\canvas\\POINode.svelte",
+      "line": 64,
+      "snippet": "  // Update component state when poi changes\n  $: {\n    name = poi.name || \"\";",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\canvas\\CitationSidebar.svelte",
+      "line": 31,
+      "snippet": "  // Reactive filtering\n  $: {\n    filteredCitations = citations.filter((citation) => {",
+      "pattern": "side_effect_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\auth\\LoginModal.svelte",
+      "line": 42,
+      "snippet": "  // the 'open' prop, our internal store is updated.\n  $: if ($openStore !== open) {\n    $openStore = open;",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\TypewriterResponse.svelte",
+      "line": 343,
+      "snippet": "\t// Reactive statements\n\t$: if (text && autoStart) {\n\t\trestart();",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ollama-agent-shell.svelte",
+      "line": 332,
+      "snippet": "  let xstateResponse = $derived($state.context.response);\n  $: if (\n    xstateResponse &&",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\DeedAnalysis.svelte",
+      "line": 57,
+      "snippet": "// Reactive search when query changes\n$: if (searchQuery && searchQuery.trim().length) {\n  // simple reactive trigger (debounce could be added later)",
+      "pattern": "conditional_block"
+    },
+    {
+      "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ChatInterface.svelte",
+      "line": 363,
+      "snippet": "  // Reactive scroll to bottom when new messages arrive\n  $: if ($currentConversation?.messages) {\n    tick().then(scrollToBottom);",
+      "pattern": "conditional_block"
+    }
+  ]
+}

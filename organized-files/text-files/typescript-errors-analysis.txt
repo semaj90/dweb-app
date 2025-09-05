@@ -1,0 +1,47 @@
+TypeScript Error Analysis - 2025-07-29
+========================================
+
+MAIN ERROR CATEGORIES:
+
+1. DRIZZLE ORM TYPE ISSUES (Critical - Most frequent)
+   - Pattern: Type 'Omit<PgSelectBase<...>> is missing properties from type 'PgSelectBase<...>'
+   - Files affected: 
+     * src/routes/api/canvas-states/+server.ts (lines 65, 68, 80)
+     * src/routes/api/cases/+server.ts (lines 48, 65, 70)
+     * src/routes/api/export/+server.ts (lines 60, 63, 68, 78, 83, 88)
+     * Multiple other API routes
+   - Root cause: Drizzle ORM query builder type incompatibility
+
+2. UNDEFINED/MISSING PROPERTIES (High)
+   - Pattern: Property 'X' does not exist on type '{}'
+   - Examples:
+     * 'aiSummary' does not exist on type '{}'
+     * 'evidenceAnalysis' does not exist on type '{}'
+     * 'validationScore' does not exist on type '{}'
+   - Files: Various API routes using empty object types
+
+3. TYPE ASSERTION ISSUES (Medium)
+   - Pattern: Type assertions that don't match actual types
+   - Files: Various component and API files
+
+PRIORITY RANKING:
+
+CRITICAL (Fix First):
+1. Drizzle ORM type issues - These block database operations
+2. API route type errors - These break backend functionality
+
+HIGH (Fix Second):
+3. Missing property errors - These cause runtime errors
+4. Component type mismatches - These affect UI functionality
+
+MEDIUM (Fix Third):
+5. Type assertion warnings
+6. Import path inconsistencies
+
+ESTIMATED ERROR COUNT: 50+ TypeScript errors across multiple files
+
+RECOMMENDED APPROACH:
+1. Fix Drizzle ORM types first (likely a version mismatch or schema issue)
+2. Add proper type definitions for API responses
+3. Fix component prop types
+4. Clean up remaining warnings

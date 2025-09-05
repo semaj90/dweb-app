@@ -1,0 +1,144 @@
+{
+  "ts": "2025-08-12T22:21:40",
+  "environment": "local",
+  "results": [
+    {
+      "name": "mcp-single",
+      "port": 4000,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w1",
+      "port": 4100,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w2",
+      "port": 4101,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w3",
+      "port": 4102,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w4",
+      "port": 4103,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w5",
+      "port": 4104,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w6",
+      "port": 4105,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w7",
+      "port": 4106,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "mcp-multi-w8",
+      "port": 4107,
+      "category": "mcp",
+      "status": "healthy"
+    },
+    {
+      "name": "sveltekit-frontend",
+      "port": 5173,
+      "category": "frontend",
+      "status": "healthy"
+    },
+    {
+      "name": "postgres",
+      "port": 5432,
+      "category": "db",
+      "status": "open"
+    },
+    {
+      "name": "redis",
+      "port": 6379,
+      "category": "cache",
+      "status": "closed"
+    },
+    {
+      "name": "qdrant",
+      "port": 6333,
+      "category": "vector-db",
+      "status": "down"
+    },
+    {
+      "name": "summarizer-http",
+      "port": 8091,
+      "category": "go",
+      "status": "down"
+    },
+    {
+      "name": "cluster-http",
+      "port": 8090,
+      "category": "go",
+      "status": "down"
+    },
+    {
+      "name": "rag-http",
+      "port": 8093,
+      "category": "go",
+      "status": "down"
+    },
+    {
+      "name": "grpc-server",
+      "port": 8084,
+      "category": "go",
+      "status": "closed"
+    },
+    {
+      "name": "quic-front",
+      "port": 8443,
+      "category": "network",
+      "status": "closed"
+    },
+    {
+      "name": "nats",
+      "port": 4222,
+      "category": "mq",
+      "status": "closed"
+    },
+    {
+      "name": "elasticsearch",
+      "port": 9200,
+      "category": "elk",
+      "status": "down"
+    },
+    {
+      "name": "kibana",
+      "port": 5601,
+      "category": "elk",
+      "status": "down"
+    },
+    {
+      "name": "logstash",
+      "port": 5044,
+      "category": "elk",
+      "status": "closed"
+    },
+    {
+      "name": "ollama",
+      "port": 11434,
+      "category": "ai",
+      "status": "down"
+    }
+  ]
+}

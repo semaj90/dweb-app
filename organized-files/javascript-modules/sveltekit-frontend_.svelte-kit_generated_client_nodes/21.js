@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/cases/[caseId]/rag/+page.svelte";

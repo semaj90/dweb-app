@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/legal-ai-suite/+page.svelte";

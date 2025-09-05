@@ -1,0 +1,18 @@
+{
+  "servers": {
+    "context7": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["../mcp-servers/context7-multicore.js"],
+      "env": {
+        "MCP_MULTICORE": "true",
+        "MCP_PORT": "40000"
+      }
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  }
+}
